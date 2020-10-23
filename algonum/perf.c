@@ -14,11 +14,16 @@ void perf(perf_t *p) {
 }
 
 void perf_diff(const perf_t *begin, perf_t *end) {
-    end->tv_sec = end->tv_sec - begin->tv_sec;
+    end->tv_sec  = end->tv_sec  - begin->tv_sec;
     end->tv_usec = end->tv_usec - begin->tv_usec;
     if (end->tv_usec < 0) {
 	(end->tv_sec)--;
 	end->tv_usec += 1.e6;
+    }
+
+    if ( (end->tv_sec  == 0) &&
+	 (end->tv_usec == 0) ) {
+	end->tv_usec = 1;
     }
 }
 

@@ -28,6 +28,8 @@ set( algonum_srcs
   core_dplrnt.c
   tile.c
   perf.c
+  check_ddot.c
+  test_ddot.c
   check_dgemm.c
   test_dgemm.c
   test_dgemm_tiled.c
@@ -49,17 +51,6 @@ endif()
 add_library( algonum
   ${algonum_srcs}
   )
-
-# Configuration with MKL
-set( LAPACKE_LIBRARY_DIRS_DEP
-  $ENV{MKLROOT}/lib/intel64
-  )
-
-set( LAPACKE_LIBRARIES_DEP
-  mkl_gf_lp64
-  mkl_sequential
-  mkl_core
-)
 
 set( DEPS_LIBS
   ${LAPACKE_LIBRARIES_DEP}

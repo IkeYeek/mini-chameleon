@@ -1,0 +1,124 @@
+/**
+ *
+ * @file test_ddot.c
+ *
+ * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ *                      Univ. Bordeaux. All rights reserved.
+ *
+ * @brief Functions to test the ddot variants on lapack format.
+ *
+ * @version 0.1.0
+ * @author Mathieu Faverge
+ * @date 2019-12-01
+ *
+ */
+#include "algonum_int.h"
+
+double flops_ddot(int N){
+  return flops_dgemm( 1, 1, N );
+}
+
+int
+testone_ddot( ddot_fct_t ddot, int N, int check )
+{
+    int     rc = 0;
+    double *A, *B, *C;
+    int     lda, ldb, ldc;
+    double  alpha = 1.0;
+    double  beta = 0.0;
+    int     seedA = random();
+    int     seedB = random();
+    int     seedC = random();
+    perf_t  start, stop;
+
+    double gflops;
+    double flops = flops_ddot( N );
+    lda = 1;
+    ldb = 1;
+    ldc = 1;
+
+    /* Allocate A, B, and C */
+    A = malloc( lda * N * sizeof(double) );
+    B = malloc( ldb * N * sizeof(double) );
+    C = malloc( ldc * 1 * sizeof(double) );
+
+    /* Fill the matrices with random values */
+    CORE_dplrnt( 0, 1, N, A, lda, 1, 0, 0, seedA );
+    CORE_dplrnt( 0, 1, N, B, ldb, N, 0, 0, seedB );
+    CORE_dplrnt( 0, 1, 1, C, ldc, 1, 0, 0, seedC );
+
+    /* Calculate the product */
+    perf( &start );
+    *C = ddot( N, A, lda, B, ldb );
+    perf( &stop );
+
+    perf_diff( &start, &stop );
+    if ( flops > 0. ) {
+        gflops = perf_gflops( &stop, flops );
+    }
+    else {
+        gflops = 0.;
+    }
+
+    /* Check the solution */
+    if ( check ) {
+        double *Cinit = malloc( ldc * 1  * sizeof(double) );
+        CORE_dplrnt( 0, 1, 1, Cinit, ldc, 1, 0, 0, seedC );
+
+        rc = check_ddot( N, A, lda, B, ldb, Cinit, C );
+
+        if ( rc ) {
+            fprintf( stderr, "N= %4d : FAILED\n", N );
+        }
+        free( Cinit );
+    }
+    else {
+        printf( "N= %4d : %le GFlop/s\n", N, gflops );
+    }
+
+    free( A );
+    free( B );
+    free( C );
+
+    return rc;
+}
+
+/**
+ * @brief Function to test a series of tests on a ddot function.
+ *
+ * @param[in] ddot
+ *          The function pointer to a ddot operation on lapack format to test.
+ *
+ * @retval 0, on success
+ * @retval The number of failures otherwise.
+ *
+ */
+int
+testall_ddot( ddot_fct_t ddot )
+{
+    int all_N[] = { 0, 3, 5, 17, 64 };
+
+    int nb_N = sizeof( all_N ) / sizeof( int );
+
+    int im, in, ik, m, n, k;
+    int nbfailed = 0;
+    int nbpassed = 0;
+    int nbtests = nb_N;
+    CBLAS_TRANSPOSE tA, tB;
+
+    for( in = 0; in < nb_N; in ++ ) {
+        n = all_N[in];
+
+        nbfailed += testone_ddot( ddot, n, 1 );
+        nbpassed++;
+        fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
+    }
+
+    if ( nbfailed > 0 ) {
+        fprintf( stdout, "\n %4d tests failed out of %d\n", nbfailed, nbtests );
+    }
+    else {
+        fprintf( stdout, "\n Congratulations all %4d tests succeeded\n", nbtests );
+    }
+    return nbfailed;
+}

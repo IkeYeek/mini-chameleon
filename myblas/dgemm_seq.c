@@ -24,21 +24,21 @@ int dgemm_seq( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 
     if ( transA == CblasNoTrans ) {
         if ( transB == CblasNoTrans ) {
-            for( k=0; k<K; k++ ) {
-                for( m=0; m<M; m++ ) {
-                    for( n=0; n<N; n++ ) {
-                        C[ ldc * n + m ] = alpha * A[ lda * k + m ] * B[ ldb * n + k ]
-                            +              beta * C[ ldc * n + m ];
+	    for( m=0; m<M; m++ ) {
+		for( n=0; n<N; n++ ) {
+		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+		    for( k=0; k<K; k++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * k + m ] * B[ ldb * n + k ];
                     }
                 }
             }
         }
         else {
-            for( k=0; k<K; k++ ) {
-                for( m=0; m<M; m++ ) {
-                    for( n=0; n<N; n++ ) {
-                        C[ ldc * n + m ] = alpha * A[ lda * k + m ] * B[ ldb * k + n ]
-                            +              beta * C[ ldc * n + m ];
+	    for( m=0; m<M; m++ ) {
+		for( n=0; n<N; n++ ) {
+		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+		    for( k=0; k<K; k++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * k + m ] * B[ ldb * k + n ];
                     }
                 }
             }
@@ -46,21 +46,21 @@ int dgemm_seq( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     }
     else {
         if ( transB == CblasNoTrans ) {
-            for( k=0; k<K; k++ ) {
-                for( m=0; m<M; m++ ) {
-                    for( n=0; n<N; n++ ) {
-                        C[ ldc * n + m ] = alpha * A[ lda * m + k ] * B[ ldb * n + k ]
-                            +              beta * C[ ldc * n + m ];
+	    for( m=0; m<M; m++ ) {
+		for( n=0; n<N; n++ ) {
+		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+		    for( k=0; k<K; k++ ) {
+			C[ ldc * n + m ] += alpha * A[ lda * m + k ] * B[ ldb * n + k ];
                     }
                 }
             }
         }
         else {
-            for( k=0; k<K; k++ ) {
-                for( m=0; m<M; m++ ) {
-                    for( n=0; n<N; n++ ) {
-                        C[ ldc * n + m ] = alpha * A[ lda * m + k ] * B[ ldb * k + n ]
-                            +              beta * C[ ldc * n + m ];
+	    for( m=0; m<M; m++ ) {
+		for( n=0; n<N; n++ ) {
+		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+		    for( k=0; k<K; k++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * m + k ] * B[ ldb * k + n ];
                     }
                 }
             }

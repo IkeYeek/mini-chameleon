@@ -148,10 +148,10 @@ testone_dgemm( dgemm_fct_t     dgemm,
 
         if ( rc ) {
             fprintf( stderr,
-                     "tA=%s tB=%s M= %4d N= %4d K= %4d: FAILED\n",
+                     "tA=%s tB=%s M= %4d N= %4d K= %4d alpha= %e, beta= %e: FAILED\n",
                      (transA == CblasNoTrans) ? "NoTrans" : "Trans",
                      (transB == CblasNoTrans) ? "NoTrans" : "Trans",
-                     M, N, K );
+                     M, N, K, alpha, beta );
         }
         free( Cinit );
     }

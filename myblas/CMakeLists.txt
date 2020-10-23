@@ -85,16 +85,6 @@ if ( OpenMP_C_FOUND )
 endif()
 
 if( ENABLE_STARPU )
-  # Configuration with MKL
-  set( LAPACKE_LIBRARY_DIRS_DEP
-    $ENV{MKLROOT}/lib/intel64
-    )
-  set( LAPACKE_LIBRARIES_DEP
-    mkl_gf_lp64
-    mkl_sequential
-    mkl_core
-    )
-
   target_link_libraries( myblas
     algonum
     ${STARPU_LIBRARIES}

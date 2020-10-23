@@ -75,6 +75,38 @@ endif()
 find_package(OpenMP)
 
 #
+# Set BLAS
+#
+option( ENABLE_MKL "Set BLAS MKL by default, otherwise OpenBLAS" ON )
+if (ENABLE_MKL)
+
+  # Configuration with MKL
+  set( LAPACKE_LIBRARY_DIRS_DEP
+    $ENV{MKLROOT}/lib/intel64
+    )
+
+  set( LAPACKE_LIBRARIES_DEP
+    mkl_gf_lp64
+    mkl_sequential
+    mkl_core
+    )
+
+else()
+
+  # Configuration with OpenBLAS
+  set( LAPACKE_LIBRARY_DIRS_DEP
+    /usr/lib/x86_64-linux-gnu/openblas-serial
+    )
+
+  set( LAPACKE_LIBRARIES_DEP
+    openblas
+    lapack
+    blas
+    )
+
+endif()
+
+#
 # Add libraries
 # -------------
 

@@ -17,6 +17,7 @@
 #include <strings.h>
 #include <stdio.h>
 
+fct_list_t *list_ddot   = NULL;
 fct_list_t *list_dgemm  = NULL;
 fct_list_t *list_dgetrf = NULL;
 
@@ -24,7 +25,11 @@ void
 register_fct( fct_list_t *fct, int algo )
 {
     assert( fct->next == NULL );
-    if ( algo == ALGO_GETRF ) {
+    if ( algo == ALGO_DDOT ) {
+        fct->next = list_ddot;
+        list_ddot = fct;
+    }
+    else if ( algo == ALGO_GETRF ) {
         fct->next = list_dgetrf;
         list_dgetrf = fct;
     }
@@ -37,7 +42,17 @@ register_fct( fct_list_t *fct, int algo )
 fct_list_t *
 search_fct( const char *name, int algo )
 {
-    fct_list_t *item = (algo == ALGO_GETRF) ? list_dgetrf : list_dgemm;
+    fct_list_t *item;
+    
+    if ( algo == ALGO_DDOT ) {
+        item = list_ddot;
+    }
+    else if (algo == ALGO_GETRF){
+        item = list_dgetrf;
+    }
+    else {
+        item = list_dgemm;
+    }
 
     while( item != NULL ) {
         if ( strcasecmp( name, item->name ) == 0 ) {
@@ -52,7 +67,17 @@ search_fct( const char *name, int algo )
 void
 print_fct( int algo )
 {
-    fct_list_t *item = (algo == ALGO_GETRF) ? list_dgetrf : list_dgemm;
+    fct_list_t *item;
+    
+    if ( algo == ALGO_DDOT ) {
+        item = list_ddot;
+    }
+    else if (algo == ALGO_GETRF){
+        item = list_dgetrf;
+    }
+    else {
+        item = list_dgemm;
+    }
 
     while( item != NULL ) {
         printf( "    %-8s %s\n", item->name, item->helper );

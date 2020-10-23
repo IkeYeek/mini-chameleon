@@ -23,6 +23,7 @@
 
 #define ALGO_GEMM  0
 #define ALGO_GETRF 1
+#define ALGO_DDOT   2
 
 /**
  * Helper function to compute integer ceil
@@ -62,6 +63,9 @@ void dplrnt_tiled_starpu( double bump, int M, int N, int b,
 /**
  * Function prototypes
  */
+typedef double (*ddot_fct_t)( const int N, const double *X, const int incX,
+                                           const double *Y, const int incY );
+
 typedef int (*dgemm_fct_t)( CBLAS_LAYOUT layout,
                             CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
                             int M, int N, int K,
@@ -117,6 +121,13 @@ typedef struct option_s {
 
 void print_usage( const char *name, int algo );
 void parse_opts( int argc, char **argv, option_t *opts, int algo );
+
+/**
+ * Testing functions for the scalar dot in LAPACK layout
+ */
+int check_ddot( const int N, const double *X, const int incX, const double *Y, const int incY, double *res_ref, const double *res );
+int testone_ddot( ddot_fct_t ddot, int N, int check );
+int testall_ddot( ddot_fct_t ddot );
 
 /**
  * Testing functions for the matrix-matrix product in LAPACK layout

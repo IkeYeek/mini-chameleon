@@ -27,17 +27,18 @@ print_usage( const char *name, int algo )
     print_fct( algo );
 
     printf( "\n"
-            "  -M x       Set the M value\n"
-            "  -N x       Set the N value\n"
-            "  -K x       Set the K value\n"
-            "  -b --nb=x  Set the block size b value\n"
-            "  -A         Switch transA to CblasTrans\n"
-            "  -B         Switch transB to CblasTrans\n" );
+            "  -M x        Set the M value\n"
+            "  -N x        Set the N value\n"
+            "  -K x        Set the K value\n"
+            "  -b --nb=x   Set the block size b value\n"
+            "  -A          Switch transA to CblasTrans\n"
+            "  -B          Switch transB to CblasTrans\n"
+            "  -i --iter=x Set the number of iteration\n" );
 
     return;
 }
 
-#define GETOPT_STRING "hv:M:N:K:AB"
+#define GETOPT_STRING "hv:M:N:K:b:ABi:"
 static struct option long_options[] =
 {
     {"help",          no_argument,       0,      'h'},

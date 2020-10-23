@@ -120,7 +120,7 @@ check_dgemm( CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
     /* Compute the norm of the residual */
     Rnorm = LAPACKE_dlange_work( LAPACK_COL_MAJOR, 'M', M, N, Cref, ldc, NULL );
 
-    result = ((abs(alpha) * max(Anorm, Bnorm) + abs(beta) * Crefnorm) * K * eps);
+    result = ((fabs(alpha) * max(Anorm, Bnorm) + fabs(beta) * Crefnorm) * K * eps);
     if ( result > 0. ) {
         result = Rnorm / result;
     }

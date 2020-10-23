@@ -53,8 +53,10 @@ set(TESTINGS_SRCS
   )
 
 set(TESTINGS
+  check_ddot.c
   check_dgemm.c
   check_dgetrf.c
+  perf_ddot.c
   perf_dgemm.c
   perf_dgetrf.c
   )
