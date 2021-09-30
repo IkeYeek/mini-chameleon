@@ -1,110 +1,142 @@
 ###
 #
-#  @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+#  @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
 #                       Univ. Bordeaux. All rights reserved.
 #
 #  @author Mathieu Faverge
-#  @date 2019-11-13
+#  @version 0.2.0
+#  @date 2021-09-30
 #
 # This is the main CmakeLists.txt of the project.
 # You shoudl not have to modify it.
 #
 ###
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.3)
 project(myblas)
 
-include_directories( ${CMAKE_SOURCE_DIR}/algonum/include )
+## # Disable in source directory build
+## set( CMAKE_DISABLE_IN_SOURCE_BUILD ON )
+## 
+## # use, i.e. don't skip the full RPATH for the build tree
+## set( CMAKE_SKIP_BUILD_RPATH FALSE )
+## 
+## # when building, don't use the install RPATH already
+## # (but later on when installing)
+## set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+## 
+## option(BUILD_SHARED_LIBS
+##   "Build shared libraries" ON)
 
-#
-# Add option to detect MPI (A partir de la séance 2)
-#
-option( ENABLE_MPI "Define if MPI support should be enabled" OFF )
-if (ENABLE_MPI)
-  add_definitions(-DENABLE_MPI)
+# Check that we do no try to configure/build inside the source directory
+# ----------------------------------------------------------------------
+if( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
+  message(FATAL_ERROR "
+    This project is set such that you can not configure/build inside the source directory.
+    Please:
+     1) remove entirely this directory
+     2) extract or clone a fresh revision of the project
+     3) create a build directory and run cmake from this directory or
+    run with (for exemple):
+    mkdir build && cd build && cmake ..
+    or
+    cmake . -B./build
+")
 endif()
 
-#
-# Add option to detect the StarPU package (A partir de la séance 3)
-#
-option( ENABLE_STARPU "Define if StarPU support is enabled or not" OFF )
-if (ENABLE_STARPU)
-  add_definitions(-DENABLE_STARPU)
-endif()
+# Disable in source directory build
+set( CMAKE_DISABLE_IN_SOURCE_BUILD ON )
 
-#
-# Add option to detect the CUDA (Bonus not yet available)
-#
-option( ENABLE_CUDA "Define if CUDA support is enabled or not" OFF )
-if (ENABLE_CUDA)
-  add_definitions(-DENABLE_CUDA)
-endif()
+# use, i.e. don't skip, the full RPATH for the build tree
+set( CMAKE_SKIP_BUILD_RPATH FALSE )
 
-#
-# Find external packages
-#
-if (ENABLE_MPI)
-  find_package(MPI)
-endif()
+# when building, don't use the install RPATH already
+# (but later on when installing)
+set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 
-if( ENABLE_STARPU )
-  include(FindPkgConfig)
-  find_package(PkgConfig QUIET)
+# Build shared libraries
+set( BUILD_SHARED_LIBS ON )
 
-  set (starpu_version "1.3")
-  if( ENABLE_MPI )
-    pkg_search_module(STARPU starpumpi-${starpu_version})
-  else()
-    pkg_search_module(STARPU starpu-${starpu_version})
+# Check that the submodule exists and is up to date
+# -------------------------------------------------
+find_package(Git QUIET)
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  # Update submodules as needed
+  option(GIT_SUBMODULE "Check submodules during build" ON)
+  if(GIT_SUBMODULE)
+    message(STATUS "Submodule update")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+      message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    endif()
   endif()
-
-  if (STARPU_FOUND AND STARPU_LIBRARIES)
-    message(STATUS "Looking for STARPU - found using PkgConfig")
-  else()
-    message(ERROR "${Magenta}Looking for STARPU - not found using PkgConfig."
-      "\n   Perhaps you should add the directory containing libstarpu.pc"
-      "\n   to the PKG_CONFIG_PATH environment variable.${ColourReset}")
-  endif()
-
-  include_directories(${STARPU_INCLUDE_DIRS})
-  link_directories(${STARPU_LIBRARY_DIRS})
 endif()
 
-#
-# Find OpenMP if available
-#
-find_package(OpenMP)
+if( NOT EXISTS "${PROJECT_SOURCE_DIR}/cmake_modules/modules/MorseInit.cmake" )
+  message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()
 
-#
-# Set BLAS
-#
-option( ENABLE_MKL "Set BLAS MKL by default, otherwise OpenBLAS" ON )
-if (ENABLE_MKL)
-
-  # Configuration with MKL
-  set( LAPACKE_LIBRARY_DIRS_DEP
-    $ENV{MKLROOT}/lib/intel64
-    )
-
-  set( LAPACKE_LIBRARIES_DEP
-    mkl_gf_lp64
-    mkl_sequential
-    mkl_core
-    )
-
+# Add extra cmake module path and initialize morse cmake modules
+# This is mainly done to integrate the BLAS/LAPACK detection
+# --------------------------------------------------------------
+if (IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake_modules/modules)
+  set( MORSE_CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules/modules )
+  list(APPEND CMAKE_MODULE_PATH ${MORSE_CMAKE_MODULE_PATH})
+  include(MorseInit)
 else()
-
-  # Configuration with OpenBLAS
-  set( LAPACKE_LIBRARY_DIRS_DEP
-    /usr/lib/x86_64-linux-gnu/openblas-serial
-    )
-
-  set( LAPACKE_LIBRARIES_DEP
-    openblas
-    lapack
-    blas
-    )
-
+  message(FATAL_ERROR "Submodule cmake_morse not initialized - run `git submodule update --init`")
 endif()
+
+
+# Define the compilation options of the project
+# ---------------------------------------------
+
+# Option to enable/disable the MPI compilation
+option( ENABLE_MPI "Define if MPI support should be enabled" OFF )
+
+# Option to enable/disable the StarPU package
+option( ENABLE_STARPU "Define if StarPU support is enabled or not" OFF )
+
+# Option to enable/disable CUDA support
+option( ENABLE_CUDA "Define if CUDA support is enabled or not" OFF )
+
+
+# Generate the config file that holds the define of the lib
+# ---------------------------------------------------------
+configure_file (
+  "${CMAKE_CURRENT_SOURCE_DIR}/algonum/include/config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/algonum/include/config.h")
+
+# Find all required external packages
+# -----------------------------------
+
+# Search for MPI
+if (ENABLE_MPI)
+  find_package(MPI REQUIRED)
+endif()
+
+# Search for StarPU
+if( ENABLE_STARPU )
+  # Specify the minimum version
+  set( STARPU_REQUIRED_VERSION "1.3" CACHE STRING "oldest STARPU version desired" )
+
+  find_package( STARPU ${STARPU_REQUIRED_VERSION} REQUIRED )
+endif()
+
+# Search for OpenMP
+find_package(OpenMP REQUIRED)
+
+# Search for libm
+find_package(M REQUIRED)
+
+# Search for cblas in sequential
+set( CBLAS_MT FALSE )
+find_package(CBLAS REQUIRED)
+
+# Search for lapacke in sequential
+set( LAPACKE_MT FALSE )
+find_package(LAPACKE REQUIRED)
 
 #
 # Add libraries

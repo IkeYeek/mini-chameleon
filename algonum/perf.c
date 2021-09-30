@@ -1,3 +1,18 @@
+/**
+ *
+ * @file perf.c
+ *
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ *                      Univ. Bordeaux. All rights reserved.
+ *
+ * @brief Performance measurement subroutines
+ *
+ * @version 0.2.0
+ * @author Mathieu Faverge
+ * @author Emmanuel Agullo
+ * @date 2021-09-30
+ *
+ */
 #include "algonum.h"
 #include "perf.h"
 #include <stdio.h>
@@ -22,7 +37,8 @@ void perf_diff(const perf_t *begin, perf_t *end) {
     }
 
     if ( (end->tv_sec  == 0) &&
-	 (end->tv_usec == 0) ) {
+	 (end->tv_usec == 0) )
+    {
 	end->tv_usec = 1;
     }
 }

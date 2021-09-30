@@ -1,5 +1,20 @@
-#ifndef PERF_H
-#define PERF_H
+/**
+ *
+ * @file perf.h
+ *
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ *                      Univ. Bordeaux. All rights reserved.
+ *
+ * @brief Performance measurement header
+ *
+ * @version 0.2.0
+ * @author Mathieu Faverge
+ * @author Emmanuel Agullo
+ * @date 2021-09-30
+ *
+ */
+#ifndef _perf_h_
+#define _perf_h_
 #include <sys/time.h>
 
 typedef struct timeval perf_t;
@@ -73,4 +88,4 @@ double perf_mflops(const perf_t *p, const double nb_op);
  */
 double perf_gflops(const perf_t *p, const double nb_op);
 
-#endif
+#endif /* _perf_h_ */

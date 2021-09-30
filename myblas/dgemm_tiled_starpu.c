@@ -2,17 +2,17 @@
  *
  * @file dgemm_tiled_starpu.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Prototype of a StarPU implementation of the dgemm.
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-30
  *
  */
-#include "algonum.h"
+#include "myblas.h"
 #include "codelets.h"
 
 int
@@ -116,16 +116,18 @@ dgemm_tiled_starpu( CBLAS_LAYOUT layout,
     unregister_starpu_handle( MT * NT, handlesC );
 
     /* Let's wait for the end of all the tasks */
-    starpu_task_wait_for_all();
 #if defined(ENABLE_MPI)
-    starpu_mpi_barrier(MPI_COMM_WORLD);
+    starpu_mpi_wait_for_all( MPI_COMM_WORLD );
+    starpu_mpi_barrier( MPI_COMM_WORLD );
+#else
+    starpu_task_wait_for_all();
 #endif
 
     free( handlesA );
     free( handlesB );
     free( handlesC );
 
-    return 0; /* Success */
+    return ALGONUM_SUCCESS;
 }
 
 /* To make sure we use the right prototype */
@@ -141,6 +143,7 @@ void dgemm_tiled_starpu_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_tiled_starpu_init( void )
 {
+    fct_dgemm_tiled_starpu.mpi    = 1;
     fct_dgemm_tiled_starpu.tiled  = 1;
     fct_dgemm_tiled_starpu.starpu = 1;
     fct_dgemm_tiled_starpu.name   = "starpu";

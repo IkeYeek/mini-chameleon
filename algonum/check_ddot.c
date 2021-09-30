@@ -2,14 +2,14 @@
  *
  * @file check_ddot.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Function to numerically validate a gemm function
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-23
  *
  */
 #include "algonum_int.h"

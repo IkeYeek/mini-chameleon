@@ -1,3 +1,17 @@
+/**
+ *
+ * @file codelets.h
+ *
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ *                      Univ. Bordeaux. All rights reserved.
+ *
+ * @brief StarPU codelets declaration header
+ *
+ * @version 0.2.0
+ * @author Mathieu Faverge
+ * @date 2021-09-30
+ *
+ */
 #ifndef _codelets_h_
 #define _codelets_h_
 
@@ -120,4 +134,4 @@ void insert_dgemm ( CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB, int m, int n
                     starpu_data_handle_t B, int ldb,
                     double beta, starpu_data_handle_t C, int ldc );
 
-#endif
+#endif /* _codelets_h_ */

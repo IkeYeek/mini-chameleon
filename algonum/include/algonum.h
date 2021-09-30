@@ -2,14 +2,14 @@
  *
  * @file algonum.h
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Main header file of the library
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-30
  *
  */
 #ifndef _algonum_h_
@@ -18,12 +18,16 @@
 #include <cblas.h>
 #include <lapacke.h>
 #include <math.h>
+#include "config.h"
 #include "flops.h"
 #include "perf.h"
 
 #define ALGO_GEMM  0
 #define ALGO_GETRF 1
-#define ALGO_DDOT   2
+#define ALGO_DDOT  2
+
+#define ALGONUM_SUCCESS            0
+#define ALGONUM_NOT_IMPLEMENTED -100
 
 /**
  * Helper function to compute integer ceil
@@ -96,8 +100,9 @@ typedef struct fct_list_s fct_list_t;
  * @brief Data structure to register an implementation of dgemm/dgetrf
  */
 struct fct_list_s {
-    int         tiled;  /**< If true, the function uses tile format */
-    int         starpu; /**< If true, the function uses StarPU      */
+    int         mpi;    /**< True if the function supports MPI      */
+    int         tiled;  /**< True if the function uses tile storage */
+    int         starpu; /**< True if the function uses StarPU       */
     const char *name;   /**< Short name of the function             */
     const char *helper; /**< Long description of the implementation */
     void       *fctptr; /**< function pointer of the implementation */
@@ -114,13 +119,15 @@ void print_fct( int algo );
 typedef struct option_s {
     fct_list_t *fct;
     int         iter;
-    int         M, N, K, b;
+    int         P, M, N, K, b;
+    int         mpirank, mpisize;
     CBLAS_TRANSPOSE transA;
     CBLAS_TRANSPOSE transB;
 } option_t;
 
 void print_usage( const char *name, int algo );
-void parse_opts( int argc, char **argv, option_t *opts, int algo );
+void algonum_init( int argc, char **argv, option_t *opts, int algo );
+void algonum_exit( option_t *opts, int algo );
 
 /**
  * Testing functions for the scalar dot in LAPACK layout

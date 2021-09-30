@@ -2,14 +2,14 @@
  *
  * @file common.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Functions to test the dgemm_tiled variants.
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-30
  *
  */
 #include "algonum.h"
@@ -34,6 +34,10 @@ print_usage( const char *name, int algo )
             "  -A          Switch transA to CblasTrans\n"
             "  -B          Switch transB to CblasTrans\n"
             "  -i --iter=x Set the number of iteration\n" );
+#if defined(ENABLE_MPI)
+    printf( "\n"
+	    "  -P x        Set the 2D bloc-cyclic parameter P such that P x Q = nbnodes\n" );
+#endif
 
     return;
 }
@@ -43,6 +47,7 @@ static struct option long_options[] =
 {
     {"help",          no_argument,       0,      'h'},
     {"v",             required_argument, 0,      'v'},
+    {"P",             required_argument, 0,      'P'},
     // Matrix parameters
     {"M",             required_argument, 0,      'M'},
     {"N",             required_argument, 0,      'N'},
@@ -57,12 +62,15 @@ static struct option long_options[] =
 };
 
 void
-parse_opts( int argc, char **argv, option_t *options, int algo )
+algonum_init( int argc, char **argv, option_t *options, int algo )
 {
+    int mpirank = 0;
+    int mpisize = 1;
     int opt;
 
     /* Set defaults */
     options->fct    = NULL;
+    options->P      = 1;
     options->N      = 100;
     options->M      = -'N';
     options->K      = -'N';
@@ -70,6 +78,37 @@ parse_opts( int argc, char **argv, option_t *options, int algo )
     options->iter   = 1;
     options->transA = CblasNoTrans;
     options->transB = CblasNoTrans;
+
+#if defined(ENABLE_MPI)
+    {
+	int provided;
+	MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
+
+	switch( provided ) {
+	case MPI_THREAD_MULTIPLE:
+	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_MULTIPLE\n" );
+	    break;
+	case MPI_THREAD_SERIALIZED:
+	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_SERIALIZED\n" );
+	    break;
+	case MPI_THREAD_FUNNELED:
+	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_FUNNELED\n" );
+	    break;
+	case MPI_THREAD_SINGLE:
+	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_SINGLE\n" );
+	    break;
+	default:
+	    fprintf( stderr, "Error initializing MPI\n" );
+	    exit(1);
+	}
+
+	MPI_Comm_rank( MPI_COMM_WORLD, &mpirank );
+	MPI_Comm_size( MPI_COMM_WORLD, &mpisize );
+    }
+#endif
+    
+    options->mpirank = mpirank;
+    options->mpisize = mpisize;
 
     while ((opt = getopt_long(argc, argv, GETOPT_STRING, long_options, NULL)) != -1)
     {
@@ -100,8 +139,24 @@ parse_opts( int argc, char **argv, option_t *options, int algo )
             options->transB = CblasTrans;
             break;
 
+        case 'P':
+            options->P = atoi( optarg );
+
+	    if ( mpisize % options->P != 0 ) {
+		fprintf( stderr, "Parameter P (%d) must divide the number of nodes (%d)\n",
+			 options->P, mpisize );
+		exit(1);
+	    }
+            break;
+
         case 'v':
             options->fct = search_fct( optarg, algo );
+
+	    if ( (mpisize > 1) && (!options->fct->mpi) ) {
+		fprintf( stderr, "ERROR: Version %s does not support MPI\n",
+			 options->fct->name );
+		exit(1);
+	    }
             break;
 
         case '?': /* error from getopt[_long] */
@@ -120,4 +175,38 @@ parse_opts( int argc, char **argv, option_t *options, int algo )
     if ( options->K == -'N' ) {
         options->K = options->N;
     }
+
+    if ( options->fct == NULL ) {
+        fprintf( stderr, "Need to define a version to test\n" );
+        print_usage( argv[0], algo );
+        exit(1);
+    }
+    else {
+        printf( "Test: %s\n", options->fct->helper );
+    }
+
+#if defined(ENABLE_STARPU)
+    if ( options->fct->starpu ) {
+        my_starpu_init();
+    }
+#endif
+
+    return;
+}
+
+void
+algonum_exit( option_t *options, int algo )
+{
+
+#if defined(ENABLE_STARPU)
+    if ( options->fct->starpu ) {
+        my_starpu_exit();
+    }
+#endif
+
+#if defined(ENABLE_MPI)
+    MPI_Finalize();
+#endif
+
+    return;
 }

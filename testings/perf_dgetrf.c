@@ -2,14 +2,14 @@
  *
  * @file perf_dgetrf.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Binary to assess the performance of a GETRF implementation
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-30
  *
  */
 #include <stdlib.h>
@@ -22,20 +22,10 @@ int main( int argc, char **argv )
     option_t options;
     int i, check = 0;
 
-    parse_opts( argc, argv, &options, ALGO_GETRF );
-
-    if ( options.fct == NULL ) {
-        fprintf( stderr, "Need to define a version to test\n" );
-        print_usage( argv[0], ALGO_GETRF );
-        exit(1);
-    }
-    else {
-        printf( "Test: %s\n", options.fct->helper );
-    }
+    algonum_init( argc, argv, &options, ALGO_GETRF );
 
 #if defined(ENABLE_STARPU)
     if ( options.fct->starpu ) {
-        my_starpu_init();
         tested_tiled_dplrnt = dplrnt_tiled_starpu;
     }
 #endif
@@ -54,11 +44,7 @@ int main( int argc, char **argv )
         }
     }
 
-#if defined(ENABLE_STARPU)
-    if ( options.fct->starpu ) {
-        my_starpu_exit();
-    }
-#endif
+    algonum_exit( &options, ALGO_GETRF );
 
     return EXIT_SUCCESS;
 }

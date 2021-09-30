@@ -1,3 +1,17 @@
+/**
+ *
+ * @file tile.c
+ *
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ *                      Univ. Bordeaux. All rights reserved.
+ *
+ * @brief Tile to/from lapack conversion subroutine
+ *
+ * @version 0.2.0
+ * @author Mathieu Faverge
+ * @date 2021-09-30
+ *
+ */
 #include <assert.h>
 #include "algonum_int.h"
 

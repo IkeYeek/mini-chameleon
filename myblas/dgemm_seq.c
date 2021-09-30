@@ -1,18 +1,22 @@
 /**
  *
- * @file common.c
+ * @file dgemm_seq.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
- * @brief Template for the initial sequential GEMM function
+ * @brief Sequential version of the Matrix-Matrix multiply operation
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-30
  *
  */
-#include "algonum.h"
+#include "myblas.h"
+
+// Exemple of ways to add additionnal parameters to your kernel
+// See the registration function to change its value
+static int dgemm_seq_block_size = -1;
 
 int dgemm_seq( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                CBLAS_TRANSPOSE transB, const int M, const int N,
@@ -22,52 +26,21 @@ int dgemm_seq( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 {
     int m, n, k;
 
-    if ( transA == CblasNoTrans ) {
-        if ( transB == CblasNoTrans ) {
-	    for( m=0; m<M; m++ ) {
-		for( n=0; n<N; n++ ) {
-		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
-		    for( k=0; k<K; k++ ) {
-                        C[ ldc * n + m ] += alpha * A[ lda * k + m ] * B[ ldb * n + k ];
-                    }
-                }
-            }
-        }
-        else {
-	    for( m=0; m<M; m++ ) {
-		for( n=0; n<N; n++ ) {
-		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
-		    for( k=0; k<K; k++ ) {
-                        C[ ldc * n + m ] += alpha * A[ lda * k + m ] * B[ ldb * k + n ];
-                    }
-                }
-            }
-        }
-    }
-    else {
-        if ( transB == CblasNoTrans ) {
-	    for( m=0; m<M; m++ ) {
-		for( n=0; n<N; n++ ) {
-		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
-		    for( k=0; k<K; k++ ) {
-			C[ ldc * n + m ] += alpha * A[ lda * m + k ] * B[ ldb * n + k ];
-                    }
-                }
-            }
-        }
-        else {
-	    for( m=0; m<M; m++ ) {
-		for( n=0; n<N; n++ ) {
-		    C[ ldc * n + m ] = beta * C[ ldc * n + m ];
-		    for( k=0; k<K; k++ ) {
-                        C[ ldc * n + m ] += alpha * A[ lda * m + k ] * B[ ldb * k + n ];
-                    }
-                }
-            }
-        }
+    if (transA == CblasNoTrans) {
+      if (transB == CblasNoTrans) {
+        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
+      } else {
+        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
+      }
+    } else {
+      if (transB == CblasNoTrans) {
+        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
+      } else {
+        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
+      }
     }
 
-    return 0;
+    return ALGONUM_SUCCESS;
 }
 
 /* To make sure we use the right prototype */
@@ -83,6 +56,7 @@ void dgemm_seq_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_seq_init( void )
 {
+    fct_dgemm_seq.mpi    = 0;
     fct_dgemm_seq.tiled  = 0;
     fct_dgemm_seq.starpu = 0;
     fct_dgemm_seq.name   = "seq";
@@ -91,4 +65,7 @@ dgemm_seq_init( void )
     fct_dgemm_seq.next   = NULL;
 
     register_fct( &fct_dgemm_seq, ALGO_GEMM );
+
+    /* Read the value of dgemm_block_size */
+    dgemm_seq_block_size = myblas_getenv_value_int( "BLOCKSIZE", 32 );
 }

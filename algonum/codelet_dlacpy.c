@@ -2,14 +2,14 @@
  *
  * @file codelet_dlacpy.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief dlacpy StarPU codelet
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-21
  *
  * This file describes the StarPU codelet for the LAPACK dlacpy function that
  * copies a matrix A into a matrix B.

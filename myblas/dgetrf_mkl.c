@@ -2,18 +2,17 @@
  *
  * @file dgetrf_mkl.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Register the MKL function for references
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-21
  *
  */
-#include "algonum.h"
-#include <assert.h>
+#include "myblas.h"
 
 int dgetrf_mkl( CBLAS_LAYOUT layout,
                 int m, int n, double *A, int lda )
@@ -35,7 +34,7 @@ int dgetrf_mkl( CBLAS_LAYOUT layout,
 #endif
     free( ipiv );
 
-    return 0;
+    return ALGONUM_SUCCESS;
 }
 
 /* To make sure we use the right prototype */
@@ -51,6 +50,7 @@ void dgetrf_mkl_init( void ) __attribute__( ( constructor ) );
 void
 dgetrf_mkl_init( void )
 {
+    fct_dgetrf_mkl.mpi    = 0;
     fct_dgetrf_mkl.tiled  = 0;
     fct_dgetrf_mkl.starpu = 0;
     fct_dgetrf_mkl.name   = "mkl";

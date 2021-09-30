@@ -1,29 +1,13 @@
 ###
 #
-#  @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+#  @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
 #                       Univ. Bordeaux. All rights reserved.
 #
 #  @author Mathieu Faverge
-#  @date 2019-11-13
+#  @version 0.2.0
+#  @date 2021-09-30
 #
 ###
-cmake_minimum_required (VERSION 2.8)
-
-# Disable in source directory build
-set( CMAKE_DISABLE_IN_SOURCE_BUILD ON )
-
-# use, i.e. don't skip the full RPATH for the build tree
-set( CMAKE_SKIP_BUILD_RPATH FALSE )
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-
-option(BUILD_SHARED_LIBS
-  "Build shared libraries" ON)
-
-include_directories( include )
-
 set( algonum_srcs
   core_dplrnt.c
   tile.c
@@ -42,6 +26,9 @@ if( ENABLE_STARPU )
   list( APPEND algonum_srcs
     codelet_dplrnt.c
     codelet_dlacpy.c
+    codelet_dgemm.c
+    codelet_dgetrf.c
+    codelet_dtrsm.c
     starpu.c
     starpu_dplrnt.c
     starpu_dlacpy.c
@@ -52,32 +39,32 @@ add_library( algonum
   ${algonum_srcs}
   )
 
-set( DEPS_LIBS
-  ${LAPACKE_LIBRARIES_DEP}
-  m
-  )
+target_include_directories( algonum PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/include )
 
-if( ENABLE_STARPU )
-  list( APPEND DEPS_LIBS
-    ${STARPU_LIBRARIES}
-    )
+target_link_libraries( algonum PUBLIC MORSE::LAPACKE )
+target_link_libraries( algonum PUBLIC MORSE::CBLAS   )
+target_link_libraries( algonum PUBLIC MORSE::M       )
+
+if(ENABLE_MPI)
+  target_link_libraries( algonum PUBLIC MPI::MPI_C )
 endif()
 
-link_directories( ${LAPACKE_LIBRARY_DIRS_DEP} )
-target_link_libraries( algonum
-  ${DEPS_LIBS}
-  )
+if(ENABLE_STARPU)
+  target_link_libraries( algonum PUBLIC MORSE::STARPU )
+endif()
 
-install(TARGETS algonum
-  RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib)
+# install(TARGETS algonum
+#   RUNTIME DESTINATION bin
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib)
 
-install(FILES
-  include/algonum.h
-  include/cblas.h
-  include/flops.h
-  include/lapacke.h
-  include/perf.h
-  DESTINATION include )
+# install(FILES
+#   include/algonum.h
+#   include/cblas.h
+#   include/flops.h
+#   include/lapacke.h
+#   include/perf.h
+#   DESTINATION include )
 

@@ -2,17 +2,21 @@
  *
  * @file dgemm_mkl.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  * @brief Register the MKL function for references
  *
- * @version 0.1.0
+ * This version of the DGEMM should not be modified. It is provided to
+ * you in order to have a reference point for the sequential
+ * algorithm.
+ *
+ * @version 0.2.0
  * @author Mathieu Faverge
- * @date 2019-12-01
+ * @date 2021-09-30
  *
  */
-#include "algonum.h"
+#include "myblas.h"
 
 int dgemm_mkl( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                CBLAS_TRANSPOSE transB, const int M, const int N,
@@ -23,7 +27,7 @@ int dgemm_mkl( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     cblas_dgemm( layout, transA, transB, M, N, K,
                  alpha, A, lda, B, ldb, beta, C, ldc );
 
-    return 0;
+    return ALGONUM_SUCCESS;
 }
 
 /* To make sure we use the right prototype */
@@ -39,6 +43,7 @@ void dgemm_mkl_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_mkl_init( void )
 {
+    fct_dgemm_mkl.mpi    = 0;
     fct_dgemm_mkl.tiled  = 0;
     fct_dgemm_mkl.starpu = 0;
     fct_dgemm_mkl.name   = "mkl";

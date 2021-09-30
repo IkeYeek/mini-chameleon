@@ -2,17 +2,17 @@
  *
  * @file core_dplrnt.c
  *
- * @copyright 2019-2020 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+ * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
  ***
  *
  * @brief Chameleon core_dplrnt CPU kernel
  *
- * @version 0.9.2
+ * @version 0.2.0
  * @author Mathieu Faverge
  * @author Emmanuel Agullo
- * @date 2019-11-13
+ * @date 2021-09-21
  *
  * Functiont to generate random matrices.
  */
