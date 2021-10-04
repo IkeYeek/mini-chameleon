@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+module load build/cmake/3.15.3
 module load compiler/gcc/9.3.0
 module load mpi/openmpi/4.0.3-mlx
 module load compiler/cuda/10.2
