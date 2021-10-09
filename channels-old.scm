@@ -2,7 +2,7 @@
        (name 'guix)
        (url "https://git.savannah.gnu.org/git/guix.git")
        (commit
-        "fd8ea9abf5b4ded096b7ccadb5e36fde4bac0867")
+        "7b59508ca711d1fe299de3f8d9710da36aeb6829")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -12,9 +12,9 @@
        (name 'guix-hpc-non-free)
        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
        (commit
-        "adf3e266fff4ba07b659510cd5c6e307b0a377fb"))
+        "00a6149a5fae3571adbb2eca83c23935cb28ebfa"))
       (channel
        (name 'guix-hpc)
        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
        (commit
-        "c702e45d9591124587f6c964bfec4fd699f099b7")))
+        "15a6e03e0366ca5462474a925c225d91de8cd584")))
