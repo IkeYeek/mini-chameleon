@@ -29,5 +29,8 @@ foreach( _test ${TESTINGS} )
   target_link_libraries( ${_name_we} PUBLIC myblas )
   target_link_libraries( ${_name_we} PUBLIC algonum )
 
+  install(TARGETS ${_name_we} RUNTIME DESTINATION bin)
+
 endforeach()
+
 

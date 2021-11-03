@@ -55,16 +55,18 @@ if(ENABLE_STARPU)
   target_link_libraries( algonum PUBLIC MORSE::STARPU )
 endif()
 
-# install(TARGETS algonum
-#   RUNTIME DESTINATION bin
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib)
+install(TARGETS algonum
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
-# install(FILES
-#   include/algonum.h
-#   include/cblas.h
-#   include/flops.h
-#   include/lapacke.h
-#   include/perf.h
-#   DESTINATION include )
+install(FILES
+  include/algonum.h
+  include/algonum_int.h
+  include/cblas.h
+  include/codelets.h
+  include/flops.h
+  include/lapacke.h
+  include/perf.h
+  DESTINATION include )
 

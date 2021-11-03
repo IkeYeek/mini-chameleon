@@ -89,8 +89,8 @@ target_link_libraries( myblas PUBLIC MORSE::LAPACKE )
 target_link_libraries( myblas PUBLIC MORSE::CBLAS   )
 target_link_libraries( myblas PUBLIC MORSE::M       )
 
-# install(TARGETS myblas
-#   RUNTIME DESTINATION bin
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib)
+install(TARGETS myblas
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
