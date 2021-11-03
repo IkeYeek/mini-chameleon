@@ -28,6 +28,12 @@ foreach( _test ${TESTINGS} )
 
   target_link_libraries( ${_name_we} PUBLIC myblas )
   target_link_libraries( ${_name_we} PUBLIC algonum )
+  if (ENABLE_MPI)
+    target_link_libraries( ${_name_we} PUBLIC MPI::MPI_C )
+  endif (ENABLE_MPI)
+  if (ENABLE_STARPU)
+    target_link_libraries(${_name_we} PUBLIC MORSE::STARPU)
+  endif (ENABLE_STARPU)
 
   install(TARGETS ${_name_we} RUNTIME DESTINATION bin)
 
