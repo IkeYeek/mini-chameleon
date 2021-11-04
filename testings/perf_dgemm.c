@@ -24,6 +24,12 @@ int main( int argc, char **argv )
 
     algonum_init( argc, argv, &options, ALGO_GEMM );
 
+#if defined(ENABLE_STARPU)
+    if ( options.fct->starpu ) {
+        tested_tiled_dplrnt = dplrnt_tiled_starpu;
+    }
+#endif
+
     for( i=0; i<options.iter; i++ ) {
         if ( options.fct->tiled ) {
             testone_dgemm_tiled( tested_tiled_dplrnt,

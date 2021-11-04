@@ -48,6 +48,15 @@ my_imin( int a, int b )
 }
 
 /**
+ * Helper function to compute integer max
+ */
+static inline int
+my_imax( int a, int b )
+{
+    return ( a < b ) ? b : a;
+}
+
+/**
  * Helpers for the matrix conversion from lapack layout to tile layout
  */
 double ** lapack2tile( int M, int N, int b, const double *Alapack, int lda );
@@ -135,6 +144,7 @@ void algonum_exit( option_t *opts, int algo );
 int check_ddot( const int N, const double *X, const int incX, const double *Y, const int incY, double *res_ref, const double *res );
 int testone_ddot( ddot_fct_t ddot, int N, int check );
 int testall_ddot( ddot_fct_t ddot );
+int testwarm_ddot( ddot_fct_t ddot, int N );
 
 /**
  * Testing functions for the matrix-matrix product in LAPACK layout
@@ -148,6 +158,10 @@ int testone_dgemm( dgemm_fct_t dgemm,
                    CBLAS_TRANSPOSE transB,
                    int M, int N, int K, int check );
 int testall_dgemm( dgemm_fct_t tested_dgemm );
+int testwarm_dgemm( dgemm_fct_t dgemm,
+		    CBLAS_TRANSPOSE transA,
+		    CBLAS_TRANSPOSE transB,
+		    int M, int N, int K );
 
 /**
  * Testing functions for the LU factorization in LAPACK layout
@@ -157,6 +171,7 @@ int check_dgetrf( int M, int N,
 int testone_dgetrf( dgetrf_fct_t dgetrf,
                     int M, int N, int check );
 int testall_dgetrf( dgetrf_fct_t tested_dgetrf );
+int testwarm_dgetrf( dgetrf_fct_t dgetrf, int M, int N );
 
 
 /**
