@@ -48,7 +48,7 @@ dgemm_TEMPLATE_init( void )
 {
     fct_dgemm_TEMPLATE.tiled  = 0;
     fct_dgemm_TEMPLATE.starpu = 0;
-    fct_dgemm_TEMPLATE.name   = "TEMPLATE3";
+    fct_dgemm_TEMPLATE.name   = "TEMPLATE";
     fct_dgemm_TEMPLATE.helper = "TODO: Put a short description of what TEMPLATE is doing to identify it";
     fct_dgemm_TEMPLATE.fctptr = dgemm_TEMPLATE;
     fct_dgemm_TEMPLATE.next   = NULL;
