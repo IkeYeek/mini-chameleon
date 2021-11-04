@@ -21,16 +21,13 @@ void
 my_starpu_init()
 {
     int hres;
+    hres = starpu_init(NULL);
 #if defined(ENABLE_MPI)
     {
         int flag = 0;
         MPI_Initialized( &flag );
 
         hres = starpu_mpi_init( NULL, NULL, !flag );
-    }
-#else
-    {
-        hres = starpu_init( NULL );
     }
 #endif
 
