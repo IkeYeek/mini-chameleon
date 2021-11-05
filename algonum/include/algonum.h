@@ -57,6 +57,11 @@ my_imax( int a, int b )
 }
 
 /**
+ * Helper function to compute the rank of the owner of the tile A[m, n]
+ */
+int get_rank_of( int M, int N );
+
+/**
  * Helpers for the matrix conversion from lapack layout to tile layout
  */
 double ** lapack2tile( int M, int N, int b, const double *Alapack, int lda );
@@ -83,8 +88,8 @@ typedef int (*dgemm_fct_t)( CBLAS_LAYOUT layout,
                             CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
                             int M, int N, int K,
                             double alpha, const double *A, int lda,
-			                  const double *B, int ldb,
-			    double beta,        double *C, int ldc );
+                                          const double *B, int ldb,
+                            double beta,        double *C, int ldc );
 
 typedef int (*dgemm_tiled_fct_t)( CBLAS_LAYOUT layout,
                                   CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
@@ -128,11 +133,13 @@ void print_fct( int algo );
 typedef struct option_s {
     fct_list_t *fct;
     int         iter;
-    int         P, M, N, K, b;
+    int         P, Q, M, N, K, b;
     int         mpirank, mpisize;
     CBLAS_TRANSPOSE transA;
     CBLAS_TRANSPOSE transB;
 } option_t;
+
+extern option_t global_options;
 
 void print_usage( const char *name, int algo );
 void algonum_init( int argc, char **argv, option_t *opts, int algo );
@@ -159,9 +166,9 @@ int testone_dgemm( dgemm_fct_t dgemm,
                    int M, int N, int K, int check );
 int testall_dgemm( dgemm_fct_t tested_dgemm );
 int testwarm_dgemm( dgemm_fct_t dgemm,
-		    CBLAS_TRANSPOSE transA,
-		    CBLAS_TRANSPOSE transB,
-		    int M, int N, int K );
+                    CBLAS_TRANSPOSE transA,
+                    CBLAS_TRANSPOSE transB,
+                    int M, int N, int K );
 
 /**
  * Testing functions for the LU factorization in LAPACK layout

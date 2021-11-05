@@ -54,26 +54,26 @@ testone_ddot( ddot_fct_t ddot, int N, int check )
 
     perf_diff( &start, &stop );
     if ( flops > 0. ) {
-	gflops = perf_gflops( &stop, flops );
+        gflops = perf_gflops( &stop, flops );
     }
     else {
-	gflops = 0.;
+        gflops = 0.;
     }
 
     /* Check the solution */
     if ( check ) {
-	double *Cinit = malloc( ldc * 1  * sizeof(double) );
-	CORE_dplrnt( 0, 1, 1, Cinit, ldc, 1, 0, 0, seedC );
+        double *Cinit = malloc( ldc * 1  * sizeof(double) );
+        CORE_dplrnt( 0, 1, 1, Cinit, ldc, 1, 0, 0, seedC );
 
-	rc = check_ddot( N, A, lda, B, ldb, Cinit, C );
+        rc = check_ddot( N, A, lda, B, ldb, Cinit, C );
 
-	if ( rc ) {
-	    fprintf( stderr, "N= %4d : FAILED\n", N );
-	}
-	free( Cinit );
+        if ( rc ) {
+            fprintf( stderr, "N= %4d : FAILED\n", N );
+        }
+        free( Cinit );
     }
     else {
-	printf( "N= %4d : %le GFlop/s\n", N, gflops );
+        printf( "N= %4d : %le GFlop/s\n", N, gflops );
     }
 
     free( A );
@@ -107,18 +107,18 @@ testall_ddot( ddot_fct_t ddot )
     CBLAS_TRANSPOSE tA, tB;
 
     for( in = 0; in < nb_N; in ++ ) {
-	n = all_N[in];
+        n = all_N[in];
 
-	nbfailed += testone_ddot( ddot, n, 1 );
-	nbpassed++;
-	fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
+        nbfailed += testone_ddot( ddot, n, 1 );
+        nbpassed++;
+        fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
     }
 
     if ( nbfailed > 0 ) {
-	fprintf( stdout, "\n %4d tests failed out of %d\n", nbfailed, nbtests );
+        fprintf( stdout, "\n %4d tests failed out of %d\n", nbfailed, nbtests );
     }
     else {
-	fprintf( stdout, "\n Congratulations all %4d tests succeeded\n", nbtests );
+        fprintf( stdout, "\n Congratulations all %4d tests succeeded\n", nbtests );
     }
     return nbfailed;
 }
@@ -158,16 +158,16 @@ testwarm_ddot( ddot_fct_t ddot, int N )
     /* Calculate the product */
     perf( &start );
     for( i=0; i<nbiter; i++ ) {
-	C += ddot( N, A, lda, B, ldb );
+        C += ddot( N, A, lda, B, ldb );
     }
     perf( &stop );
 
     perf_diff( &start, &stop );
     if ( flops > 0. ) {
-	gflops = perf_gflops( &stop, flops * nbiter );
+        gflops = perf_gflops( &stop, flops * nbiter );
     }
     else {
-	gflops = 0.;
+        gflops = 0.;
     }
 
     printf( "N= %4d : %le GFlop/s\n (%7ld iterations)", N, gflops, nbiter );

@@ -36,13 +36,13 @@ print_usage( const char *name, int algo )
             "  -i --iter=x Set the number of iteration\n" );
 #if defined(ENABLE_MPI)
     printf( "\n"
-	    "  -P x        Set the 2D bloc-cyclic parameter P such that P x Q = nbnodes\n" );
+            "  -P x        Set the 2D bloc-cyclic parameter P such that P x Q = nbnodes\n" );
 #endif
 
     return;
 }
 
-#define GETOPT_STRING "hv:M:N:K:b:ABi:"
+#define GETOPT_STRING "hv:M:N:K:b:ABi:P:"
 static struct option long_options[] =
 {
     {"help",          no_argument,       0,      'h'},
@@ -81,32 +81,34 @@ algonum_init( int argc, char **argv, option_t *options, int algo )
 
 #if defined(ENABLE_MPI)
     {
-	int provided;
-	MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
+        int provided;
+        MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
 
-	switch( provided ) {
-	case MPI_THREAD_MULTIPLE:
-	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_MULTIPLE\n" );
-	    break;
-	case MPI_THREAD_SERIALIZED:
-	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_SERIALIZED\n" );
-	    break;
-	case MPI_THREAD_FUNNELED:
-	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_FUNNELED\n" );
-	    break;
-	case MPI_THREAD_SINGLE:
-	    fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_SINGLE\n" );
-	    break;
-	default:
-	    fprintf( stderr, "Error initializing MPI\n" );
-	    exit(1);
-	}
+        MPI_Comm_rank( MPI_COMM_WORLD, &mpirank );
+        MPI_Comm_size( MPI_COMM_WORLD, &mpisize );
 
-	MPI_Comm_rank( MPI_COMM_WORLD, &mpirank );
-	MPI_Comm_size( MPI_COMM_WORLD, &mpisize );
+        if ( mpirank == 0 ) {
+            switch( provided ) {
+            case MPI_THREAD_MULTIPLE:
+                fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_MULTIPLE\n" );
+                break;
+            case MPI_THREAD_SERIALIZED:
+                fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_SERIALIZED\n" );
+                break;
+            case MPI_THREAD_FUNNELED:
+                fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_FUNNELED\n" );
+                break;
+            case MPI_THREAD_SINGLE:
+                fprintf( stderr, "MPI_THREAD_LEVEL support: MPI_THREAD_SINGLE\n" );
+                break;
+            default:
+                fprintf( stderr, "Error initializing MPI\n" );
+                exit(1);
+            }
+        }
     }
 #endif
-    
+
     options->mpirank = mpirank;
     options->mpisize = mpisize;
 
@@ -141,22 +143,16 @@ algonum_init( int argc, char **argv, option_t *options, int algo )
 
         case 'P':
             options->P = atoi( optarg );
-
-	    if ( mpisize % options->P != 0 ) {
-		fprintf( stderr, "Parameter P (%d) must divide the number of nodes (%d)\n",
-			 options->P, mpisize );
-		exit(1);
-	    }
             break;
 
         case 'v':
             options->fct = search_fct( optarg, algo );
 
-	    if ( (mpisize > 1) && (!options->fct->mpi) ) {
-		fprintf( stderr, "ERROR: Version %s does not support MPI\n",
-			 options->fct->name );
-		exit(1);
-	    }
+            if ( (mpisize > 1) && (!options->fct->mpi) ) {
+                fprintf( stderr, "ERROR: Version %s does not support MPI\n",
+                         options->fct->name );
+                exit(1);
+            }
             break;
 
         case '?': /* error from getopt[_long] */
@@ -176,13 +172,22 @@ algonum_init( int argc, char **argv, option_t *options, int algo )
         options->K = options->N;
     }
 
+    if ( mpisize % options->P != 0 ) {
+        fprintf( stderr, "Parameter P (%d) must divide the number of nodes (%d)\n",
+                 options->P, mpisize );
+        exit(1);
+    }
+    options->Q = mpisize / options->P;
+
     if ( options->fct == NULL ) {
         fprintf( stderr, "Need to define a version to test\n" );
         print_usage( argv[0], algo );
         exit(1);
     }
     else {
-        printf( "Test: %s\n", options->fct->helper );
+        if ( mpirank == 0 ) {
+            printf( "Test: %s (%s)\n", options->fct->helper, options->fct->name );
+        }
     }
 
 #if defined(ENABLE_STARPU)

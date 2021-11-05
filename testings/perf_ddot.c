@@ -18,17 +18,16 @@
 
 int main( int argc, char **argv )
 {
-    option_t options;
+    option_t *options = &global_options;
     int i, check = 0;
 
-    algonum_init( argc, argv, &options, ALGO_DDOT );
+    algonum_init( argc, argv, options, ALGO_DDOT );
 
-    for( i=0; i<options.iter; i++ ) {
-        testone_ddot( options.fct->fctptr, options.N, check );
+    for( i=0; i<options->iter; i++ ) {
+        testone_ddot( options->fct->fctptr, options->N, check );
     }
 
-    algonum_exit( &options, ALGO_DDOT );
-    
+    algonum_exit( options, ALGO_DDOT );
+
     return EXIT_SUCCESS;
 }
-

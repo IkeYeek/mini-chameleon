@@ -18,19 +18,19 @@
 
 int main( int argc, char **argv )
 {
-    option_t options;
+    option_t *options = &global_options;
 
-    algonum_init( argc, argv, &options, ALGO_GETRF );
+    algonum_init( argc, argv, options, ALGO_GETRF );
 
-    if ( options.fct->mpi || options.fct->tiled || options.fct->starpu ) {
-	fprintf( stderr, "this benchmark is meant to bench only the sequential versions of your code\n" );
-	algonum_exit( &options, ALGO_DDOT );
-	return EXIT_FAILURE;
+    if ( options->fct->mpi || options->fct->tiled || options->fct->starpu ) {
+        fprintf( stderr, "this benchmark is meant to bench only the sequential versions of your code\n" );
+        algonum_exit( options, ALGO_DDOT );
+        return EXIT_FAILURE;
     }
 
-    testwarm_dgetrf( options.fct->fctptr, options.M, options.N );
+    testwarm_dgetrf( options->fct->fctptr, options->M, options->N );
 
-    algonum_exit( &options, ALGO_GETRF );
+    algonum_exit( options, ALGO_GETRF );
 
     return EXIT_SUCCESS;
 }

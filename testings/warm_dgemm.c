@@ -18,21 +18,21 @@
 
 int main( int argc, char **argv )
 {
-    option_t options;
+    option_t *options = &global_options;
 
-    algonum_init( argc, argv, &options, ALGO_GEMM );
+    algonum_init( argc, argv, options, ALGO_GEMM );
 
-    if ( options.fct->mpi || options.fct->tiled || options.fct->starpu ) {
-	fprintf( stderr, "this benchmark is meant to bench only the sequential versions of your code\n" );
-	algonum_exit( &options, ALGO_GEMM );
-	return EXIT_FAILURE;
+    if ( options->fct->mpi || options->fct->tiled || options->fct->starpu ) {
+        fprintf( stderr, "this benchmark is meant to bench only the sequential versions of your code\n" );
+        algonum_exit( options, ALGO_GEMM );
+        return EXIT_FAILURE;
     }
 
-    testwarm_dgemm( options.fct->fctptr,
-		    options.transA, options.transB,
-		    options.M, options.N, options.K );
+    testwarm_dgemm( options->fct->fctptr,
+                    options->transA, options->transB,
+                    options->M, options->N, options->K );
 
-    algonum_exit( &options, ALGO_GEMM );
+    algonum_exit( options, ALGO_GEMM );
 
     return EXIT_SUCCESS;
 }

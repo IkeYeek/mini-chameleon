@@ -22,7 +22,7 @@ testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
     int      rc = 0;
     double **Atile;
     int      lda;
-    int      seedA = random();
+    int      seedA = 4562;
     perf_t   start, stop;
     int minMN = ( M < N ) ? M : N;
 
@@ -42,9 +42,13 @@ testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
     perf( &stop );
 
     if ( rc ) {
-        fprintf( stderr,
-                 "M= %4d N= %4d: Not Supported or not implemented\n",
-                 M, N );
+        if ( global_options.mpirank == 0 ) {
+            fprintf( stderr,
+                     "M= %4d N= %4d: Not Supported or not implemented\n",
+                     M, N );
+        }
+
+        tileFree( M, N, b, Atile );
         return rc;
     }
 
@@ -58,20 +62,35 @@ testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
 
     /* Check the solution */
     if ( check ) {
-        double *A     = malloc( lda * N * sizeof(double) );
-        double *Ainit = malloc( lda * N * sizeof(double) );
-        CORE_dplrnt( minMN, M, N, Ainit, lda, M, 0, 0, seedA );
+        double *A, *Ainit;
+
+        /* Create the matrices for the test */
+        if ( global_options.mpirank == 0 ) {
+            A     = malloc( lda * N * sizeof(double) );
+            Ainit = malloc( lda * N * sizeof(double) );
+            CORE_dplrnt( minMN, M, N, Ainit, lda, M, 0, 0, seedA );
+        }
 
         tile2lapack( M, N, b, (const double **)Atile, A, lda );
 
-        rc = check_dgetrf( M, N, A, Ainit, lda );
+        if ( global_options.mpirank == 0 ) {
+            rc = check_dgetrf( M, N, A, Ainit, lda );
 
-        free( A );
-        free( Ainit );
+            if ( rc ) {
+                fprintf( stderr,
+                         "M= %4d N= %4d b=%3d: FAILED\n",
+                         M, N, b );
+            }
+
+            free( A );
+            free( Ainit );
+        }
     }
     else {
-        printf( "M= %4d N= %4d : %le GFlop/s\n",
-                M, N, gflops );
+        if ( global_options.mpirank == 0 ) {
+            printf( "M= %4d N= %4d b=%3d: %le GFlop/s\n",
+                    M, N, b, gflops );
+        }
     }
 
     tileFree( M, N, b, Atile );
@@ -110,13 +129,15 @@ testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
         }
     }
 
-    if ( nbfailed > 0 ) {
-        fprintf( stdout, "\n %4d tests failed out of %d\n",
-                 nbfailed, nbtests );
-    }
-    else {
-        fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
-                 nbtests );
+    if ( global_options.mpirank == 0 ) {
+        if ( nbfailed > 0 ) {
+            fprintf( stdout, "\n %4d tests failed out of %d\n",
+                     nbfailed, nbtests );
+        }
+        else {
+            fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
+                     nbtests );
+        }
     }
     return nbfailed;
 }

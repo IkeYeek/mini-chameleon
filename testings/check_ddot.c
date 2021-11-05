@@ -18,13 +18,13 @@
 
 int main( int argc, char **argv )
 {
-    option_t options;
+    option_t *options = &global_options;
 
-    algonum_init( argc, argv, &options, ALGO_DDOT );
+    algonum_init( argc, argv, options, ALGO_DDOT );
 
-    testall_ddot( options.fct->fctptr );
+    testall_ddot( options->fct->fctptr );
 
-    algonum_exit( &options, ALGO_DDOT );
+    algonum_exit( options, ALGO_DDOT );
 
     return EXIT_SUCCESS;
 }

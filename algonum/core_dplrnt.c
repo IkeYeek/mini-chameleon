@@ -40,10 +40,10 @@ Rnd64_jump(unsigned long long int n, unsigned long long int seed ) {
 
     ran = seed;
     for (i = 0; n; n >>= 1, ++i) {
-	if (n & 1)
-	    ran = a_k * ran + c_k;
-	c_k *= (a_k + 1);
-	a_k *= a_k;
+        if (n & 1)
+            ran = a_k * ran + c_k;
+        c_k *= (a_k + 1);
+        a_k *= a_k;
     }
 
     return ran;
@@ -102,9 +102,9 @@ void CORE_dplrnt( double bump, int m, int n, double *A, int lda,
             *tmp = 0.5f - ran * RndF_Mul;
             ran  = Rnd64_A * ran + Rnd64_C;
 
-	    if ( (i + m0) == (j + n0) ) {
-		*tmp += bump;
-	    }
+            if ( (i + m0) == (j + n0) ) {
+                *tmp += bump;
+            }
 
             tmp++;
         }
@@ -146,11 +146,16 @@ void dplrnt_tiled( double bump, int M, int N, int b,
     int m, n;
     int mm, nn;
 
+#pragma omp parallel for collapse(2) private (m, n, mm, nn)
     for( m=0; m<MT; m++ ) {
-        mm = m == (MT-1) ? M - m * b : b;
-
         for( n=0; n<NT; n++ ) {
+
+            mm = m == (MT-1) ? M - m * b : b;
             nn = n == (NT-1) ? N - n * b : b;
+
+            if ( A[ MT * n + m ] == NULL ) {
+                continue;
+            }
 
             CORE_dplrnt( bump, mm, nn, A[ MT * n + m ], b,
                          M, m * b, n * b, seed );

@@ -25,6 +25,7 @@ dgetrf_tiled_starpu( CBLAS_LAYOUT layout,
     /* Let's compute the total number of tiles with a *ceil* */
     int MT = my_iceil( M, b );
     int NT = my_iceil( N, b );
+    int K  = my_imin( M, N );
     int KT = my_imin( MT, NT );
     int m, n, k;
 

@@ -43,7 +43,7 @@ fct_list_t *
 search_fct( const char *name, int algo )
 {
     fct_list_t *item;
-    
+
     if ( algo == ALGO_DDOT ) {
         item = list_ddot;
     }
@@ -68,7 +68,7 @@ void
 print_fct( int algo )
 {
     fct_list_t *item;
-    
+
     if ( algo == ALGO_DDOT ) {
         item = list_ddot;
     }

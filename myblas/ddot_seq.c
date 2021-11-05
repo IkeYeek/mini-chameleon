@@ -15,7 +15,7 @@
 #include "myblas.h"
 
 double ddot_seq( int N, const double *X, int incX,
-		        const double *Y, int incY )
+                        const double *Y, int incY )
 {
     return 0.;
 }

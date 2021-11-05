@@ -74,9 +74,9 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
     double **Atile, **Btile, **Ctile;
     int     lda, ldb, ldc;
     double  alpha, beta;
-    int     seedA = random();
-    int     seedB = random();
-    int     seedC = random();
+    int     seedA = 4972;
+    int     seedB = 330;
+    int     seedC = 93047;
     perf_t  start, stop;
 
     double gflops;
@@ -92,6 +92,7 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
         An = M;
     }
     lda = max( Am, 1 );
+    lda = max( lda, my_iceil( Am, b ) * b );
 
     if ( transB == CblasNoTrans ) {
         Bm = K;
@@ -102,11 +103,13 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
         Bn = K;
     }
     ldb = max( Bm, 1 );
+    ldb = max( ldb, my_iceil( Bm, b ) * b );
     ldc = max( M, 1 );
+    ldc = max( ldc, my_iceil( M,  b ) * b );
 
     /* Initialize alpha and beta */
-    CORE_dplrnt( 0, 1, 1, &alpha, lda, 1, 0, 0, random() );
-    CORE_dplrnt( 0, 1, 1, &beta,  ldb, 1, 0, 0, random() );
+    CORE_dplrnt( 0, 1, 1, &alpha, lda, 1, 0, 0, 342 );
+    CORE_dplrnt( 0, 1, 1, &beta,  ldb, 1, 0, 0, 651 );
 
     /* Allocate A, B, and C */
     Atile = lapack2tile( Am, An, b, NULL, lda );
@@ -125,11 +128,18 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
     perf( &stop );
 
     if ( rc ) {
-        fprintf( stderr,
-                 "tA=%s tB=%s M= %4d N= %4d K= %4d: Not Supported or not implemented\n",
-                 (transA == CblasNoTrans) ? "NoTrans" : "Trans",
-                 (transB == CblasNoTrans) ? "NoTrans" : "Trans",
-                 M, N, K );
+        if ( global_options.mpirank == 0 ) {
+            fprintf( stderr,
+                     "tA=%s tB=%s M= %4d N= %4d K= %4d: Not Supported or not implemented\n",
+                     (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                     (transB == CblasNoTrans) ? "NoTrans" : "Trans",
+                     M, N, K );
+        }
+
+        tileFree( Am, An, b, Atile );
+        tileFree( Bm, Bn, b, Btile );
+        tileFree( M,  N,  b, Ctile );
+
         return rc;
     }
 
@@ -146,9 +156,11 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
         double *A, *B, *C, *Cinit;
 
         /* Create the matrices for the test */
-        A = malloc( lda * An * sizeof(double) );
-        B = malloc( ldb * Bn * sizeof(double) );
-        C = malloc( ldc * N  * sizeof(double) );
+        if ( global_options.mpirank == 0 ) {
+            A = malloc( lda * An * sizeof(double) );
+            B = malloc( ldb * Bn * sizeof(double) );
+            C = malloc( ldc * N  * sizeof(double) );
+        }
 
         /* Fill the matrices with the same random values */
         tile2lapack( Am, An, b, (const double **)Atile, A, lda );
@@ -156,30 +168,34 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
         tile2lapack( M,  N,  b, (const double **)Ctile, C, ldc );
 
         /* Create the original C to compare with */
-        Cinit = malloc( ldc * N  * sizeof(double) );
-        CORE_dplrnt( 0, M, N, Cinit, ldc, M, 0, 0, seedC );
+        if ( global_options.mpirank == 0 ) {
+            Cinit = malloc( ldc * N  * sizeof(double) );
+            CORE_dplrnt( 0, M, N, Cinit, ldc, M, 0, 0, seedC );
 
-        rc = check_dgemm( transA, transB, M, N, K,
-                          alpha, A, lda, B, ldb,
-                          beta, Cinit, C, ldc );
+            rc = check_dgemm( transA, transB, M, N, K,
+                              alpha, A, lda, B, ldb,
+                              beta, Cinit, C, ldc );
 
-        if ( rc ) {
-            fprintf( stderr,
-                     "tA=%s tB=%s M= %4d N= %4d K= %4d b=%3d: FAILED\n",
-                     (transA == CblasNoTrans) ? "NoTrans" : "Trans",
-                     (transB == CblasNoTrans) ? "NoTrans" : "Trans",
-                     M, N, K, b );
+            if ( rc ) {
+                fprintf( stderr,
+                         "tA=%s tB=%s M= %4d N= %4d K= %4d b=%3d: FAILED\n",
+                         (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                         (transB == CblasNoTrans) ? "NoTrans" : "Trans",
+                         M, N, K, b );
+            }
+            free( A );
+            free( B );
+            free( C );
+            free( Cinit );
         }
-        free( A );
-        free( B );
-        free( C );
-        free( Cinit );
     }
     else {
-        printf( "tA=%s tB=%s M= %4d N= %4d K= %4d: %le GFlop/s\n",
-                (transA == CblasNoTrans) ? "NoTrans" : "Trans",
-                (transB == CblasNoTrans) ? "NoTrans" : "Trans",
-                M, N, K, gflops );
+        if ( global_options.mpirank == 0 ) {
+            printf( "tA=%s tB=%s M= %4d N= %4d K= %4d: %le GFlop/s\n",
+                    (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                    (transB == CblasNoTrans) ? "NoTrans" : "Trans",
+                    M, N, K, gflops );
+        }
     }
 
     tileFree( Am, An, b, Atile );
@@ -243,13 +259,15 @@ testall_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
         }
     }
 
-    if ( nbfailed > 0 ) {
-        fprintf( stdout, "\n %4d tests failed out of %d\n",
-                 nbfailed, nbtests );
-    }
-    else {
-        fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
-                 nbtests );
+    if ( global_options.mpirank == 0 ) {
+        if ( nbfailed > 0 ) {
+            fprintf( stdout, "\n %4d tests failed out of %d\n",
+                     nbfailed, nbtests );
+        }
+        else {
+            fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
+                     nbtests );
+        }
     }
     return nbfailed;
 }

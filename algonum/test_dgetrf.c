@@ -16,7 +16,7 @@
 
 int
 testone_dgetrf( dgetrf_fct_t dgetrf,
-		int M, int N, int check )
+                int M, int N, int check )
 {
     int     rc = 0;
     double *A;
@@ -41,32 +41,32 @@ testone_dgetrf( dgetrf_fct_t dgetrf,
     perf( &stop );
 
     if ( rc ) {
-	fprintf( stderr,
-		 "M= %4d N= %4d: Not Supported or not implemented\n",
-		 M, N );
-	return rc;
+        fprintf( stderr,
+                 "M= %4d N= %4d: Not Supported or not implemented\n",
+                 M, N );
+        return rc;
     }
 
     perf_diff( &start, &stop );
     if ( flops > 0. ) {
-	gflops = perf_gflops( &stop, flops );
+        gflops = perf_gflops( &stop, flops );
     }
     else {
-	gflops = 0.;
+        gflops = 0.;
     }
 
     /* Check the solution */
     if ( check ) {
-	double *Ainit = malloc( lda * N  * sizeof(double) );
-	CORE_dplrnt( minMN, M, N, Ainit, lda, M, 0, 0, seedA );
+        double *Ainit = malloc( lda * N  * sizeof(double) );
+        CORE_dplrnt( minMN, M, N, Ainit, lda, M, 0, 0, seedA );
 
-	rc = check_dgetrf( M, N, A, Ainit, lda );
+        rc = check_dgetrf( M, N, A, Ainit, lda );
 
-	free( Ainit );
+        free( Ainit );
     }
     else {
-	printf( "M= %4d N= %4d : %le GFlop/s\n",
-		M, N, gflops );
+        printf( "M= %4d N= %4d : %le GFlop/s\n",
+                M, N, gflops );
     }
 
     free( A );
@@ -89,30 +89,30 @@ testall_dgetrf( dgetrf_fct_t tested_dgetrf )
     int nbtests = nb_M * nb_N;
 
     for( im = 0; im < nb_M; im ++ ) {
-	m = all_M[im];
-	for( in = 0; in < nb_N; in ++ ) {
-	    n = all_N[in];
+        m = all_M[im];
+        for( in = 0; in < nb_N; in ++ ) {
+            n = all_N[in];
 
-	    nbfailed += testone_dgetrf( tested_dgetrf, m, n, 1 );
-	    nbpassed++;
-	    fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
-	}
+            nbfailed += testone_dgetrf( tested_dgetrf, m, n, 1 );
+            nbpassed++;
+            fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
+        }
     }
 
     if ( nbfailed > 0 ) {
-	fprintf( stdout, "\n %4d tests failed out of %d\n",
-		 nbfailed, nbtests );
+        fprintf( stdout, "\n %4d tests failed out of %d\n",
+                 nbfailed, nbtests );
     }
     else {
-	fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
-		 nbtests );
+        fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
+                 nbtests );
     }
     return nbfailed;
 }
 
 int
 testwarm_dgetrf( dgetrf_fct_t dgetrf,
-		 int M, int N )
+                 int M, int N )
 {
     int     rc = 0;
     double *A;
@@ -140,28 +140,28 @@ testwarm_dgetrf( dgetrf_fct_t dgetrf,
     /* Calculate the product */
     perf( &start );
     for( i=0; i<nbiter; i++ ) {
-	rc += dgetrf( CblasColMajor, M, N, A, lda );
+        rc += dgetrf( CblasColMajor, M, N, A, lda );
     }
     perf( &stop );
 
     if ( rc ) {
-	fprintf( stderr,
-		 "M= %4d N= %4d: Not Supported or not implemented\n",
-		 M, N );
-	return rc;
+        fprintf( stderr,
+                 "M= %4d N= %4d: Not Supported or not implemented\n",
+                 M, N );
+        return rc;
     }
 
     perf_diff( &start, &stop );
     if ( flops > 0. ) {
-	gflops = perf_gflops( &stop, flops * nbiter );
+        gflops = perf_gflops( &stop, flops * nbiter );
     }
     else {
-	gflops = 0.;
+        gflops = 0.;
     }
 
     /* Check the solution */
     printf( "M= %4d N= %4d : %le GFlop/s (%7ld iterations)\n",
-	    M, N, gflops, nbiter );
+            M, N, gflops, nbiter );
 
     free( A );
 

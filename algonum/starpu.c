@@ -64,19 +64,6 @@ get_starpu_rank()
 #endif
 }
 
-int
-get_starpu_owner( int m, int n )
-{
-#if defined(ENABLE_MPI)
-    /* TODO */
-    return 0;
-#else
-    return 0;
-#endif
-    (void)m;
-    (void)n;
-}
-
 starpu_data_handle_t
 get_starpu_handle( int id, starpu_data_handle_t *handles, double **A, int m, int n, int b, int MT )
 {
@@ -87,7 +74,7 @@ get_starpu_handle( int id, starpu_data_handle_t *handles, double **A, int m, int
         int home_node = -1;
         void *user_ptr = NULL;
         int myrank = get_starpu_rank();
-        int owner  = get_starpu_owner( m, n );
+        int owner  = get_rank_of( m, n );
 
         if ( myrank == owner ) {
             user_ptr = A[ MT * n + m ];
@@ -107,7 +94,6 @@ get_starpu_handle( int id, starpu_data_handle_t *handles, double **A, int m, int
          * Be careful to take into account the multiple decriptors that can be used in parallel.
          */
         {
-            /* TODO */
             int64_t tag = ((int64_t)id << 32) | ( n * MT + m );
             starpu_mpi_data_register( *tile_handle, tag, owner );
         }

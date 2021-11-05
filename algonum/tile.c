@@ -15,6 +15,14 @@
 #include <assert.h>
 #include "algonum_int.h"
 
+int
+get_rank_of( int M, int N ) {
+    int p = M % global_options.P;
+    int q = N % global_options.Q;
+
+    return p * global_options.Q + q;
+}
+
 double **
 lapack2tile( int M, int N, int b,
              const double *Alapack, int lda )
@@ -30,9 +38,17 @@ lapack2tile( int M, int N, int b,
     /* Now, let's copy the tile one by one, in column major order */
     for( n=0; n<NT; n++) {
         for( m=0; m<MT; m++) {
-            double *tile = malloc( b * b * sizeof(double) );
-            int mm = m == (MT-1) ? M - m * b : b;
-            int nn = n == (NT-1) ? N - n * b : b;
+            double *tile;
+            int mm, nn;
+
+            if ( get_rank_of( m, n ) != global_options.mpirank ) {
+                Atile[ MT * n + m ] = NULL;
+                continue;
+            }
+
+            tile = malloc( b * b * sizeof(double) );
+            mm   = m == (MT-1) ? M - m * b : b;
+            nn   = n == (NT-1) ? N - n * b : b;
 
             /* Let's use LAPACKE to ease the copy */
             if ( Alapack != NULL ) {
@@ -59,19 +75,91 @@ tile2lapack( int M, int N, int b,
 
     assert( lda >= M );
 
+#if defined(ENABLE_MPI)
+    MPI_Datatype *type;
+    MPI_Datatype tiletypeA, tiletypeB, tiletypeC, tiletypeD;
+
+    if ( global_options.mpirank != 0 ) {
+        lda = b;
+    }
+
+    MPI_Type_vector( b,              b,              lda, MPI_DOUBLE, &tiletypeA );
+    MPI_Type_vector( N - (NT-1) * b, b,              lda, MPI_DOUBLE, &tiletypeB );
+    MPI_Type_vector( b,              M - (MT-1) * b, lda, MPI_DOUBLE, &tiletypeC );
+    MPI_Type_vector( N - (NT-1) * b, M - (MT-1) * b, lda, MPI_DOUBLE, &tiletypeD );
+
+    MPI_Type_commit( &tiletypeA );
+    MPI_Type_commit( &tiletypeB );
+    MPI_Type_commit( &tiletypeC );
+    MPI_Type_commit( &tiletypeD );
+
+    type = &tiletypeA;
+#endif
+
     /* Now, let's copy the tile one by one, in column major order */
     for( n=0; n<NT; n++) {
         for( m=0; m<MT; m++) {
-            const double *tile = Atile[ MT * n + m ];
-            int mm = m == (MT-1) ? M - m * b : b;
-            int nn = n == (NT-1) ? N - n * b : b;
+            const double *tile;
+            int mm, nn;
+            int owner = get_rank_of( m, n );
 
-            /* Let's use LAPACKE to ease the copy */
-            LAPACKE_dlacpy_work( LAPACK_COL_MAJOR, 'A', mm, nn,
-                                 tile, b,
-                                 Alapack + lda * b * n + b * m, lda );
+            if ( (global_options.mpirank != owner) &&
+                 (global_options.mpirank != 0    ) )
+            {
+                assert( Atile[ MT * n + m ] == NULL );
+                continue;
+            }
+
+            tile = Atile[ MT * n + m ];
+            mm   = m == (MT-1) ? M - m * b : b;
+            nn   = n == (NT-1) ? N - n * b : b;
+
+            if ( owner == 0 ) {
+                /* Let's use LAPACKE to ease the copy */
+                LAPACKE_dlacpy_work( LAPACK_COL_MAJOR, 'A', mm, nn,
+                                     tile, b,
+                                     Alapack + lda * b * n + b * m, lda );
+            }
+#if defined(ENABLE_MPI)
+            else {
+                if ( m == (MT-1) ) {
+                    if ( n == (NT-1) ) {
+                        type = &tiletypeD;
+                    }
+                    else {
+                        type = &tiletypeC;
+                    }
+                }
+                else {
+                    if ( n == (NT-1) ) {
+                        type = &tiletypeB;
+                    }
+                    else {
+                        type = &tiletypeA;
+                    }
+                }
+                if ( global_options.mpirank == owner ) {
+                    MPI_Send( tile, 1, *type,
+                              0, MT * n + m, MPI_COMM_WORLD );
+                }
+
+                if ( global_options.mpirank == 0 ) {
+                    MPI_Status status;
+                    MPI_Recv( Alapack + lda * b * n + b * m, 1, *type,
+                              owner, MT * n + m, MPI_COMM_WORLD, &status );
+                }
+            }
+#endif
         }
     }
+
+
+#if defined(ENABLE_MPI)
+    MPI_Type_free( &tiletypeA );
+    MPI_Type_free( &tiletypeB );
+    MPI_Type_free( &tiletypeC );
+    MPI_Type_free( &tiletypeD );
+#endif
 }
 
 void
@@ -85,7 +173,9 @@ tileFree( int M, int N, int b, double **A )
     /* Now, let's copy the tile one by one, in column major order */
     for( n=0; n<NT; n++) {
         for( m=0; m<MT; m++) {
-            free( A[ MT * n + m ] );
+            if ( A[ MT * n + m ] ) {
+                free( A[ MT * n + m ] );
+            }
         }
     }
     free( A );

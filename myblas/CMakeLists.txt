@@ -24,6 +24,7 @@ set( DGEMM_srcs
   dgemm_mkl.c
   dgemm_omp.c
   dgemm_tiled_omp.c
+  dgemm_tiled_mpi.c
   # ADD HERE: your additional dgemm implementation
   #  dgemm_xxx.c
 )
@@ -33,6 +34,9 @@ set( DGEMM_srcs
 set( DGETRF_srcs
   dgetrf_seq.c
   dgetrf_mkl.c
+  dgetrf_omp.c
+  dgetrf_tiled_omp.c
+  dgetrf_tiled_mpi.c
   # ADD HERE: your additional dgetrf implementation
   #  dgetrf_xxx.c
 )

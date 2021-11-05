@@ -22,10 +22,10 @@
 #include "myblas.h"
 
 int dgemm_TEMPLATE( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-		  CBLAS_TRANSPOSE transB, const int M, const int N,
-		  const int K, const double alpha, const double *A,
-		  const int lda, const double *B, const int ldb,
-		  const double beta, double *C, const int ldc )
+                  CBLAS_TRANSPOSE transB, const int M, const int N,
+                  const int K, const double alpha, const double *A,
+                  const int lda, const double *B, const int ldb,
+                  const double beta, double *C, const int ldc )
 {
     /* Here is where you put your own code */
 

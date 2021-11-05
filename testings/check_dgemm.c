@@ -19,24 +19,24 @@
 int main( int argc, char **argv )
 {
     dplrnt_tiled_fct_t tested_tiled_dplrnt = dplrnt_tiled;
-    option_t options;
+    option_t *options = &global_options;
 
-    algonum_init( argc, argv, &options, ALGO_GEMM );
+    algonum_init( argc, argv, options, ALGO_GEMM );
 
 #if defined(ENABLE_STARPU)
-    if ( options.fct->starpu ) {
+    if ( options->fct->starpu ) {
         tested_tiled_dplrnt = dplrnt_tiled_starpu;
     }
 #endif
 
-    if ( options.fct->tiled ) {
+    if ( options->fct->tiled ) {
         testall_dgemm_tiled( tested_tiled_dplrnt,
-                              options.fct->fctptr );
+                              options->fct->fctptr );
     }
     else {
-        testall_dgemm( options.fct->fctptr );
+        testall_dgemm( options->fct->fctptr );
     }
 
-    algonum_exit( &options, ALGO_GEMM );
+    algonum_exit( options, ALGO_GEMM );
     return EXIT_SUCCESS;
 }

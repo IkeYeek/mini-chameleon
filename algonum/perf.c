@@ -21,6 +21,22 @@
 #include <mpi.h>
 #endif
 
+/* TODO : move that into common.c when common.c will be moved to algonum lib */
+option_t global_options = {
+    .fct     = NULL,
+    .P       = 1,
+    .Q       = 1,
+    .N       = 100,
+    .M       = -'N',
+    .K       = -'N',
+    .b       = 320,
+    .iter    = 1,
+    .mpirank = 0,
+    .mpisize = 1,
+    .transA  = CblasNoTrans,
+    .transB  = CblasNoTrans,
+};
+
 void perf(perf_t *p) {
 #if defined(ENABLE_MPI)
     MPI_Barrier( MPI_COMM_WORLD );
@@ -32,14 +48,14 @@ void perf_diff(const perf_t *begin, perf_t *end) {
     end->tv_sec  = end->tv_sec  - begin->tv_sec;
     end->tv_usec = end->tv_usec - begin->tv_usec;
     if (end->tv_usec < 0) {
-	(end->tv_sec)--;
-	end->tv_usec += 1.e6;
+        (end->tv_sec)--;
+        end->tv_usec += 1.e6;
     }
 
     if ( (end->tv_sec  == 0) &&
-	 (end->tv_usec == 0) )
+         (end->tv_usec == 0) )
     {
-	end->tv_usec = 1;
+        end->tv_usec = 1;
     }
 }
 
