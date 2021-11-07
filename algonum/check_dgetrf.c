@@ -57,10 +57,10 @@ check_dgetrf( int M, int N,
     if (  isnan(Rnorm) || isinf(Rnorm) || isnan(result) || isinf(result) || (result > 10.0) ) {
         /* fprintf(stderr, "M= %4d, N= %4d, Anorm= %le, Rnorm= %le, result= %le\n", */
         /*         M, N, Anorm, Rnorm, result ); */
-        info_solution = 1;
+        info_solution = ALGONUM_FAIL;
     }
     else {
-        info_solution = 0;
+        info_solution = ALGONUM_SUCCESS;
     }
 
     free( U );

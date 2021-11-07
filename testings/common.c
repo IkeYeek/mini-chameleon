@@ -33,10 +33,12 @@ print_usage( const char *name, int algo )
             "  -b --nb=x   Set the block size b value\n"
             "  -A          Switch transA to CblasTrans\n"
             "  -B          Switch transB to CblasTrans\n"
-            "  -i --iter=x Set the number of iteration\n" );
+            "  -i --iter=x Set the number of iteration\n"
+            "  -c --check  Enable checking of the result\n" );
 #if defined(ENABLE_MPI)
-    printf( "\n"
-            "  -P x        Set the 2D bloc-cyclic parameter P such that P x Q = nbnodes\n" );
+    printf("\n"
+           "  -P x        Set the 2D bloc-cyclic parameter P such that P x "
+           "Q = nbnodes\n");
 #endif
 
     return;
@@ -56,6 +58,7 @@ static struct option long_options[] =
     // Check/prints
     {"transA",        no_argument,       0,      'A'},
     {"transB",        no_argument,       0,      'B'},
+    {"check",         no_argument,       0,      'c'},
     // Performance tests
     {"iter",          no_argument,       0,      'i'},
     {0, 0, 0, 0}
@@ -78,6 +81,7 @@ algonum_init( int argc, char **argv, option_t *options, int algo )
     options->iter   = 1;
     options->transA = CblasNoTrans;
     options->transB = CblasNoTrans;
+    options->check  = 0;
 
 #if defined(ENABLE_MPI)
     {
@@ -140,6 +144,9 @@ algonum_init( int argc, char **argv, option_t *options, int algo )
         case 'B':
             options->transB = CblasTrans;
             break;
+        case 'c':
+          options->check = 1;
+          break;
 
         case 'P':
             options->P = atoi( optarg );

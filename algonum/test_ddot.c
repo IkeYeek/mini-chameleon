@@ -60,20 +60,25 @@ testone_ddot( ddot_fct_t ddot, int N, int check )
         gflops = 0.;
     }
 
-    /* Check the solution */
+    /* check the solution */
     if ( check ) {
         double *Cinit = malloc( ldc * 1  * sizeof(double) );
         CORE_dplrnt( 0, 1, 1, Cinit, ldc, 1, 0, 0, seedC );
 
         rc = check_ddot( N, A, lda, B, ldb, Cinit, C );
 
-        if ( rc ) {
-            fprintf( stderr, "N= %4d : FAILED\n", N );
+        if ( rc == ALGONUM_SUCCESS) {
+            printf( "N= %4d: %le GFlop/s: " ALGONUM_COLOR_GREEN
+                    "SUCCESS\n" ALGONUM_COLOR_RESET, N, gflops);
+        }
+        else {
+            printf( "N= %4d: %le GFlop/s: " ALGONUM_COLOR_RED
+                    "FAIL\n" ALGONUM_COLOR_RESET, N, gflops);
         }
         free( Cinit );
     }
     else {
-        printf( "N= %4d : %le GFlop/s\n", N, gflops );
+        printf( "N= %4d: %le GFlop/s\n", N, gflops );
     }
 
     free( A );
@@ -108,17 +113,20 @@ testall_ddot( ddot_fct_t ddot )
 
     for( in = 0; in < nb_N; in ++ ) {
         n = all_N[in];
-
-        nbfailed += testone_ddot( ddot, n, 1 );
+        printf("Test %4d / %4d\n", nbpassed, nbtests);
+        if ( testone_ddot(ddot, n, 1) != ALGONUM_SUCCESS ) {
+            nbfailed += 1;
+        }
         nbpassed++;
-        fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
     }
 
     if ( nbfailed > 0 ) {
-        fprintf( stdout, "\n %4d tests failed out of %d\n", nbfailed, nbtests );
+        printf( ALGONUM_COLOR_RED "\n %4d tests failed out of %d\n" ALGONUM_COLOR_RESET,
+                nbfailed, nbtests );
     }
     else {
-        fprintf( stdout, "\n Congratulations all %4d tests succeeded\n", nbtests );
+        printf( ALGONUM_COLOR_GREEN "\n Congratulations all %4d tests succeeded\n" ALGONUM_COLOR_RESET,
+                nbtests );
     }
     return nbfailed;
 }

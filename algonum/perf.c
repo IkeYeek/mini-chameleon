@@ -35,6 +35,7 @@ option_t global_options = {
     .mpisize = 1,
     .transA  = CblasNoTrans,
     .transB  = CblasNoTrans,
+    .check   = 0
 };
 
 void perf(perf_t *p) {

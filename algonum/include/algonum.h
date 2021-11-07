@@ -28,6 +28,12 @@
 
 #define ALGONUM_SUCCESS            0
 #define ALGONUM_NOT_IMPLEMENTED -100
+#define ALGONUM_FAIL            -101
+
+#define ALGONUM_COLOR_RESET  "\033[0m"
+#define ALGONUM_COLOR_GREEN  "\033[32m" /* Green */
+#define ALGONUM_COLOR_ORANGE "\033[33m" /* Orange */
+#define ALGONUM_COLOR_RED    "\033[31m" /* Red */
 
 /**
  * Helper function to compute integer ceil
@@ -137,6 +143,7 @@ typedef struct option_s {
     int         mpirank, mpisize;
     CBLAS_TRANSPOSE transA;
     CBLAS_TRANSPOSE transB;
+    int check;
 } option_t;
 
 extern option_t global_options;

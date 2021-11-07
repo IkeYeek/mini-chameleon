@@ -20,7 +20,7 @@ int main( int argc, char **argv )
 {
     dplrnt_tiled_fct_t tested_tiled_dplrnt = dplrnt_tiled;
     option_t *options = &global_options;
-    int i, check = 0;
+    int i;
 
     algonum_init( argc, argv, options, ALGO_GEMM );
 
@@ -36,12 +36,12 @@ int main( int argc, char **argv )
                                  options->fct->fctptr,
                                  options->transA, options->transB,
                                  options->M, options->N, options->K,
-                                 options->b, check );
+                                 options->b, options->check );
         }
         else {
             testone_dgemm( options->fct->fctptr,
                            options->transA, options->transB,
-                           options->M, options->N, options->K, check );
+                           options->M, options->N, options->K, options->check );
         }
     }
 

@@ -19,12 +19,12 @@
 int main( int argc, char **argv )
 {
     option_t *options = &global_options;
-    int i, check = 0;
+    int i;
 
     algonum_init( argc, argv, options, ALGO_DDOT );
 
     for( i=0; i<options->iter; i++ ) {
-        testone_ddot( options->fct->fctptr, options->N, check );
+        testone_ddot( options->fct->fctptr, options->N, options->check );
     }
 
     algonum_exit( options, ALGO_DDOT );

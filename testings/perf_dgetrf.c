@@ -20,7 +20,7 @@ int main( int argc, char **argv )
 {
     dplrnt_tiled_fct_t tested_tiled_dplrnt = dplrnt_tiled;
     option_t *options = &global_options;
-    int i, check = 0;
+    int i;
 
     algonum_init( argc, argv, options, ALGO_GETRF );
 
@@ -35,12 +35,12 @@ int main( int argc, char **argv )
             testone_dgetrf_tiled( tested_tiled_dplrnt,
                                   options->fct->fctptr,
                                   options->M, options->N,
-                                  options->b, check );
+                                  options->b, options->check );
         }
         else {
             testone_dgetrf(
                 options->fct->fctptr,
-                options->M, options->N, check );
+                options->M, options->N, options->check );
         }
     }
 

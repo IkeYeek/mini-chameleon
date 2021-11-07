@@ -48,12 +48,12 @@ check_ddot( const int N, const double *X, const int incX, const double *Y, const
           fprintf(stdout, "\nresult : %le\n", result);
         }
         else{
-          fprintf(stdout, "\nERREUR BIZAAAAAAAAAAAAAAAAAAAAAAAAAARE\n");
+          fprintf(stdout, "\nERREUR BIZAAAAAAAAAAAAAAAAAAAAAAAAAARRE\n");
         }
-        info_solution = 1;
+        info_solution = ALGONUM_FAIL;
     }
     else {
-        info_solution = 0;
+        info_solution = ALGONUM_SUCCESS;
     }
 
     free(work);

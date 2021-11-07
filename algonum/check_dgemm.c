@@ -127,10 +127,10 @@ check_dgemm( CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
 
     /* Verify if the result is inside the threshold threshold */
     if (  isnan(Rnorm) || isinf(Rnorm) || isnan(result) || isinf(result) || (result > 10.0) ) {
-        info_solution = 1;
+        info_solution = ALGONUM_FAIL;
     }
     else {
-        info_solution = 0;
+        info_solution = ALGONUM_SUCCESS;
     }
 
     free(work);

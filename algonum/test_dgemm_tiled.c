@@ -127,13 +127,12 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
                 alpha, (const double **)Atile, (const double **)Btile, beta, Ctile );
     perf( &stop );
 
-    if ( rc ) {
+    if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
         if ( global_options.mpirank == 0 ) {
-            fprintf( stderr,
-                     "tA=%s tB=%s M= %4d N= %4d K= %4d: Not Supported or not implemented\n",
-                     (transA == CblasNoTrans) ? "NoTrans" : "Trans",
-                     (transB == CblasNoTrans) ? "NoTrans" : "Trans",
-                     M, N, K );
+            printf( "tA=%s tB=%s M= %4d N= %4d K= %4d: " ALGONUM_COLOR_ORANGE "not supported or not implemented\n" ALGONUM_COLOR_RESET,
+                    (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                    (transB == CblasNoTrans) ? "NoTrans" : "Trans",
+                    M, N, K );
         }
 
         tileFree( Am, An, b, Atile );
@@ -176,12 +175,17 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
                               alpha, A, lda, B, ldb,
                               beta, Cinit, C, ldc );
 
-            if ( rc ) {
-                fprintf( stderr,
-                         "tA=%s tB=%s M= %4d N= %4d K= %4d b=%3d: FAILED\n",
-                         (transA == CblasNoTrans) ? "NoTrans" : "Trans",
-                         (transB == CblasNoTrans) ? "NoTrans" : "Trans",
-                         M, N, K, b );
+            if ( rc == ALGONUM_SUCCESS ) {
+                printf( "tA=%s tB=%s M= %4d N= %4d K= %4d alpha= %e beta= %e: %le GFlop/s: " ALGONUM_COLOR_GREEN "SUCCESS\n" ALGONUM_COLOR_RESET,
+                        (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                        (transB == CblasNoTrans) ? "NoTrans" : "Trans", M, N, K,
+                        alpha, +beta, gflops);
+            }
+            else {
+                printf( "tA=%s tB=%s M= %4d N= %4d K= %4d alpha= %e beta= %e: %le GFlop/s: " ALGONUM_COLOR_RED "FAIL\n" ALGONUM_COLOR_RESET,
+                        (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                        (transB == CblasNoTrans) ? "NoTrans" : "Trans", M, N, K,
+                        alpha, +beta, gflops );
             }
             free( A );
             free( B );
@@ -232,8 +236,10 @@ testall_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
     int nb_K = sizeof( all_K ) / sizeof( int );
     int nb_b = sizeof( all_b ) / sizeof( int );
 
+    int rc;
     int im, in, ik, ib, m, n, k, b;
     int nbfailed = 0;
+    int nbnotimplemented = 0;
     int nbpassed = 0;
     int nbtests = 4 * nb_M * nb_N * nb_K * nb_b;
     CBLAS_TRANSPOSE tA, tB;
@@ -249,9 +255,18 @@ testall_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
                         for( ib = 0; ib < nb_b; ib ++ ) {
                             b = all_b[ib];
 
-                            nbfailed += testone_dgemm_tiled( dplrnt, dgemm, tA, tB, m, n, k, b, 1 );
+                            if ( global_options.mpirank == 0 ) {
+                                printf( "Test %4d / %4d\n", nbpassed, nbtests );
+                            }
+                            rc = testone_dgemm_tiled( dplrnt, dgemm, tA, tB, m,
+                                                      n, k, b, 1 );
+                            if (rc == ALGONUM_FAIL) {
+                                nbfailed += 1;
+                            }
+                            else if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
+                                nbnotimplemented++;
+                            }
                             nbpassed++;
-                            fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
                         }
                     }
                 }
@@ -260,13 +275,26 @@ testall_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
     }
 
     if ( global_options.mpirank == 0 ) {
-        if ( nbfailed > 0 ) {
-            fprintf( stdout, "\n %4d tests failed out of %d\n",
-                     nbfailed, nbtests );
+        if ( nbnotimplemented > 0 ) {
+            printf( ALGONUM_COLOR_ORANGE
+                    "Warning: %4d tests out of %d could not be assessed due to "
+                    "non implemented variants\n" ALGONUM_COLOR_RESET,
+                    nbnotimplemented, nbtests);
         }
         else {
-            fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
-                     nbtests );
+            printf( "All tested variants were implemented\n" );
+        }
+        if ( nbfailed > 0 ) {
+            printf( ALGONUM_COLOR_RED
+                    "%4d tests failed out of %d\n" ALGONUM_COLOR_RESET,
+                    nbfailed, nbtests - nbnotimplemented);
+        }
+        else {
+            if ( nbtests != nbnotimplemented ) {
+                printf( ALGONUM_COLOR_GREEN "Congratulations: all %4d tests"
+                        "succeeded\n" ALGONUM_COLOR_RESET,
+                        nbtests - nbnotimplemented);
+            }
         }
     }
     return nbfailed;

@@ -41,16 +41,16 @@ testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
     rc = dgetrf( CblasColMajor, M, N, b, Atile );
     perf( &stop );
 
-    if ( rc ) {
+    if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
         if ( global_options.mpirank == 0 ) {
-            fprintf( stderr,
-                     "M= %4d N= %4d: Not Supported or not implemented\n",
-                     M, N );
+            printf( "M= %4d N= %4d: " ALGONUM_COLOR_ORANGE "not supported or not implemented\n" ALGONUM_COLOR_RESET,
+                    M,
+                    N );
         }
 
         tileFree( M, N, b, Atile );
         return rc;
-    }
+      }
 
     perf_diff( &start, &stop );
     if ( flops > 0. ) {
@@ -76,12 +76,15 @@ testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
         if ( global_options.mpirank == 0 ) {
             rc = check_dgetrf( M, N, A, Ainit, lda );
 
-            if ( rc ) {
-                fprintf( stderr,
-                         "M= %4d N= %4d b=%3d: FAILED\n",
-                         M, N, b );
+            if ( rc == ALGONUM_SUCCESS ) {
+                printf( "M= %4d N= %4d b=%3d: %le GFlop/s " ALGONUM_COLOR_GREEN
+                        "SUCCESS\n" ALGONUM_COLOR_RESET,
+                        M, N, b, gflops );
+            } else {
+                printf( "M= %4d N= %4d b=%3d: %le GFlop/s " ALGONUM_COLOR_RED
+                        "FAIL\n" ALGONUM_COLOR_RESET,
+                        M, N, b, gflops );
             }
-
             free( A );
             free( Ainit );
         }
@@ -110,8 +113,10 @@ testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
     int nb_N = sizeof( all_N ) / sizeof( int );
     int nb_b = sizeof( all_b ) / sizeof( int );
 
+    int rc;
     int im, in, ib, m, n, b;
     int nbfailed = 0;
+    int nbnotimplemented = 0;
     int nbpassed = 0;
     int nbtests = nb_M * nb_N * nb_b;
 
@@ -122,21 +127,42 @@ testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
             for( ib = 0; ib < nb_b; ib ++ ) {
                 b = all_b[ib];
 
-                nbfailed += testone_dgetrf_tiled( dplrnt, tested_dgetrf, m, n, b, 1 );
+                if (global_options.mpirank == 0) {
+                    printf("Test %4d / %4d\n", nbpassed, nbtests);
+                }
+                rc = testone_dgetrf_tiled(dplrnt, tested_dgetrf, m, n, b, 1);
+                if (rc == ALGONUM_FAIL) {
+                    nbfailed += 1;
+                }
+                else if (rc == ALGONUM_NOT_IMPLEMENTED) {
+                    nbnotimplemented++;
+                }
                 nbpassed++;
-                fprintf( stdout, "\r %4d / %4d", nbpassed, nbtests );
             }
         }
     }
 
     if ( global_options.mpirank == 0 ) {
-        if ( nbfailed > 0 ) {
-            fprintf( stdout, "\n %4d tests failed out of %d\n",
-                     nbfailed, nbtests );
+        if ( nbnotimplemented > 0 ) {
+            printf( ALGONUM_COLOR_ORANGE
+                    "Warning: %4d tests out of %d could not be assessed due to "
+                    "non implemented variants\n" ALGONUM_COLOR_RESET,
+                    nbnotimplemented, nbtests );
         }
         else {
-            fprintf( stdout, "\n Congratulations all %4d tests succeeded\n",
-                     nbtests );
+            printf( "All tested variants were implemented\n" );
+        }
+        if (nbfailed > 0) {
+            printf( ALGONUM_COLOR_RED
+                    "%4d tests failed out of %d\n" ALGONUM_COLOR_RESET,
+                    nbfailed, nbtests - nbnotimplemented);
+        }
+        else {
+            if (nbtests != nbnotimplemented) {
+                printf(ALGONUM_COLOR_GREEN "Congratulations: all %4d tests"
+                       "succeeded\n" ALGONUM_COLOR_RESET,
+                       nbtests - nbnotimplemented);
+            }
         }
     }
     return nbfailed;
