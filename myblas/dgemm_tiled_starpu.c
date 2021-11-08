@@ -64,13 +64,13 @@ dgemm_tiled_starpu( CBLAS_LAYOUT layout,
                 }
                 else {
 
-                    /* A: Cblas[Conj]Trans / B: CblasNoTrans */
+                    /* A: CblasNoTrans / B: Cblas[Conj]Trans */
                     for( k=0; k<KT; k++) {
                         int kk = k == (KT-1) ? K - k * b : b;
                         double lbeta = (k == 0) ? beta : 1.;
 
-                        hA = get_starpu_handle( 0, handlesA, (double **)A, k, m, b, KT );
-                        hB = get_starpu_handle( 1, handlesB, (double **)B, k, n, b, KT );
+                        hA = get_starpu_handle( 0, handlesA, (double **)A, m, k, b, MT );
+                        hB = get_starpu_handle( 1, handlesB, (double **)B, n, k, b, NT );
 
                         insert_dgemm( transA, transB, mm, nn, kk,
                                       alpha, hA, b, hB, b, lbeta, hC, b );
@@ -80,13 +80,13 @@ dgemm_tiled_starpu( CBLAS_LAYOUT layout,
             else {
                 if ( transB == CblasNoTrans ) {
 
-                    /* A: CblasNoTrans / B: Cblas[Conj]Trans */
+                    /* A: Cblas[Conj]Trans / B: CblasNoTrans */
                     for( k=0; k<KT; k++) {
                         int kk = k == (KT-1) ? K - k * b : b;
                         double lbeta = (k == 0) ? beta : 1.;
 
-                        hA = get_starpu_handle( 0, handlesA, (double **)A, m, k, b, MT );
-                        hB = get_starpu_handle( 1, handlesB, (double **)B, n, k, b, NT );
+                        hA = get_starpu_handle( 0, handlesA, (double **)A, k, m, b, KT );
+                        hB = get_starpu_handle( 1, handlesB, (double **)B, k, n, b, KT );
 
                         insert_dgemm( transA, transB, mm, nn, kk,
                                       alpha, hA, b, hB, b, lbeta, hC, b );
