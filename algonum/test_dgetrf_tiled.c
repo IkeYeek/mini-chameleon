@@ -159,7 +159,7 @@ testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
         }
         else {
             if (nbtests != nbnotimplemented) {
-                printf(ALGONUM_COLOR_GREEN "Congratulations: all %4d tests"
+                printf(ALGONUM_COLOR_GREEN "Congratulations: all %4d tests "
                        "succeeded\n" ALGONUM_COLOR_RESET,
                        nbtests - nbnotimplemented);
             }
