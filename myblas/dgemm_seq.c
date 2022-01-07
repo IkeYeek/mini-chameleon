@@ -26,18 +26,59 @@ int dgemm_seq( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 {
     int m, n, k;
 
-    if (transA == CblasNoTrans) {
-      if (transB == CblasNoTrans) {
-        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
-      } else {
-        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
-      }
-    } else {
-      if (transB == CblasNoTrans) {
-        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
-      } else {
-        return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
-      }
+    if ( transA == CblasNoTrans ) {
+        if ( transB == CblasNoTrans ) {
+            for( n=0; n<N; n++ ) {
+                if ( beta != 1. ) {
+                    for( m=0; m<M; m++ ) {
+                        C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+                    }
+                }
+                for( k=0; k<K; k++ ) {
+                    for( m=0; m<M; m++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * k + m ] * B[ ldb * n + k ];
+                    }
+                }
+            }
+        }
+        else {
+            for( m=0; m<M; m++ ) {
+                for( n=0; n<N; n++ ) {
+                    if ( beta != 1. ) {
+                        C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+                    }
+                    for( k=0; k<K; k++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * k + m ] * B[ ldb * k + n ];
+                    }
+                }
+            }
+        }
+    }
+    else {
+        if ( transB == CblasNoTrans ) {
+            for( m=0; m<M; m++ ) {
+                for( n=0; n<N; n++ ) {
+                    if ( beta != 1. ) {
+                        C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+                    }
+                    for( k=0; k<K; k++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * m + k ] * B[ ldb * n + k ];
+                    }
+                }
+            }
+        }
+        else {
+            for( m=0; m<M; m++ ) {
+                for( n=0; n<N; n++ ) {
+                    if ( beta != 1. ) {
+                        C[ ldc * n + m ] = beta * C[ ldc * n + m ];
+                    }
+                    for( k=0; k<K; k++ ) {
+                        C[ ldc * n + m ] += alpha * A[ lda * m + k ] * B[ ldb * k + n ];
+                    }
+                }
+            }
+        }
     }
 
     return ALGONUM_SUCCESS;

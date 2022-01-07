@@ -44,13 +44,12 @@ testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
     if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
         if ( global_options.mpirank == 0 ) {
             printf( "M= %4d N= %4d: " ALGONUM_COLOR_ORANGE "not supported or not implemented\n" ALGONUM_COLOR_RESET,
-                    M,
-                    N );
+                    M, N );
         }
 
         tileFree( M, N, b, Atile );
         return rc;
-      }
+    }
 
     perf_diff( &start, &stop );
     if ( flops > 0. ) {
@@ -127,17 +126,17 @@ testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
             for( ib = 0; ib < nb_b; ib ++ ) {
                 b = all_b[ib];
 
-                if (global_options.mpirank == 0) {
-                    printf("Test %4d / %4d\n", nbpassed, nbtests);
-                }
-                rc = testone_dgetrf_tiled(dplrnt, tested_dgetrf, m, n, b, 1);
-                if (rc == ALGONUM_FAIL) {
-                    nbfailed += 1;
+                rc = testone_dgetrf_tiled( dplrnt, tested_dgetrf, m, n, b, 1 );
+                if ( rc == ALGONUM_FAIL ) {
+                    nbfailed++;
                 }
                 else if (rc == ALGONUM_NOT_IMPLEMENTED) {
                     nbnotimplemented++;
                 }
                 nbpassed++;
+                if ( global_options.mpirank == 0 ) {
+                    printf( "Test %4d / %4d\n", nbpassed, nbtests );
+                }
             }
         }
     }
@@ -152,13 +151,13 @@ testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
         else {
             printf( "All tested variants were implemented\n" );
         }
-        if (nbfailed > 0) {
+        if ( nbfailed > 0 ) {
             printf( ALGONUM_COLOR_RED
                     "%4d tests failed out of %d\n" ALGONUM_COLOR_RESET,
                     nbfailed, nbtests - nbnotimplemented);
         }
         else {
-            if (nbtests != nbnotimplemented) {
+            if ( nbtests != nbnotimplemented ) {
                 printf(ALGONUM_COLOR_GREEN "Congratulations: all %4d tests "
                        "succeeded\n" ALGONUM_COLOR_RESET,
                        nbtests - nbnotimplemented);

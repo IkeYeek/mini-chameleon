@@ -21,11 +21,16 @@ dgetrf_seq( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )
     int m, n, k;
     int K = ( M > N ) ? N : M;
 
-    /* COMPLETEME */
+    for( k=0; k<K; k++ ) {
+        for( m=k+1; m<M; m++ ) {
+            A[ lda * k + m ] = A[ lda * k + m ] / A[ lda * k + k ];
+            for( n=k+1; n<N; n++ ) {
+                A[ lda * n + m ] = A[ lda * n + m ] - A[ lda * k + m ] * A[ lda * n + k ];
+            }
+        }
+    }
 
-    // return ALGONUM_SUCCESS; /* Success */
-
-    return ALGONUM_NOT_IMPLEMENTED /* Not implemented */;
+    return ALGONUM_SUCCESS; /* Success */
 }
 
 /* To make sure we use the right prototype */

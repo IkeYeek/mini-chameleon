@@ -32,7 +32,40 @@ dgetrf_tiled_starpu( CBLAS_LAYOUT layout,
     /* Let's allocate data handlers for all pieces of data */
     handlesA = calloc( MT * NT, sizeof(starpu_data_handle_t) );
 
-    // ADD STARPU GETRF ALGORITHM RIGHT HERE
+    for( k=0; k<KT; k++) {
+        int kk = k == (KT-1) ? K - k * b : b;
+
+        hAkk = get_starpu_handle( 0, handlesA, A, k, k, b, MT );
+
+        insert_dgetrf( kk, kk, hAkk, b );
+
+        for( n=k+1; n<NT; n++) {
+            int nn = n == (NT-1) ? N - n * b : b;
+
+            hAkn = get_starpu_handle( 0, handlesA, A, k, n, b, MT );
+
+            insert_dtrsm( CblasLeft, CblasLower, CblasNoTrans, CblasUnit,
+                          kk, nn, 1., hAkk, b, hAkn, b );
+        }
+
+        for( m=k+1; m<MT; m++) {
+            int mm = m == (MT-1) ? M - m * b : b;
+
+            hAmk = get_starpu_handle( 0, handlesA, A, m, k, b, MT );
+
+            insert_dtrsm( CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit,
+                          mm, kk, 1., hAkk, b, hAmk, b );
+
+            for( n=k+1; n<NT; n++) {
+                int nn = n == (NT-1) ? N - n * b : b;
+
+                hAmn = get_starpu_handle( 0, handlesA, A, m, n, b, MT );
+
+                insert_dgemm( CblasNoTrans, CblasNoTrans, mm, nn, kk,
+                              -1., hAmk, b, hAkn, b, 1., hAmn, b );
+            }
+        }
+    }
 
     /* Let's submit unregistration of all data handlers */
     unregister_starpu_handle( MT * NT, handlesA );

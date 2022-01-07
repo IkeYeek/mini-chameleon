@@ -40,10 +40,9 @@ testone_dgetrf( dgetrf_fct_t dgetrf,
     rc = dgetrf( CblasColMajor, M, N, A, lda );
     perf( &stop );
 
-    if ( rc == ALGONUM_NOT_IMPLEMENTED) {
-        printf("M= %4d N= %4d:" ALGONUM_COLOR_ORANGE " not supported or not implemented\n" ALGONUM_COLOR_RESET,
-               M,
-               N);
+    if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
+        printf( "M= %4d N= %4d:" ALGONUM_COLOR_ORANGE " not supported or not implemented\n" ALGONUM_COLOR_RESET,
+               M, N );
         return rc;
     }
 
@@ -105,14 +104,14 @@ testall_dgetrf( dgetrf_fct_t tested_dgetrf )
         for( in = 0; in < nb_N; in ++ ) {
             n = all_N[in];
 
-            printf("Test %4d / %4d\n", nbpassed, nbtests);
             rc = testone_dgetrf( tested_dgetrf, m, n, 1 );
             if ( rc == ALGONUM_FAIL ) {
-                nbfailed += 1;
+                nbfailed++;
             } else if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
                 nbnotimplemented++;
             }
             nbpassed++;
+            printf("Test %4d / %4d\n", nbpassed, nbtests);
         }
     }
 

@@ -129,7 +129,7 @@ testone_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
 
     if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
         if ( global_options.mpirank == 0 ) {
-            printf( "tA=%s tB=%s M= %4d N= %4d K= %4d: " ALGONUM_COLOR_ORANGE "not supported or not implemented\n" ALGONUM_COLOR_RESET,
+            printf( "tA=%s tB=%s M= %4d N= %4d K= %4d: " ALGONUM_COLOR_ORANGE "Not supported or not implemented\n" ALGONUM_COLOR_RESET,
                     (transA == CblasNoTrans) ? "NoTrans" : "Trans",
                     (transB == CblasNoTrans) ? "NoTrans" : "Trans",
                     M, N, K );
@@ -255,18 +255,18 @@ testall_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
                         for( ib = 0; ib < nb_b; ib ++ ) {
                             b = all_b[ib];
 
-                            if ( global_options.mpirank == 0 ) {
-                                printf( "Test %4d / %4d\n", nbpassed, nbtests );
-                            }
                             rc = testone_dgemm_tiled( dplrnt, dgemm, tA, tB, m,
                                                       n, k, b, 1 );
-                            if (rc == ALGONUM_FAIL) {
-                                nbfailed += 1;
+                            if ( rc == ALGONUM_FAIL ) {
+                                nbfailed++;
                             }
                             else if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
                                 nbnotimplemented++;
                             }
                             nbpassed++;
+                            if ( global_options.mpirank == 0 ) {
+                                printf( "Test %4d / %4d\n", nbpassed, nbtests );
+                            }
                         }
                     }
                 }
@@ -287,7 +287,7 @@ testall_dgemm_tiled( dplrnt_tiled_fct_t dplrnt,
         if ( nbfailed > 0 ) {
             printf( ALGONUM_COLOR_RED
                     "%4d tests failed out of %d\n" ALGONUM_COLOR_RESET,
-                    nbfailed, nbtests - nbnotimplemented);
+                    nbfailed, nbtests - nbnotimplemented );
         }
         else {
             if ( nbtests != nbnotimplemented ) {

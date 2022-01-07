@@ -49,12 +49,10 @@ target_link_libraries( algonum PUBLIC MORSE::M       )
 
 if(ENABLE_MPI)
   target_link_libraries( algonum PUBLIC MPI::MPI_C )
-  target_compile_definitions( algonum PUBLIC ENABLE_MPI )
 endif()
 
 if(ENABLE_STARPU)
   target_link_libraries( algonum PUBLIC MORSE::STARPU )
-  target_compile_definitions( algonum PUBLIC ENABLE_STARPU )
 endif()
 
 install(TARGETS algonum

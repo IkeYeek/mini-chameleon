@@ -121,7 +121,7 @@ testone_dgemm( dgemm_fct_t     dgemm,
     perf( &stop );
 
     if ( rc == ALGONUM_NOT_IMPLEMENTED ) {
-        printf(  "tA=%s tB=%s M= %4d N= %4d K= %4d: " ALGONUM_COLOR_ORANGE "not supported or not implemented\n" ALGONUM_COLOR_RESET,
+        printf(  "tA=%s tB=%s M= %4d N= %4d K= %4d: " ALGONUM_COLOR_ORANGE "Not supported or not implemented\n" ALGONUM_COLOR_RESET,
                  (transA == CblasNoTrans) ? "NoTrans" : "Trans",
                  (transB == CblasNoTrans) ? "NoTrans" : "Trans",
                  M, N, K );
@@ -151,11 +151,11 @@ testone_dgemm( dgemm_fct_t     dgemm,
                     (transB == CblasNoTrans) ? "NoTrans" : "Trans", M, N, K, alpha,
                     beta, gflops);
         } else {
-            printf("tA=%s tB=%s M= %4d N= %4d K= %4d alpha= %e beta= %e: %le GFlop/s: " ALGONUM_COLOR_RED
-                   "FAIL\n" ALGONUM_COLOR_RESET,
-                   (transA == CblasNoTrans) ? "NoTrans" : "Trans",
-                   (transB == CblasNoTrans) ? "NoTrans" : "Trans", M, N, K, alpha,
-                   beta, gflops);
+            printf( "tA=%s tB=%s M= %4d N= %4d K= %4d alpha= %e beta= %e: %le GFlop/s: " ALGONUM_COLOR_RED
+                    "FAIL\n" ALGONUM_COLOR_RESET,
+                    (transA == CblasNoTrans) ? "NoTrans" : "Trans",
+                    (transB == CblasNoTrans) ? "NoTrans" : "Trans", M, N, K, alpha,
+                    beta, gflops );
         }
         free( Cinit );
     }
@@ -211,14 +211,14 @@ testall_dgemm( dgemm_fct_t dgemm )
                     for( ik = 0; ik < nb_K; ik ++ ) {
                         k = all_K[ik];
 
-                        printf("Test %4d / %4d\n", nbpassed, nbtests);
-                        rc = testone_dgemm(dgemm, tA, tB, m, n, k, 1);
+                        rc = testone_dgemm( dgemm, tA, tB, m, n, k, 1 );
                         if (rc == ALGONUM_FAIL) {
-                            nbfailed += 1;
+                            nbfailed++;
                         } else if (rc == ALGONUM_NOT_IMPLEMENTED) {
                             nbnotimplemented++;
                         }
                         nbpassed++;
+                        fprintf( stdout, "Test %4d / %4d\n", nbpassed, nbtests );
                     }
                 }
             }
@@ -242,7 +242,7 @@ testall_dgemm( dgemm_fct_t dgemm )
         }
     }
     return nbfailed;
-    }
+}
 
 /**
  *  @brief Function to test one single case of dgemm with warm cache.

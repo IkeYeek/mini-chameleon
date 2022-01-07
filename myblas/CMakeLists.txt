@@ -83,12 +83,10 @@ target_link_libraries( myblas PUBLIC OpenMP::OpenMP_C )
 
 if(ENABLE_MPI)
   target_link_libraries( myblas PUBLIC MPI::MPI_C )
-  target_compile_definitions( myblas PUBLIC ENABLE_MPI )
 endif()
 
 if(ENABLE_STARPU)
   target_link_libraries( myblas PRIVATE MORSE::STARPU )
-  target_compile_definitions( myblas PUBLIC ENABLE_STARPU )
 endif()
 
 target_link_libraries( myblas PUBLIC MORSE::LAPACKE )

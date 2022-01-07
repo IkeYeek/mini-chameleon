@@ -36,9 +36,8 @@ print_usage( const char *name, int algo )
             "  -i --iter=x Set the number of iteration\n"
             "  -c --check  Enable checking of the result\n" );
 #if defined(ENABLE_MPI)
-    printf("\n"
-           "  -P x        Set the 2D bloc-cyclic parameter P such that P x "
-           "Q = nbnodes\n");
+    printf( "\n"
+            "  -P x        Set the 2D bloc-cyclic parameter P such that P x Q = nbnodes\n" );
 #endif
 
     return;

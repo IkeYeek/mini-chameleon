@@ -60,7 +60,7 @@ testone_ddot( ddot_fct_t ddot, int N, int check )
         gflops = 0.;
     }
 
-    /* check the solution */
+    /* Check the solution */
     if ( check ) {
         double *Cinit = malloc( ldc * 1  * sizeof(double) );
         CORE_dplrnt( 0, 1, 1, Cinit, ldc, 1, 0, 0, seedC );
@@ -113,11 +113,11 @@ testall_ddot( ddot_fct_t ddot )
 
     for( in = 0; in < nb_N; in ++ ) {
         n = all_N[in];
-        printf("Test %4d / %4d\n", nbpassed, nbtests);
         if ( testone_ddot(ddot, n, 1) != ALGONUM_SUCCESS ) {
             nbfailed += 1;
         }
         nbpassed++;
+        fprintf( stdout, "Test %4d / %4d\n", nbpassed, nbtests );
     }
 
     if ( nbfailed > 0 ) {
