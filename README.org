@@ -16,5 +16,9 @@ version.
 The project is named after the fully-featured [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]] dense linear algebra
 library.
 
+* Browse this page
+
+You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of this page.
+
 * COMMENT Getting started
 
