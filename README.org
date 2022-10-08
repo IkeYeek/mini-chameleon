@@ -1,6 +1,14 @@
-Mini-chameleon is an educational purpose dense linear algebra solver. As
+* =mini-chameleon=
+
+=mini-chameleon= is an educational purpose dense linear algebra solver. As
 provided, it essentially provides drivers while the actual computational
 routines remain to be completed. The goal is to implement a dense matrix-matrix
-product and an LU factorization, first targeting a =sequential= implementation,
-followed by an =simd= version, a shared-memory =openmp= one, a distributed
-memory =mpi= one, an =mpi+openmp= one, and a runtime-based (=starpu=) one.
+product and an LU factorization. The first step consists in a basic =sequential=
+implementation, possibly considering blocking strategies. The second step is a
+=simd= enhancement. The third step is a shared-memory (=openmp=) implementation.
+The fourth step is a distributed memory (=mpi=) version. The fifth step is an
+hybrid =mpi+openmp= version. There is also the possibility to implement a
+runtime-based (=starpu=) version.
+
+The project is named after the fully-featured [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]] dense linear algebra
+library.
