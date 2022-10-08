@@ -1,3 +1,7 @@
+#+TITLE: The =mini-chameleon= educational-purpose project
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ./include/compose-publish/theme-readtheorginria.setup
+
 * The =mini-chameleon= educational-purpose project
 
 =mini-chameleon= is an *educational-purpose* project aiming at designing a dense
