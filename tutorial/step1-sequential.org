@@ -1,0 +1,176 @@
+#+TITLE: Getting started
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+* Produit scalaire séquentiel
+
+À quels types d'opérations correspondent les routines de type =blas 1, 2 et 3=?
+Quelles opérations réalisent les routines =blas 1=: ~zdot~ et ~saxpy~ ?
+
+** Implantation de =my_ddot=
+
+Dans le fichier ~myblas/ddot_seq.c~, compléter la routine ~ddot_seq~ qui
+effectue l'opération ~ddot~ et qui suit l'interface ~cblas~ (voir
+~/algonum/include/cblas.h~):
+
+#+begin_src C++ :includes <iostream> :results output :exports both
+double ddot_seq( int N, const double *X, int incX, const double *Y, int incY )
+#+end_src
+
+** Correction
+
+   Vérifiez la correction de votre implantation sur un cas $N=200$:
+
+   #+begin_src bash
+     ./testings/perf_ddot -N 200 -v seq --check
+   #+end_src
+
+   Puis sur une plus grande gamme de test:
+   #+begin_src bash
+     /testings/check_ddot -v seq
+   #+end_src
+
+** Complexité et performance
+
+Évaluez la complexité en calculs (nombre d'opérations flottantes réalisées) et
+la complexité en nombre de références mémoire de la routine ~ddot~. Étudiez la
+performance de votre routine. Vous pouvez à nouveau vous baser sur:
+
+#+begin_src bash
+./testings/perf_ddot -v seq
+#+end_src
+
+Réalisez une boucle exponentielle (par incréments de 25%) sur la taille $N$,
+pour des valeurs comprises entre 50 et 1,000,000, et affichez les performances
+en GFlop/s en fonction de $N$. Tracez les courbes obtenues avec votre fonction.
+Commentez les courbes. Selon vous, par quoi les performances sont-elles
+limitées?
+
+* Produit de matrices séquentiel
+
+** Avant de vous lancer
+
+Codez une fonction ~affiche(m, n, a, lda, flux)~ qui affiche la matrice ~a~ de
+taille $m * n$ sur le flux ~flux~. À quoi correspond la =leading dimension=
+~lda~ ?
+
+Dans tout le devoir, les matrices seront stockées par colonne (~CBLAS_LAYOUT ==
+CblasColMajor~ selon le standard [[http://www.netlib.org/lapack/explore-html/dir_f88bc7ad48bfd56d75bf9d4836a2bb00.html][=cblas=]], cf. ~/algonum/include/cblas.h~): les
+$m$ premiers éléments de la matrice $a$ constituent la première colonne.
+
+** Implantation
+
+Dans le fichier ~myblas/dgemm_seq.c~, compléter la routine ~dgemm_seq~ qui
+effectue l'opération ~dgemm~ et qui suit l'interface ~cblas~ (voir
+~/algonum/include/cblas.h~):
+
+#+begin_src  C++ :includes <iostream> :results output :exports both
+int dgemm_seq( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+               CBLAS_TRANSPOSE transB, const int M, const int N,
+               const int K, const double alpha, const double *A,
+               const int lda, const double *B, const int ldb,
+               const double beta, double *C, const int ldc )
+#+end_src
+
+Vous pouvez vous contenter du cas non transposé ($C=\beta{}C+\alpha{}A\times
+B$). Vous pouvez éventuellement vous limiter à ~beta=1~ mais vous serez limités
+pour les tests. En revanche, il est important pour la suite de considérer
+qu'~alpha~ peut prendre une valeur quelconque. Nous utiliserons en particulier
+ultérieurement le cas ~alpha=-1~ pour la décomposition $LU$.
+
+** Correction
+
+   Vous pouvez tester votre routine sur des matrices de dimension 100 avec:
+   #+begin_src bash
+   ./testings/perf_dgemm -v seq --check
+   #+end_src
+   
+   On peut aussi choisir les dimensions, p. ex. effectuer un produit $M=30$,
+   $K=25$, $N=13$, /i.e./ impliquant $A\in\mathcal M_{40,25}(\mathbb{R})$,
+   $B\in\mathcal M_{25,13}(\mathbb{R})$ et $C\in\mathcal M_{40,13}(\mathbb{R})$:
+   #+begin_src bash
+     ./testings/perf_dgemm -M 30 -K 25 -N 13 -v seq --check
+   #+end_src
+   
+** Complexité et performance
+   
+En vous inspirant de l'analyse précédente, proposez une analyse de complexité
+pour la primitive =blas= ~dgemm~. Vous pouvez à nouveau utiliser la routie
+~perf_dgemm~ pour effectuer un test de performance, p. ex. à nouveau sur des
+matrices de dimension 100:
+
+#+begin_src bash
+  ./testings/perf_dgemm -v seq
+#+end_src
+
+** Ordre des boucles
+   
+L'algorithme de multiplication de matrices requiert trois boucles imbriquées. La
+première boucle en $i$ parcourt les lignes de $A$, la seconde en $k$ les lignes
+de B, et la troisième en $j$ les colonnes de B. Vous pouvez tester trois
+algorithmes de produit de matrices qui correspondent aux trois ordres suivants
+pour les boucles (la boucle la plus externe est donnée en premier): ~(k,i,j)~,
+~(i,j,k)~ et ~(j,i,k)~.
+
+Pensez à visualiser certains résultats avec la routine ~affiche~ pour vérifier
+vos calculs.
+
+Evaluez les complexités de ce produit de matrices. Affichez les performances (en
+temps et en Gflop/s) obtenues en fonction de l'algorithme pour des valeurs de
+$M$, $N$ et $K$ (matrices carrées) comprises entre 100 et 1000.
+
+** Considérations architecturales
+   
+Quel est le processeur utilisé ? À partir de considérations architecturales
+déduisez-vous le pic théorique de ce processeur ? Quelle proportion de ce pic
+atteint votre produit de matrice ? Faîtes varier vos tailles de matrices.
+
+** Produit de matrice par bloc
+   
+Qu'optimise-t-on lorsqu'on décompose le produit matriciel en produits matriciels
+par blocs ? Réalisez une routine ~dgemm_bloc~ (qui respecte à nouveau
+l'interface =cblas=) qui effectue le produit de matrices ainsi.
+
+Vous réutiliserez la routine scalaire précédent pour faire les produits de
+blocs. C'est sans doute l'occasion de le renommer en ~dgemm_scalaire~ et
+d'utiliser ~dgemm_seq~ comme une méthode de haut-niveau qui appellera votre
+fonction la plus rapide (c'est ~dgemm_seq~ que nous testerons de notre côté).
+
+* Optionnel: complétion de la bibliothèque =blas=
+  
+Complétez votre bibliothèque =blas= pour qu'elle contienne les routines:
+~daxpy~, ~dgemv~, ~dgemm~ et ~dger~.
+
+* Factorisation LU (sans pivotage)
+
+** Routine non bloquée  
+Dans le fichier ~myblas/dgetrf_seq.c~, compléter la routine ~dgetrf_seq~ qui
+effectue l'opération ~dgetrf~. Suit-elle l'interface [[http://www.netlib.org/lapack/explore-html/de/ddd/lapacke_8h_source.html][lapacke]]? Préciser.
+
+#+begin_src  C++ :includes <iostream> :results output :exports both
+  dgetrf_seq( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )
+#+end_src
+
+Commencer par implanter une routine de factorisation non bloquée. Vous aurez
+sans doute envie de renommer votre routine ~dgetf2~ (même signature que
+~dgetrf_seq~) avant de passer à la suite.
+
+** Routine bloquée
+
+Pour pouvoir implanter une routine bloquée, vous aurez besoin d'une routine de
+résolution de système triangulaire ~dtrsm~. Vous pouvez tout à fait utiliser la
+routine fournie par le LAPACK de votre environnement (typiquement MKL) à partir
+du moment où vous le consignez clairement dans le rapport. Vous êtes alors en
+mesure d'implanter une routine ~dgetrf_bloc~ dont vous étudierez la performance.
+Pensez à faire en sorte que ~dgetrf_seq~ appelle la plus rapide de vos versions
+(car c'est ~dgetrf_seq~ que nous testons de notre côté).
+
+** Comparaison
+
+Comment vous comparez vous avec une routine optimisée ? Vous pouvez vous
+comparer à une bibliothèque libre comme ~openblas~ ou propriétaire comme ~mkl~.
+Attention à désactiver le multithreading (pour le moment). Notez que si vous
+voulez utilisez MKL en dehors de plafrim vous pouvez le faire via ~guix~ ou vous
+pouvez le faire à la main en vous guidant via l'[[https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor][intel mkl link line advisor]].
+

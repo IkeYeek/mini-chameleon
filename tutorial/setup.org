@@ -1,0 +1,83 @@
+#+TITLE: Getting started
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+* Resources
+
+label:ressources
+
+** This project
+
+You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of the project.
+
+** Code
+
+The reference code is available in the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of this project:
+[[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/]]. It may be
+cloned and forked.
+
+* Hardware environment
+
+The project is not entitled with any particular hardware environment but we
+provide [[./setup-plafrim.org][here]] specific instructions for the [[https://www.plafrim.fr][plafrim]] machine.
+
+* Software environment
+  :PROPERTIES:
+  :ID:       a824dae5-55ca-4a27-a17a-32b11b48ec55
+  :END:
+
+label:env
+
+The project comes with advanced [[../cmake_modules][CMake modules]] to ensure the proper detection of
+the software dependencies. We however provide [[./setup-guix.org][here]] specific instructions for the
+=guix= environment.
+
+* Mise en place
+
+** Gestion des ressources avec =slurm= (mono-noeud)
+
+   Voici un petit rappel de quelques commandes =slurm= utiles pour gérer les
+   ressources =plafrim-formation= auxquelles vous voulez accéder :
+
+   #+begin_src bash :eval no
+     sinfo
+     salloc -p <partition> -N <number of nodes>
+     ssh <node id>
+     sbatch <batch script>
+     squeue -u <login name>
+     scontrol show jobid <job id>
+     scancel <job id>
+   #+end_src
+
+   Dans ce TP, nous n'utiliserons qu'un seul noeud homogène, de type ~miriel~:
+
+   #+begin_src
+   salloc -p miriel -N 1
+   ssh <node id>
+   #+end_src
+
+   Tant qu'il s'agit de développer le code, pour ne pas trop saturer
+   l'utilisation des ressources, merci de ne pas utiliser l'option
+   ~--exclusive~, et de garder celle-ci pour vos réservations dédiées à des
+   études de performance (pour lesquelles vous préférerez sans doute utiliser
+   ~sbatch~).
+
+   Merci d'effectuer l'ensemble de votre travail (édition, compilation, tests)
+   depuis un noeud de calcul pour éviter de surcharger la frontale.
+
+** Construction de la bibliothèque et des testeurs
+
+   Une fois dans l'environnement adéquat (via =module= ou =guix=), vous pouvez
+   construire le projet:
+   #+begin_src bash :eval no
+     cd ./is328-students
+     mkdir build
+     cd build
+     cmake .. -DENABLE_MPI=ON -DENABLE_STARPU=ON
+     make -j
+   #+end_src
+
+   Les options =cmake= ~-DENABLE_MPI=ON -DENABLE_STARPU=ON~ sont facultatives
+   pour le moment et peuvent être ignorés tant que l'on reste en séquentiel ou
+   multi-threadé.

@@ -1,0 +1,176 @@
+#+TITLE: Getting started
+#+SUBTITLE: =guix=
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+* Via =guix=
+
+ Un des objectifs du TP est d'apprendre à maîtriser votre environnement
+ logiciel, en particulier dans un contexte de calcul haute performance. Vous
+ avez déjà vu les =modules=, et il est possible de faire le TP avec comme
+ indiqué ci-dessus. Nous vous proposons toutefois de manipuler [[https://guix.gnu.org/][guix]] ici. Grâce
+ à un effort conjoint des équipes =guix= et =plafrim=, =guix= est immédiatement
+ disponible sur votre super-calculateur préféré (et vous pouvez également
+ [[https://guix.gnu.org/manual/en/html_node/Binary-Installation.html][l'installer]] sur votre machine =linux= si vous les souhaitez). Il permet un
+ contrôle fin de l'environnement, reproductible dans le temps et sur différentes
+ machines.
+
+** channels
+
+  On utilise ~guix pull~ (pas la peine de faire ~guix pull~ tout de suite, on le
+  fera plus loin) pour mettre à jour la distribution (voir [[https://guix.gnu.org/manual/en/html_node/Invoking-guix-pull.html#Invoking-guix-pull][Invoking guix pull]]) .
+  Par défaut, ~guix pull~ télécharge et déploie =guix= lui-même depuis le dépôt
+  officiel =gnu guix=. Sur =plafrim=, de surcroît, l'extension [[https://hpc.guix.info/][guix-hpc]] est
+  activée par défaut. Nous vous proposons pour ce TP en sus:
+  - d'activer [[https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free][guix-hpc-non-free]] avant de pouvoir utiliser p. ex. =intel mkl= et
+    =cuda=;
+  - de fixer les canaux pour assurer la reproducibilité de l'environnement.
+  Pour ce faire, il vous faut modifier vos [[https://guix.gnu.org/manual/en/html_node/Channels.html][channels]] dans le fichier
+  =~/.config/guix/channels.scm=. Un =channel= spéficie une =url= et une =branche=
+  d'un dépôt =git= à déployer. Nous vous invitons à prendre les canaux proposés
+  dans ~./is328-students/channels.scm~:
+
+  #+begin_src bash
+    cp ./is328-students/channels.scm ~/.config/guix/channels.scm
+  #+end_src
+
+
+  Pour information cela correspond à:
+  #+begin_src scheme :tangle channels.scm
+    (list (channel
+           (name 'guix)
+           (url "https://git.savannah.gnu.org/git/guix.git")
+           (commit
+            "122396075f12b013b6bde56dafb895587b95bc9d")
+           (introduction
+            (make-channel-introduction
+             "9edb3f66fd807b096b48283debdcddccfea34bad"
+             (openpgp-fingerprint
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+          (channel
+           (name 'guix-hpc-non-free)
+           (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
+           (commit
+            "c14b2a0231408cb5b30b7b3ba628db168960da44"))
+          (channel
+           (name 'guix-hpc)
+           (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
+           (commit
+            "d5f1391f419affbb2889212e0d436069cb0ec473")))
+  #+end_src
+
+  À noter que les canaux ont été *mis à jour le 9 octobre 2021* [[https://issues.guix.gnu.org/51088][pour le support
+  de =clang++= sur =plafrim=]] (un grand merci à Ludovic Courtès!), le *28 octobre
+  2021* pour le support de [[https://guix.gnu.org/en/blog/2021/from-guix-environment-to-guix-shell/][guix shell]] et [[https://gitlab.inria.fr/solverstack/hello-mpi/][hello-mpi]], le *8 novembre 2021* pour le
+  support explicite d'[[https://gitlab.inria.fr/cours-mf/is328-students/is328][is328]] alias [[https://gitlab.inria.fr/guix-hpc/guix-hpc/-/commit/7677837d832d59f404cefd732de63a8f710ffec4][mini-chameleon]], et le *16 novembre 2021* pour
+  le [[https://git.savannah.gnu.org/cgit/guix.git/commit/?id=2a32c99b387cec52d586007172f419630d79bc6b][support de =libomp= automatique avec =clang=]].
+
+** =guix pull=
+    
+  Une fois que vous avez positionné votre ~~/.config/guix/channels.scm~ de la
+  sorte vous pouvez [[https://guix.gnu.org/manual/en/html_node/Invoking-guix-pull.html#Invoking-guix-pull][invoquer guix pull]]:
+
+  #+begin_src bash
+    guix pull
+  #+end_src
+
+  À noter que si vous avez une version plus récente de =guix=, vous devrez
+  utiliser ~guix pull --allow-downgrades~ pour autoriser =guix= à revenir en
+  arrière.
+
+  Notez que =bash= utilise une table de hachage pour se souvenir des chemins des
+  exécutables, il est conseillé de la mettre à jour explicitement pour garantir
+  que le nouveau chemin vers =guix= soit trouvé après votre ~pull~ (~man bash~
+  pour plus d'informations):
+  #+begin_src bash
+  hash guix
+  #+end_src
+
+  Vous pouvez vérifier les canaux utilisés via:
+  #+begin_src bash
+  guix describe --format=channels
+  #+end_src
+
+  
+*** Pour information
+
+     Notez qu'il est possible d'obtenir la dernière version des canaux (mais ce
+     n'est pas l'objet de cet TP) plutôt que des canaux fixés:
+    #+begin_src scheme :tangle channels-rolling.scm
+  (list (channel
+         (name 'guix-hpc-non-free)
+         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
+        (channel
+         (name 'guix-hpc)
+         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git"))
+        (channel
+         (name 'guix)
+         (url "https://git.savannah.gnu.org/git/guix.git")))
+  #+end_src
+
+
+** chargement d'un environnement
+
+*** De manière implicite (le plus simple)
+     
+  =guix= permet de [[https://guix.gnu.org/manual/fr/html_node/Invoquer-guix-environment.html][définir un environnement]] de manière implicite ou explicite Le
+  plus simple pour ce TP est sans doute de le faire de manière implicite (~-D
+  chameleon~), p. ex. via:
+
+  #+begin_src bash :results output :exports both
+    guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash emacs nano vim -- bash --norc
+  #+end_src
+
+*** De manière explicite (pour info)
+     
+     Notez que vous pouvez alternativement charger un environnement de manière
+     explicite:
+  #+begin_src bash :results output :exports both
+    guix shell --pure bash cmake coreutils gdb gcc-toolchain grep make mkl openmpi openssh sed valgrind emacs nano vim -- bash --norc
+  #+end_src
+  
+*** Avec un compilateur récent (utile pour la vectorisation p. ex.)
+
+     Par défaut =guix= fait le choix relativement conservateur d'utiliser =gcc
+     7.5= afin de garantir le support d'un maximum de paquets. Il est possible
+     de choisir un compilateur plus récent (=gcc 11.2=) en chargeant
+     explicitement ~gcc-toolchain~:
+
+  #+begin_src bash :results output :exports both
+    guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain emacs nano vim -- bash --norc
+  #+end_src
+
+     On peut choisir un compilateur alternatif, p. ex. =clang 12.0.1= (plus
+     besoin de charger explicitement ~libomb~ en plus de ~clang-toolchain~
+     depuis la mise à jour du 16 novembre 2021):
+
+  #+begin_src bash :results output :exports both
+    guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash clang-toolchain emacs nano vim -- bash --norc
+  #+end_src
+
+     Notez que les paquets installés restent compilés avec =gcc 7.5= et qu'il
+     faut être vigilant quant à la compatibilité d'ABI (cf. avertissement dans
+     les [[https://guix.gnu.org/manual/fr/html_node/Options-de-transformation-de-paquets.html][options de transformation de paquets]]). En particulier, les canaux ont
+     été mis à jour le 9 octobre 2021 (cf. note plus haut, et nous vous
+     conseillons donc de mettre à jour vos canaux conformément à la note et de
+     refaire un =guix pull=).
+
+*** Modifier votre construction pour la vectorisation
+
+     En l'état, la construction de vos binaires n'est pas optimisée pour une
+     architecture particulière. Il vous faudra modifier votre système de
+     construction pour ce faire. Vous pouvez vérifier le type d'architecture sur
+     lequel vous voulez tourner (depuis le noeud cible):
+
+     #+begin_src bash
+     guix shell cpuid  -- cpuid | grep "(synth)" | uniq
+     #+end_src
+
+     Vous pouvez ensuite fixer l'architecture ainsi ciblée en modifiant votre
+     construction, via quelque chose comme ~set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}
+     -march=haswell")~.
+
+     Il est aussi possible d'utiliser ~-march=native~ mais cela ne sera [[https://hpc.guix.info/blog/2018/01/pre-built-binaries-vs-performance/][pas
+     optimal]] en cas de compilation déportée.
+   

@@ -1,0 +1,61 @@
+#+TITLE: Getting started
+#+SUBTITLE: cisd@enseirb-matmeca.bordeaux-inp.fr
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+* Specific instructions for =enseirb-matmeca= =cisd=:
+
+** Collaborative notes and possible hotfixes for the whole promo
+
+   [[https://link.infini.fr/cisd-2022]]
+
+** Collab
+Pour travailler en collaboration via le ~thor~ de l'~enseirb~ (et nous permettre
+de suivre vos avancées), vous pouvez effectuer, en spécifiant votre ~LOGIN~ (si
+vous en disposez déjà d'un) et votre groupe ~XXXXX~:
+   #+begin_src bash :eval no
+export TEAMID=XXXX
+git clone https://LOGIN@thor.enseirb-matmeca.fr/git/is328-hpc-${TEAMID}
+cd is328-hpc-${TEAMID}
+   #+end_src
+
+Pour récupérer le code de travail de base et pouvoir intégrer facilement les
+mises à jour, il va falloir l'ajouter en tant que nouvelle remote:
+   #+begin_src bash :eval no
+git remote add subject https://gitlab.inria.fr/cours-mf/is328-students.git 
+git fetch subject
+git submodule update --init
+   #+end_src
+
+L'étape suivante est à faire par **un seul** membre du groupe, et avant toute
+autre modification:
+   #+begin_src bash :eval no
+git switch master
+git push origin master
+   #+end_src
+
+Ainsi, le master du dépôt du sujet devrait être identique à celui de votre dépôt
+de projet de départ. Les autres membres de l'équipe peuvent ensuite récupérer le
+dépôt:
+   #+begin_src bash :eval no
+git pull origin master
+git submodule update --init
+   #+end_src
+
+À ce stade, tout est configuré pour que vous puissiez travailler sur le projet.
+En cas de mise à jour du sujet, **un seul** membre du sujet doit faire la
+démarche suivante:
+
+   #+begin_src bash :eval no
+git fetch subject
+git merge subject/master
+# Corriger les conflits éventuels
+git push origin master
+   #+end_src
+
+_Assurez-vous que le dépôt ne contient aucune modification locale avant de faire
+la manipulation et que vous êtes bien positionné sur le dernier =master= de
+votre dépôt._
+
+

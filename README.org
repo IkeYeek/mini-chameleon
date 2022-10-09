@@ -22,6 +22,6 @@ runtime-based (=starpu=) version.
 
 You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of this page.
 
-* COMMENT Getting started
+* Getting started
 
-[[https://link.infini.fr/cisd-2022]]
+[[./tutorial/setup.org][Get started!]]

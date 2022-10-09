@@ -1,0 +1,62 @@
+#+TITLE: Getting started
+#+SUBTITLE: Plafrim
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+* Connexion à plafrim-formation
+
+Nous allons travailler sur [[https://www.plafrim.fr][plafrim]] par [[https://fr.wikipedia.org/wiki/Secure_Shell][ssh]]. Vous avez reçu les instructions pour
+vous connecter à la machine par mail. En supposant que ~<myname>~ est votre nom,
+voici comment vous connecter:
+
+#+begin_src bash :eval no :results output :exports both
+ssh <myname>@formation.plafrim.fr
+ssh plafrim
+#+end_src
+
+Après ces deux étapes, vous devriez être sur ~miriel045~, ce que vous pouvez
+vérifier:
+#+begin_src bash :results output :exports both
+hostname
+#+end_src
+
+Ces deux étapes peuvent être effectués d'une seule traite en ajoutant les lignes
+suivantes dans votre ~.ssh/config~, où ~<myname>~ est à nouveau à changer:
+
+#+begin_src bash :results output :exports both
+Host plafrim-formation
+        ForwardAgent yes
+        ForwardX11 yes
+        User <myname>
+        ProxyCommand ssh -T -q -o "ForwardAgent yes" -l <myname> formation.plafrim.fr 'ssh-add -t 1 && nc plafrim 22'
+#+end_src
+
+Pour vous connecter, il vous suffit ensuite d'effectuer:
+#+begin_src bash :results output :exports both
+ssh -X plafrim-formation
+#+end_src
+
+* Software dependencies
+
+The software environment may be handled via either [[https://modules.readthedocs.io/en/latest/][environment modules]] or [[guix.gnu.org/][guix]].
+
+** Via =environment module=
+
+A first option is to use [[https://modules.readthedocs.io/en/latest/][environment modules]]. The required modules are available
+in [[../plafrim-formation-env.sh]], which may be sourced. Assuming to be at the root
+of a clone of the project:
+
+   #+begin_src bash
+   source ./plafrim-formation-env.sh
+   #+end_src
+
+** Via =guix=
+
+Because [[guix.gnu.org/][guix]] is available on =plafrim=, the [[./setup-cisd.org][guix setup]] can also be used. An
+advantage over the [[https://modules.readthedocs.io/en/latest/][environment modules]] is that this method allows one to fully
+control the environment without requiring any particular library to be
+pre-installed. It is also cross-platform. For instance, the same set up can be
+employed on your laptop and on =plafrim=.
+
+If you choose this method, please proceed with the [[./setup-cisd.org][guix setup]].
