@@ -39,7 +39,7 @@ ssh -X plafrim-formation
 
 * Software dependencies
 
-The software environment may be handled via either [[https://modules.readthedocs.io/en/latest/][environment modules]] or [[guix.gnu.org/][guix]].
+The software environment may be handled via either [[https://modules.readthedocs.io/en/latest/][environment modules]] or [[https://guix.gnu.org/][guix]].
 
 ** Via =environment module=
 
@@ -53,7 +53,7 @@ of a clone of the project:
 
 ** Via =guix=
 
-Because [[guix.gnu.org/][guix]] is available on =plafrim=, the [[./setup-cisd.org][guix setup]] can also be used. An
+Because [[https://guix.gnu.org/][guix]] is available on =plafrim=, the [[./setup-cisd.org][guix setup]] can also be used. An
 advantage over the [[https://modules.readthedocs.io/en/latest/][environment modules]] is that this method allows one to fully
 control the environment without requiring any particular library to be
 pre-installed. It is also cross-platform. For instance, the same set up can be
