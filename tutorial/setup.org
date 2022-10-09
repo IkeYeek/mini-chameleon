@@ -71,7 +71,7 @@ the software dependencies. We however provide [[./setup-guix.org][here]] specifi
    Une fois dans l'environnement adéquat (via =module= ou =guix=), vous pouvez
    construire le projet:
    #+begin_src bash :eval no
-     cd ./is328-students
+     cd ./mini-chameleon
      mkdir build
      cd build
      cmake .. -DENABLE_MPI=ON -DENABLE_STARPU=ON

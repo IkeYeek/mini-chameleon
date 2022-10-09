@@ -29,50 +29,53 @@
   Pour ce faire, il vous faut modifier vos [[https://guix.gnu.org/manual/en/html_node/Channels.html][channels]] dans le fichier
   =~/.config/guix/channels.scm=. Un =channel= spéficie une =url= et une =branche=
   d'un dépôt =git= à déployer. Nous vous invitons à prendre les canaux proposés
-  dans ~./is328-students/channels.scm~:
+  dans ~./mini-chameleon/channels.scm~:
 
   #+begin_src bash
-    cp ./is328-students/channels.scm ~/.config/guix/channels.scm
+    cp ./mini-chameleon/channels.scm ~/.config/guix/channels.scm
   #+end_src
-
 
   Pour information cela correspond à:
   #+begin_src scheme :tangle channels.scm
-    (list (channel
-           (name 'guix)
-           (url "https://git.savannah.gnu.org/git/guix.git")
-           (commit
-            "122396075f12b013b6bde56dafb895587b95bc9d")
-           (introduction
-            (make-channel-introduction
-             "9edb3f66fd807b096b48283debdcddccfea34bad"
-             (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
-          (channel
-           (name 'guix-hpc-non-free)
-           (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
-           (commit
-            "c14b2a0231408cb5b30b7b3ba628db168960da44"))
-          (channel
-           (name 'guix-hpc)
-           (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
-           (commit
-            "d5f1391f419affbb2889212e0d436069cb0ec473")))
+(list (channel
+       (name 'guix-hpc)
+       (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
+       (branch "master")
+       (commit
+        "5df6c7b8881be1ffcdcbda5c41032f35c2e37f10"))
+      (channel
+       (name 'guix-hpc-non-free)
+       (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
+       (branch "master")
+       (commit
+        "07d368150436d64eded315f26a3576ee3bdbc160"))
+      (channel
+       (name 'guix)
+       (url "https://git.savannah.gnu.org/git/guix.git")
+       (branch "master")
+       (commit
+        "31708431c53524f05e6a0c9fed920cb773e7dd21")
+       (introduction
+        (make-channel-introduction
+         "9edb3f66fd807b096b48283debdcddccfea34bad"
+         (openpgp-fingerprint
+          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
   #+end_src
 
   À noter que les canaux ont été *mis à jour le 9 octobre 2021* [[https://issues.guix.gnu.org/51088][pour le support
   de =clang++= sur =plafrim=]] (un grand merci à Ludovic Courtès!), le *28 octobre
   2021* pour le support de [[https://guix.gnu.org/en/blog/2021/from-guix-environment-to-guix-shell/][guix shell]] et [[https://gitlab.inria.fr/solverstack/hello-mpi/][hello-mpi]], le *8 novembre 2021* pour le
-  support explicite d'[[https://gitlab.inria.fr/cours-mf/is328-students/is328][is328]] alias [[https://gitlab.inria.fr/guix-hpc/guix-hpc/-/commit/7677837d832d59f404cefd732de63a8f710ffec4][mini-chameleon]], et le *16 novembre 2021* pour
-  le [[https://git.savannah.gnu.org/cgit/guix.git/commit/?id=2a32c99b387cec52d586007172f419630d79bc6b][support de =libomp= automatique avec =clang=]].
+  support explicite de [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon][mini-chameleon]] (cf [[https://gitlab.inria.fr/guix-hpc/guix-hpc/-/commit/7677837d832d59f404cefd732de63a8f710ffec4][mini-chameleon]]), et le *16 novembre
+  2021* pour le [[https://git.savannah.gnu.org/cgit/guix.git/commit/?id=2a32c99b387cec52d586007172f419630d79bc6b][support de =libomp=
+  automatique avec =clang=]].
 
 ** =guix pull=
-    
+
   Une fois que vous avez positionné votre ~~/.config/guix/channels.scm~ de la
   sorte vous pouvez [[https://guix.gnu.org/manual/en/html_node/Invoking-guix-pull.html#Invoking-guix-pull][invoquer guix pull]]:
 
   #+begin_src bash
-    guix pull
+    guix pull --allow-downgrades
   #+end_src
 
   À noter que si vous avez une version plus récente de =guix=, vous devrez
@@ -92,7 +95,6 @@
   guix describe --format=channels
   #+end_src
 
-  
 *** Pour information
 
      Notez qu'il est possible d'obtenir la dernière version des canaux (mais ce
