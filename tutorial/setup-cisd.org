@@ -11,51 +11,39 @@
    [[https://link.infini.fr/cisd-2022]]
 
 ** Collab
-Pour travailler en collaboration via le ~thor~ de l'~enseirb~ (et nous permettre
-de suivre vos avancées), vous pouvez effectuer, en spécifiant votre ~LOGIN~ (si
-vous en disposez déjà d'un) et votre groupe ~XXXXX~:
-   #+begin_src bash :eval no
-export TEAMID=XXXX
-git clone https://LOGIN@thor.enseirb-matmeca.fr/git/is328-hpc-${TEAMID}
-cd is328-hpc-${TEAMID}
-   #+end_src
+
+Pour travailler en collaboration via le ~gitlab~ de l'~enseirb~ (et nous permettre
+de suivre vos avancées), nous vous emandons de travailler sur le dépôt qui vous est fourni:
+#+begin_src bash :eval no
+TEAMID=X
+git clone --recursive git@gitlab.enseirb-matmeca.dev:cisd/is331/team${TEAMID}.git
+cd team${TEAMID}
+#+end_src
+
+où X doit être remplacé par le uméro de votre équipe.
 
 Pour récupérer le code de travail de base et pouvoir intégrer facilement les
 mises à jour, il va falloir l'ajouter en tant que nouvelle remote:
-   #+begin_src bash :eval no
-git remote add subject https://gitlab.inria.fr/cours-mf/is328-students.git 
+
+#+begin_src bash :eval no
+git remote add subject git@gitlab.inria.fr:solverstack/mini-examples/mini-chameleon.git
 git fetch subject
 git submodule update --init
-   #+end_src
-
-L'étape suivante est à faire par **un seul** membre du groupe, et avant toute
-autre modification:
-   #+begin_src bash :eval no
-git switch master
-git push origin master
-   #+end_src
+#+end_src
 
 Ainsi, le master du dépôt du sujet devrait être identique à celui de votre dépôt
-de projet de départ. Les autres membres de l'équipe peuvent ensuite récupérer le
-dépôt:
-   #+begin_src bash :eval no
-git pull origin master
-git submodule update --init
-   #+end_src
+de projet de départ.
+
+#+begin_src bash :eval no
+* 597aaf7 (HEAD -> master, teamX/master, subject/master) Channels with new mini-chameleon readily available
+#+end_src
 
 À ce stade, tout est configuré pour que vous puissiez travailler sur le projet.
-En cas de mise à jour du sujet, **un seul** membre du sujet doit faire la
-démarche suivante:
+En cas de mise à jour du sujet, il faudra synchroniser à nouveau votre master
+avec celui du dépôt. En cas de soucis pour faire cette démarche,
+n'hésitez pas à nous demander. Mais surtout:
 
-   #+begin_src bash :eval no
-git fetch subject
-git merge subject/master
-# Corriger les conflits éventuels
-git push origin master
-   #+end_src
-
-_Assurez-vous que le dépôt ne contient aucune modification locale avant de faire
+_ Assurez-vous que le dépôt ne contient aucunes modifications locales avant de faire
 la manipulation et que vous êtes bien positionné sur le dernier =master= de
-votre dépôt._
-
+votre dépôt. _
 
