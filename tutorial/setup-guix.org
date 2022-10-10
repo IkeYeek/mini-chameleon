@@ -197,7 +197,7 @@ architecture cible]]. Pour ce faire, il faut alors passer l'option ~--tune~ à
 =guix=, p. ex.:
 
 #+begin_src bash
-guix shell --pure mini-chameleon ... --tune
+guix shell --pure mini-chameleon --tune
 #+end_src
 
 À noter qu'on peut produire un binaire pour une architecture spécifiée. Il
@@ -206,7 +206,7 @@ suffit comme ici de mettre ~-march=native~ dans le source (~set(CMAKE_C_FLAGS
 ~--tune~ de =guix=:
 
 #+begin_src bash
-guix shell --pure mini-chameleon ... --tune=haswell
+guix shell --pure mini-chameleon --tune=haswell
 #+end_src
 
 
