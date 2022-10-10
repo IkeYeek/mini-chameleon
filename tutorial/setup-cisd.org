@@ -10,7 +10,7 @@
 
    [[https://link.infini.fr/cisd-2022]]
 
-** Collab
+** Collaborative set up on the =enseirb= =gitlab= instance
 
 Pour travailler en collaboration via le ~gitlab~ de l'~enseirb~ (et nous permettre
 de suivre vos avancées), nous vous emandons de travailler sur le dépôt qui vous est fourni:

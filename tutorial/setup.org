@@ -11,6 +11,10 @@ label:ressources
 
 You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of the project.
 
+Note: This project was initiated in the context of the IS321 of the
+=enseirb-matmeca= =cisd= option, for which we provide an [[./setup-cisd.org][extra collaborative set
+up]].
+
 ** Code
 
 The reference code is available in the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of this project:
