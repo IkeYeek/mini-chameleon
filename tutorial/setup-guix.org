@@ -38,36 +38,36 @@
   Pour information cela correspond à:
   #+begin_src scheme :tangle channels.scm
 (list (channel
-       (name 'guix-hpc)
-       (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
-       (branch "master")
-       (commit
-        "5df6c7b8881be1ffcdcbda5c41032f35c2e37f10"))
+        (name 'guix)
+        (url "https://git.savannah.gnu.org/git/guix.git")
+        (branch "master")
+        (commit
+          "5f856c595479c30d9ccdb0063c9124248fdcf5c2")
+        (introduction
+          (make-channel-introduction
+            "9edb3f66fd807b096b48283debdcddccfea34bad"
+            (openpgp-fingerprint
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
       (channel
-       (name 'guix-hpc-non-free)
-       (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
-       (branch "master")
-       (commit
-        "07d368150436d64eded315f26a3576ee3bdbc160"))
+        (name 'guix-hpc-non-free)
+        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
+        (branch "master")
+        (commit
+          "07d368150436d64eded315f26a3576ee3bdbc160"))
       (channel
-       (name 'guix)
-       (url "https://git.savannah.gnu.org/git/guix.git")
-       (branch "master")
-       (commit
-        "31708431c53524f05e6a0c9fed920cb773e7dd21")
-       (introduction
-        (make-channel-introduction
-         "9edb3f66fd807b096b48283debdcddccfea34bad"
-         (openpgp-fingerprint
-          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+        (name 'guix-hpc)
+        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
+        (branch "master")
+        (commit
+          "4787b11b13a58f09793aefd9b23fe565d24ed1e9")))
   #+end_src
 
-  À noter que les canaux ont été *mis à jour le 9 octobre 2021* [[https://issues.guix.gnu.org/51088][pour le support
-  de =clang++= sur =plafrim=]] (un grand merci à Ludovic Courtès!), le *28 octobre
-  2021* pour le support de [[https://guix.gnu.org/en/blog/2021/from-guix-environment-to-guix-shell/][guix shell]] et [[https://gitlab.inria.fr/solverstack/hello-mpi/][hello-mpi]], le *8 novembre 2021* pour le
-  support explicite de [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon][mini-chameleon]] (cf [[https://gitlab.inria.fr/guix-hpc/guix-hpc/-/commit/7677837d832d59f404cefd732de63a8f710ffec4][mini-chameleon]]), et le *16 novembre
-  2021* pour le [[https://git.savannah.gnu.org/cgit/guix.git/commit/?id=2a32c99b387cec52d586007172f419630d79bc6b][support de =libomp=
-  automatique avec =clang=]].
+  # À noter que les canaux ont été *mis à jour le 9 octobre 2021* [[https://issues.guix.gnu.org/51088][pour le support
+  # de =clang++= sur =plafrim=]] (un grand merci à Ludovic Courtès!), le *28 octobre
+  # 2021* pour le support de [[https://guix.gnu.org/en/blog/2021/from-guix-environment-to-guix-shell/][guix shell]] et [[https://gitlab.inria.fr/solverstack/hello-mpi/][hello-mpi]], le *8 novembre 2021* pour le
+  # support explicite de [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon][mini-chameleon]] (cf [[https://gitlab.inria.fr/guix-hpc/guix-hpc/-/commit/7677837d832d59f404cefd732de63a8f710ffec4][mini-chameleon]]), et le *16 novembre
+  # 2021* pour le [[https://git.savannah.gnu.org/cgit/guix.git/commit/?id=2a32c99b387cec52d586007172f419630d79bc6b][support de =libomp=
+  # automatique avec =clang=]].
 
 ** =guix pull=
 
@@ -134,16 +134,16 @@
   
 *** Avec un compilateur récent (utile pour la vectorisation p. ex.)
 
-     Par défaut =guix= fait le choix relativement conservateur d'utiliser =gcc
-     7.5= afin de garantir le support d'un maximum de paquets. Il est possible
-     de choisir un compilateur plus récent (=gcc 11.2=) en chargeant
-     explicitement ~gcc-toolchain~:
+     Par défaut =guix= fait le choix relativement conservateur d'utiliser =gcc 10.3=
+     afin de garantir le support d'un maximum de paquets. Il est possible de
+     choisir un compilateur plus récent (=gcc 12.2=) en chargeant explicitement
+     ~gcc-toolchain~:
 
   #+begin_src bash :results output :exports both
     guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain emacs nano vim -- bash --norc
   #+end_src
 
-     On peut choisir un compilateur alternatif, p. ex. =clang 12.0.1= (plus
+     On peut choisir un compilateur alternatif, p. ex. =clang 14.0.6= (plus
      besoin de charger explicitement ~libomb~ en plus de ~clang-toolchain~
      depuis la mise à jour du 16 novembre 2021):
 
@@ -151,7 +151,7 @@
     guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash clang-toolchain emacs nano vim -- bash --norc
   #+end_src
 
-     Notez que les paquets installés restent compilés avec =gcc 7.5= et qu'il
+     Notez que les paquets installés restent compilés avec =gcc 10.3= et qu'il
      faut être vigilant quant à la compatibilité d'ABI (cf. avertissement dans
      les [[https://guix.gnu.org/manual/fr/html_node/Options-de-transformation-de-paquets.html][options de transformation de paquets]]). En particulier, les canaux ont
      été mis à jour le 9 octobre 2021 (cf. note plus haut, et nous vous
