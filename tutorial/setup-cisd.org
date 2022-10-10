@@ -34,9 +34,9 @@ git submodule update --init
 Ainsi, le master du dépôt du sujet devrait être identique à celui de votre dépôt
 de projet de départ.
 
-#+begin_src bash :eval no
-* 597aaf7 (HEAD -> master, teamX/master, subject/master) Channels with new mini-chameleon readily available
-#+end_src
+#+begin_example
+597aaf7 (HEAD -> master, teamX/master, subject/master) Channels with new mini-chameleon readily available
+#+end_example
 
 À ce stade, tout est configuré pour que vous puissiez travailler sur le projet.
 En cas de mise à jour du sujet, il faudra synchroniser à nouveau votre master
