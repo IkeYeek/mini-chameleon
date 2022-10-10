@@ -158,9 +158,9 @@
      conseillons donc de mettre à jour vos canaux conformément à la note et de
      refaire un =guix pull=).
 
-*** Modifier votre construction pour la vectorisation
+** Modifier votre construction pour la vectorisation
 
-**** Spécifier explicitement l'architecture (ex: ~-march=haswell~)
+*** Spécifier explicitement l'architecture (ex: ~-march=haswell~)
 
      En l'état, la construction de vos binaires n'est pas optimisée pour une
      architecture particulière. Il vous faudra modifier votre système de
@@ -175,7 +175,7 @@
      construction, via quelque chose comme ~set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}
      -march=haswell")~.
 
-**** Laisser le compilateur détecter l'architecture (~-march=native~)
+*** Laisser le compilateur détecter l'architecture (~-march=native~)
 
 Il est aussi possible d'utiliser ~-march=native~ pour laisser le compilateur
 détecter l'architecture cible plutôt que de la spécifier directement. Dans notre
