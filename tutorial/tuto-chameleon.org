@@ -24,7 +24,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
    Nous pouvons vérifier la topologie de la machine:
   
    #+begin_src bash
-   guix shell coreutils hwloc -- hwloc-ls
+   guix shell --pure coreutils hwloc -- hwloc-ls
    #+end_src
 
    Combien de coeurs sont-ils vus par ~hwloc~? Est-ce consistant avec la
@@ -33,7 +33,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
    Que voit =starpu=?
   
    #+begin_src bash
-   guix shell coreutils starpu -- starpu_machine_display
+   guix shell --pure coreutils starpu -- starpu_machine_display
    #+end_src
 
 ** Produit de matrice (GEMM)
