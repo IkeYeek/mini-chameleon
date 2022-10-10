@@ -19,7 +19,24 @@ up]].
 
 The reference code is available in the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of this project:
 [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/]]. It may be
-cloned and forked.
+cloned and forked. The clone set up must be performed with the
+~--recurse-submodules~ option. The clone may be performed either via ~https~ or
+~ssh~.
+
+- clone via ~https~:
+
+#+begin_src bash
+git clone --recurse-submodules https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon.git
+#+end_src
+
+- clone via ~ssh~:
+
+#+begin_src bash
+git clone --recursive git@gitlab.inria.fr:solverstack/mini-examples/mini-chameleon.git
+#+end_src
+
+Other options are possible, such as cloning from a fork, as in the case of [[./setup-cisd.org][cisd
+option at enseirb-matmeca]].
 
 * Hardware environment
 
@@ -35,7 +52,12 @@ label:env
 
 The project comes with advanced [[../cmake_modules][CMake modules]] to ensure the proper detection of
 the software dependencies. We however provide [[./setup-guix.org][here]] specific instructions for the
-=guix= environment.
+=guix= environment. They can be used on any machine onto which =guix= is
+available, including =plafrim=. We also propose =environment modules= in the
+case in the [[./setup-plafrim.org][plafrim]] case. In a nutshell, proceed with
+- either [[./setup-guix.org][guix set up]] (on any machine having =guix= installed, including
+  =plafrim=);
+- or [[./setup-plafrim.org][plafrim modules]] (on =plafrim= only).
 
 * Mise en place
 
@@ -72,8 +94,9 @@ the software dependencies. We however provide [[./setup-guix.org][here]] specifi
 
 ** Construction de la bibliothèque et des testeurs
 
-   Une fois dans l'environnement adéquat (via =module= ou =guix=), vous pouvez
-   construire le projet:
+Once the proper software environement has been set up (with either [[./setup-guix.org][guix]] or
+[[./setup-plafrim.org][environment modules]]), you can build the project:
+
    #+begin_src bash :eval no
      cd ./mini-chameleon
      mkdir build
