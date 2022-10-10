@@ -59,7 +59,7 @@
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
         (branch "master")
         (commit
-          "4787b11b13a58f09793aefd9b23fe565d24ed1e9")))
+          "fb01f04fc643eaa345e92ef0abb215b0c5f08775")))
   #+end_src
 
   # À noter que les canaux ont été *mis à jour le 9 octobre 2021* [[https://issues.guix.gnu.org/51088][pour le support
