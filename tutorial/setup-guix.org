@@ -115,7 +115,7 @@
 ** chargement d'un environnement
 
 *** De manière implicite (le plus simple)
-     
+
   =guix= permet de [[https://guix.gnu.org/manual/fr/html_node/Invoquer-guix-environment.html][définir un environnement]] de manière implicite ou explicite Le
   plus simple pour ce TP est sans doute de le faire de manière implicite (~-D
   chameleon~), p. ex. via:
@@ -125,7 +125,7 @@
   #+end_src
 
 *** De manière explicite (pour info)
-     
+
      Notez que vous pouvez alternativement charger un environnement de manière
      explicite:
   #+begin_src bash :results output :exports both
@@ -160,7 +160,7 @@
 
 *** Modifier votre construction pour la vectorisation
 
-**** Modifier le source
+**** Spécifier explicitement l'architecture (ex: ~-march=haswell~)
 
      En l'état, la construction de vos binaires n'est pas optimisée pour une
      architecture particulière. Il vous faudra modifier votre système de
@@ -175,12 +175,38 @@
      construction, via quelque chose comme ~set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}
      -march=haswell")~.
 
-     Il est aussi possible d'utiliser ~-march=native~ mais cela ne sera [[https://hpc.guix.info/blog/2018/01/pre-built-binaries-vs-performance/][pas
-     optimal]] en cas de compilation déportée.
+**** Laisser le compilateur détecter l'architecture (~-march=native~)
 
-     
-**** Utiliser l'option ~--tune~ de guix
+Il est aussi possible d'utiliser ~-march=native~ pour laisser le compilateur
+détecter l'architecture cible plutôt que de la spécifier directement. Dans notre
+cas, on peut par exemple le spécifier via ~set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}
+-march=native")~.
 
-=guix= peut automatiquement tuner votre code selon l'architecture avec l'option ~--tune~:
+Si vous vous mettez dans un environnement (~guix shell --pure -D mini-chameleon
+...~) dans lequel vous compilez ensuite vous-même =mini-chameleon= (~cmake .. ;
+make -j~), cela fonctionnera comme attendu.
 
-https://hpc.guix.info/blog/2022/01/tuning-packages-for-a-cpu-micro-architecture/
+Toutefois, si vous déléguez à =guix= la compilation du paquet lui même (~guix
+shell --pure mini-chameleon ...~), alors vous n'obtiendrez pas un binaire
+optimisé. En effet =guix= a vocation à [[https://hpc.guix.info/blog/2018/01/pre-built-binaries-vs-performance/][produire des binaires portables]]: l'idée
+est de générer un code optimisé pour toutes les variantes d'architectures et de
+sélectionner la bonne variante à l'exécution. La mise en place d'un tel schéma
+est au-delà des objectifs du projet. Un schéma moins ambitieux consiste à
+spécifier à =guix= explicitement qu'on veut [[https://hpc.guix.info/blog/2022/01/tuning-packages-for-a-cpu-micro-architecture/][produire une binaire pour une
+architecture cible]]. Pour ce faire, il faut alors passer l'option ~--tune~ à
+=guix=, p. ex.:
+
+#+begin_src bash
+guix shell --pure mini-chameleon ... --tune
+#+end_src
+
+À noter qu'on peut produire un binaire pour une architecture spécifiée. Il
+suffit comme ici de mettre ~-march=native~ dans le source (~set(CMAKE_C_FLAGS
+"${CMAKE_C_FLAGS} -march=native")~) et de spécifier l'architecture via l'option
+~--tune~ de =guix=:
+
+#+begin_src bash
+guix shell --pure mini-chameleon ... --tune=haswell
+#+end_src
+
+
