@@ -160,6 +160,8 @@
 
 *** Modifier votre construction pour la vectorisation
 
+**** Modifier le source
+
      En l'état, la construction de vos binaires n'est pas optimisée pour une
      architecture particulière. Il vous faudra modifier votre système de
      construction pour ce faire. Vous pouvez vérifier le type d'architecture sur
@@ -175,4 +177,10 @@
 
      Il est aussi possible d'utiliser ~-march=native~ mais cela ne sera [[https://hpc.guix.info/blog/2018/01/pre-built-binaries-vs-performance/][pas
      optimal]] en cas de compilation déportée.
-   
+
+     
+**** Utiliser l'option ~--tune~ de guix
+
+=guix= peut automatiquement tuner votre code selon l'architecture avec l'option ~--tune~:
+
+https://hpc.guix.info/blog/2022/01/tuning-packages-for-a-cpu-micro-architecture/
