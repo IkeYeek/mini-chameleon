@@ -24,4 +24,9 @@ You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/
 
 * Getting started
 
-[[./tutorial/setup.org][Get started!]]
+- [[./tutorial/setup.org][Get started!]]
+- [[./tutorial/tuto-chameleon.org][Tutorial]]: from basic /hello world/ to =slurm=, =mpi= and =guix=.
+
+* Steps
+
+- [[./tutorial/step1-sequential.org][step 1: sequential design]]
