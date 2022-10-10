@@ -133,8 +133,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
 
     On peut dessiner un arbre de réduction:
     #+begin_src bash
-    guix shell --pure coreutils openssh chameleon
-    $GUIX_ENVIRONMENT/bin/draw_hqr -M 16 -N 8 -a 4 ; inkscape hqr.qvg
+    guix shell --pure coreutils openssh chameleon sed grep -- draw_hqr -M 16 -N 8 -a 4
     #+end_src
 
     Pour l'observer, rapatrier le fichier sur votre machine (ou connectez vous
@@ -144,7 +143,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
     #+end_src
 
     Vous pouvez aussi retrouver le fichier généré [[./static/hqr-M16-N8-a4.svg][ici]] (attention, utiliser plutôt
-    =inkscape= que votre navigateur pour le visualiser).q
+    =inkscape= que votre navigateur pour le visualiser).
 
 ** Libérer le noeud
 
