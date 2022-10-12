@@ -32,7 +32,7 @@ git clone --recurse-submodules https://gitlab.inria.fr/solverstack/mini-examples
 - clone via ~ssh~:
 
 #+begin_src bash
-git clone --recursive git@gitlab.inria.fr:solverstack/mini-examples/mini-chameleon.git
+git clone --recurse-submodules git@gitlab.inria.fr:solverstack/mini-examples/mini-chameleon.git
 #+end_src
 
 Other options are possible, such as cloning from a fork, as in the case of [[./setup-cisd.org][cisd
