@@ -156,7 +156,8 @@ the their latest version:
   #+end_src
 
 In the context of the proposed work, we however do not recommend to proceed like
-this.
+this but instead to use the above fixed channels, to ensure we rely on a common
+environment.
 
 * Work in an environment for developing =mini-chameleon=: detailed explanations
 :PROPERTIES:
