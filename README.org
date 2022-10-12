@@ -12,11 +12,10 @@ factorization (GETRF). The project is named after the fully-featured [[https://g
 dense linear algebra library.
 
 The first step of the project consists in implementing a =sequential= version of
-the routines, possibly considering blocking strategies. The second step is a
-=simd= enhancement. The third step is a shared-memory (=openmp=) implementation.
-The fourth step is a distributed memory (=mpi=) version. The fifth step is an
-hybrid =mpi+openmp= version. There is also the possibility to implement a
-runtime-based (=starpu=) version.
+the routines, including blocking strategies and vectorization. The second step
+is a shared-memory (=openmp=) implementation. The third step is a distributed
+memory (=mpi=) version. The fourth step is an hybrid =mpi+openmp= version. There
+is also the possibility to implement a runtime-based (=starpu=) version.
 
 * Browse this page
 
@@ -30,3 +29,5 @@ You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/
 * Steps
 
 - [[./tutorial/step1-sequential.org][step 1: sequential design]]
+- [[./tutorial/step2-omp.org][step 2: shared-memory design (=openmp=)]]
+- [[./tutorial/step3-mpi.org][step 3: distributed-memory design (=mpi=)]]
