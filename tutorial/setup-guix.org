@@ -132,15 +132,17 @@ guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain
   hash guix
   #+end_src
 
-  Vous pouvez vérifier les canaux utilisés via:
+** Check step
+
+You can check you are using the expected channels with:
   #+begin_src bash
   guix describe --format=channels
   #+end_src
 
-*** Pour information
+** Rolling-release (not recommended)
 
-     Notez qu'il est possible d'obtenir la dernière version des canaux (mais ce
-     n'est pas l'objet de cet TP) plutôt que des canaux fixés:
+Note that, instead of a fixed version of the channels, it is possible to obtain
+the their latest version:
     #+begin_src scheme :tangle channels-rolling.scm
   (list (channel
          (name 'guix-hpc-non-free)
@@ -153,6 +155,8 @@ guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain
          (url "https://git.savannah.gnu.org/git/guix.git")))
   #+end_src
 
+In the context of the proposed work, we however do not recommend to proceed like
+this.
 
 * Work in an environment for developing =mini-chameleon=: detailed explanations
 :PROPERTIES:
