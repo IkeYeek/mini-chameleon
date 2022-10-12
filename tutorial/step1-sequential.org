@@ -145,6 +145,8 @@ code comme vous le souhaitez, mais, /in fine/, faîtes en sorte que la routine
 ~dgemm_seq~ tire partie de l'ensemble de vos optimisations (blocage,
 vectorisation, ...).
 
+N'hésitez pas à étudier le code généré (voir notamment [[https://godbolt.org/][godbolt]]).
+
 * Optionnel: complétion de la bibliothèque =blas=
   
 Complétez votre bibliothèque =blas= pour qu'elle contienne les routines:
