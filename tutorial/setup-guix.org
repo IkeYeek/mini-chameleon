@@ -16,6 +16,48 @@
  contrôle fin de l'environnement, reproductible dans le temps et sur différentes
  machines.
 
+* In a nutshell
+
+** Set up =guix= as proposed
+:PROPERTIES:
+:ID:       09bcbde5-8641-4d4d-8b37-9d25df66e9e7
+:END:
+
+In a nutshell, after having clone the project (~git clone --recurse-submodules
+https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon.git~ or
+~git clone --recurse-submodules git@gitlab.inria.fr:solverstack/mini-examples/mini-chameleon.git~),
+one may proceed as follows to obtain the proposed =guix= setup :
+
+#+begin_src bash
+mkdir -p ~/.config/guix # prepare the repository in case it does not already exist
+cp ./mini-chameleon/channels.scm ~/.config/guix/channels.scm # position the proposed channels
+guix build hello # avoid issue with permissions
+guix pull --allow-downgrades # set up guix with
+hash guix # make sur the new guix is taken into account by bash
+guix describe --format=channels # check you have the expected channels
+#+end_src
+
+These steps are [[id:18996a23-7175-40b6-abd8-8caa5af7b0a7][explained in details below]].
+
+** Work in an environment for developing =mini-chameleon=
+:PROPERTIES:
+:ID:       e6a9011f-3bba-4ce5-a0d5-df3f91da0b50
+:END:
+
+Once =guix= is properly setup, one may work in an isolated environment, with
+expected dependencies, to develop and assess guix. For instance:
+
+#+begin_src bash
+guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain emacs nano vim --tune -- bash --norc
+#+end_src
+
+[[id:6b325e00-865c-4462-959a-024f345991a3][More options to work in an environment for developing =mini-chameleon= are proposed below.]]
+
+* Set up =guix=: detailed explanations
+:PROPERTIES:
+:ID:       18996a23-7175-40b6-abd8-8caa5af7b0a7
+:END:
+
 ** channels
 
   On utilise ~guix pull~ (pas la peine de faire ~guix pull~ tout de suite, on le
@@ -112,9 +154,12 @@
   #+end_src
 
 
-** chargement d'un environnement
+* Work in an environment for developing =mini-chameleon=: detailed explanations
+:PROPERTIES:
+:ID:       6b325e00-865c-4462-959a-024f345991a3
+:END:
 
-*** De manière implicite (le plus simple)
+** De manière implicite (le plus simple)
 
   =guix= permet de [[https://guix.gnu.org/manual/fr/html_node/Invoquer-guix-environment.html][définir un environnement]] de manière implicite ou explicite Le
   plus simple pour ce TP est sans doute de le faire de manière implicite (~-D
@@ -124,7 +169,7 @@
     guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash emacs nano vim -- bash --norc
   #+end_src
 
-*** De manière explicite (pour info)
+** De manière explicite (pour info)
 
      Notez que vous pouvez alternativement charger un environnement de manière
      explicite:
@@ -132,7 +177,7 @@
     guix shell --pure bash cmake coreutils gdb gcc-toolchain grep make mkl openmpi openssh sed valgrind emacs nano vim -- bash --norc
   #+end_src
   
-*** Avec un compilateur récent (utile pour la vectorisation p. ex.)
+** Avec un compilateur récent (utile pour la vectorisation p. ex.)
 
      Par défaut =guix= fait le choix relativement conservateur d'utiliser =gcc 10.3=
      afin de garantir le support d'un maximum de paquets. Il est possible de
