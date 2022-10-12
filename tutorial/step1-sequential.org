@@ -139,9 +139,9 @@ fonction la plus rapide (c'est ~dgemm_seq~ que nous testerons de notre côté).
 
 ** Vectorisation
 
-Vectorisez votre code. A-t-on besoin de vectoriser toutes les routines ?Quelle
-routine est-il le plus pertinent de vectoriser ? Vous pouvez organisez votre
-code comme vous le souhaitez, mais, /in fine/, faîtes en sorte que la routine
+Vectorisez votre code. A-t-on besoin de vectoriser toutes les routines? Quelle
+routine est-il le plus pertinent de vectoriser? Vous pouvez organisez votre code
+comme vous le souhaitez, mais, /in fine/, faîtes en sorte que la routine
 ~dgemm_seq~ tire partie de l'ensemble de vos optimisations (blocage,
 vectorisation, ...).
 
