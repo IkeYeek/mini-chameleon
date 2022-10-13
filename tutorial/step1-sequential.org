@@ -147,6 +147,14 @@ vectorisation, ...).
 
 N'hésitez pas à étudier le code généré (voir notamment [[https://godbolt.org/][godbolt]]).
 
+Notez également qu'en l'état aucune option n'est donnée au compilateur pour
+tirer partie de l'architecture. Il vous incombe de modifier votre
+[[../CMakeLists.txt]] à cet effet, p. ex. en spécifiant l'architecture cible
+~set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=haswell")~, ou, en demandant au
+compilateur d'optimiser pour l'architecture détectée : ~set(CMAKE_C_FLAGS
+"${CMAKE_C_FLAGS} -march=native")~. Vous pouvez également lire la section dédiée
+dans le cas =guix= en fin de [[./setup-guix.org][setup guix]].
+
 * Optionnel: complétion de la bibliothèque =blas=
   
 Complétez votre bibliothèque =blas= pour qu'elle contienne les routines:
