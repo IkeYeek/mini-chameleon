@@ -1,13 +1,15 @@
 include:
   remote: 'https://gitlab.inria.fr/compose/include/compose-publish/-/raw/master/.compose-gitlab-ci.yml'
 
-# buildrawlatex:
-#   rules:
-#   - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /^solverstack\/mini-examples\/mini-chameleon/
-# 
-# pages:
-#   rules:
-#   - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /^solverstack\/mini-examples\/mini-chameleon/
+buildrawlatex:
+  script:
+    - echo $CI_PROJECT_NAME
+  rules:
+  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /mini-chameleon/
+
+pages:
+  rules:
+  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /mini-chameleon/
 
 # before_script:
 #   # Use a fixed GUIX profile for maximum reproducibility:
