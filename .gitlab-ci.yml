@@ -3,11 +3,11 @@ include:
 
 buildrawlatex:
   rules:
-  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /^solverstack\/mini-examples/
+  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /^solverstack\/mini-examples\/mini-chameleon/
 
 pages:
   rules:
-  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /^solverstack\/mini-examples/
+  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /^solverstack\/mini-examples\/mini-chameleon/
 
 # before_script:
 #   # Use a fixed GUIX profile for maximum reproducibility:
