@@ -21,26 +21,6 @@ is a shared-memory (=openmp=) implementation. The third step is a distributed
 memory (=mpi=) version. The fourth step is an hybrid =mpi+openmp= version. There
 is also the possibility to implement a runtime-based (=starpu=) version.
 
-* Objectives
-
-The main objectives of this project is to develop by yourself a small
-linear algebra library (that includes a GEMM, and a GETRF without
-piviting) with the highest possible performance for:
-
-- the sequential kernels
-- the multi-threaded kernels
-- the MPI only implementation
-- and as a bonus, the MPI+thread implemtation.
-
-All developments will need to be carefully studied and explained in
-your report for each of these versions. Comparative studies of the
-results using R figures will be asked to show the good performances,
-and the improvement brought by each proposed functionnality.
-
-As a complement to the report, a presentation of the results will be
-made. This presentation will be taken into account for the evaluation
-of the English class.
-
 * Getting started
 
 - [[./tutorial/setup.org][Get started!]]

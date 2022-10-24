@@ -4,6 +4,24 @@
 #+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
+* Objectives
+
+The main objectives of this project is to develop by yourself a small linear
+algebra library (that includes a GEMM, and a GETRF without pivoting) with the
+highest possible performance for:
+- the sequential kernels;
+- the multi-threaded kernels;
+- the MPI only implementation;
+- and, as a bonus, the MPI+thread implementation.
+
+All developments will need to be carefully studied and explained in your report
+for each of these versions. Comparative studies of the results using R figures
+will be asked to show the good performances, and the improvement brought by each
+proposed functionality.
+
+As a complement to the report, a presentation of the results will be made. This
+presentation will be taken into account for the evaluation of the English class.
+
 * Specific instructions for =enseirb-matmeca= =cisd=:
 
 ** Collaborative notes and possible hotfixes for the whole promo
@@ -47,3 +65,7 @@ _ Assurez-vous que le dépôt ne contient aucunes modifications locales avant de
 la manipulation et que vous êtes bien positionné sur le dernier =master= de
 votre dépôt. _
 
+* Non specific instructions
+
+The rest of the instructions are non specific to =cisd= and can be retrieved [[../README.org][on
+the main page of the project]].
