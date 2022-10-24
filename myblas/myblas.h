@@ -19,6 +19,10 @@
 #include <assert.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif /* __cplusplus */
+
 /**
  * @brief Helper to read environment variable in order to change some
  * parameters in your code
@@ -94,5 +98,9 @@ int dgetrf_tiled_omp( CBLAS_LAYOUT layout,
                       int M, int N, int b, double **A );
 int dgetrf_tiled_starpu( CBLAS_LAYOUT layout,
                          int M, int N, int b, double **A );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _myblas_h_ */

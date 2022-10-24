@@ -23,6 +23,10 @@
 
 #include <cblas.h>
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif /* __cplusplus */
+
 /**
  * @brief Enable this if you want to serialize the task submission and execution
  */
@@ -133,5 +137,9 @@ void insert_dgemm ( CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB, int m, int n
                     double alpha, starpu_data_handle_t A, int lda,
                     starpu_data_handle_t B, int ldb,
                     double beta, starpu_data_handle_t C, int ldc );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _codelets_h_ */

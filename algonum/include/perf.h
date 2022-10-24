@@ -15,7 +15,12 @@
  */
 #ifndef _perf_h_
 #define _perf_h_
+
 #include <sys/time.h>
+
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif /* __cplusplus */
 
 typedef struct timeval perf_t;
 
@@ -87,5 +92,9 @@ double perf_mflops(const perf_t *p, const double nb_op);
  *
  */
 double perf_gflops(const perf_t *p, const double nb_op);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _perf_h_ */

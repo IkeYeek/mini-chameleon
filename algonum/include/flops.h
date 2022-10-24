@@ -31,6 +31,10 @@
 #ifndef _flops_h_
 #define _flops_h_
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif /* __cplusplus */
+
 /**
  *           Generic formula coming from LAWN 41
  */
@@ -351,5 +355,9 @@ static inline double flops_sgebrd( double __m, double __n) { double flops =  (  
  */
 #define FMULS_LANGE(__m, __n) ((double)(__m) * (double)(__n))
 #define FADDS_LANGE(__m, __n) ((double)(__m) * (double)(__n))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _flops_h_ */

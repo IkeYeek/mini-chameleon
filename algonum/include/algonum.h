@@ -22,6 +22,10 @@
 #include "flops.h"
 #include "perf.h"
 
+#ifdef __cplusplus
+extern "C" {            /* Assume C declarations for C++ */
+#endif /* __cplusplus */
+
 #define ALGO_GEMM  0
 #define ALGO_GETRF 1
 #define ALGO_DDOT  2
@@ -210,6 +214,10 @@ int testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
                           int M, int N, int b, int check );
 int testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
                           dgetrf_tiled_fct_t tested_dgetrf );
+
+#ifdef __cplusplus
+}
+#endif
 
 #if defined(ENABLE_STARPU)
 #include "codelets.h"
