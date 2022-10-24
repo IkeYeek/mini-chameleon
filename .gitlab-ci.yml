@@ -1,5 +1,7 @@
 include:
   remote: 'https://gitlab.inria.fr/compose/include/compose-publish/-/raw/master/.compose-gitlab-ci.yml'
+  only:
+    - master@solverstack/mini-examples
 
 # before_script:
 #   # Use a fixed GUIX profile for maximum reproducibility:
