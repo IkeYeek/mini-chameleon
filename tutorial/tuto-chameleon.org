@@ -131,9 +131,11 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
 
 *** Dessiner (et observer les arbres de réduction)
 
-    On peut dessiner un arbre de réduction:
+    On peut dessiner un arbre de réduction pour une matrice de $16x8$ tuiles
+    (~-M 16 -N 8~), par groupes de 4 tuiles par colonne (~-a 4~), et en
+    réduisant entre les groupes avec un arbre binaire (~-l 3~):
     #+begin_src bash
-    guix shell --pure coreutils openssh chameleon sed grep -- draw_hqr -M 16 -N 8 -a 4
+    guix shell --pure coreutils openssh chameleon sed grep -- draw_hqr -M 16 -N 8 -a 4 -l 3
     #+end_src
 
     Pour l'observer, rapatrier le fichier sur votre machine (ou connectez vous
