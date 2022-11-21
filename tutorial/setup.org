@@ -136,7 +136,19 @@ We install emacs and required packages:
 guix install emacs emacs-lsp-mode emacs-yasnippet emacs-lsp-treemacs emacs-helm-lsp emacs-projectile emacs-hydra emacs-flycheck emacs-company emacs-avy emacs-which-key emacs-helm-xref emacs-dap-mode ccls emacs-ccls
 #+end_src
 
-Here is an example of a minimalist initialization file (~~/.emacs.d/init.el~):
+Here is a minimalist ~~/.bash_profile~:
+#+begin_src bash
+export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
+
+GUIX_PROFILE="$HOME/.config/guix/current"
+. "$GUIX_PROFILE/etc/profile"
+
+GUIX_PROFILE="$HOME/.guix-profile"
+. "$GUIX_PROFILE/etc/profile"
+#+end_src
+
+And here is an example of a minimalist initialization file
+(~~/.emacs.d/init.el~):
 
 #+begin_src bash
 ;; sample `helm' configuration use https://github.com/emacs-helm/helm/ for details
@@ -161,16 +173,10 @@ Here is an example of a minimalist initialization file (~~/.emacs.d/init.el~):
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (require 'dap-cpptools)
   (yas-global-mode))
+
+(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
 #+end_src
 
-
-Here is a minimalist ~~/.bash_profile~:
-#+begin_src bash
-export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
-
-GUIX_PROFILE="$HOME/.config/guix/current"
-. "$GUIX_PROFILE/etc/profile"
-
-GUIX_PROFILE="$HOME/.guix-profile"
-. "$GUIX_PROFILE/etc/profile"
-#+end_src
+Note that we define the leader key for =lsp-mode= in the ultimate line:
+~(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)~. In this case, it is
+~C-c l~ (~CTRL-c l~) but feel free to choose the one you like.
