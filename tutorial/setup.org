@@ -94,17 +94,33 @@ case in the [[./setup-plafrim.org][plafrim]] case. In a nutshell, proceed with
 
 ** Construction de la bibliothèque et des testeurs
 
-Once the proper software environement has been set up (with either [[./setup-guix.org][guix]] or
+Once the proper software environment has been set up (with either [[./setup-guix.org][guix]] or
 [[./setup-plafrim.org][environment modules]]), you can build the project:
 
    #+begin_src bash :eval no
      cd ./mini-chameleon
-     mkdir build
-     cd build
-     cmake .. -DENABLE_MPI=ON -DENABLE_STARPU=ON
-     make -j
+     mkdir -p build/default
+     cmake -B build/default -DENABLE_MPI=ON -DENABLE_STARPU=ON .
+     cmake --build build/default
    #+end_src
 
    Les options =cmake= ~-DENABLE_MPI=ON -DENABLE_STARPU=ON~ sont facultatives
    pour le moment et peuvent être ignorés tant que l'on reste en séquentiel ou
    multi-threadé.
+
+** How about auto-completion?
+
+In the same proper software environment as above (with either [[./setup-guix.org][guix]] or
+[[./setup-plafrim.org][environment modules]]), you can alternatively build the project with the
+[[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html][-DCMAKE_EXPORT_COMPILE_COMMANDS=ON]] =cmake= option, e.g.:
+
+   #+begin_src bash :eval no
+     cd ./mini-chameleon
+     mkdir -p build/debug/
+     cmake -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DENABLE_MPI=ON -DENABLE_STARPU=ON .
+     ln -s build/debug/compile_commands.json .
+   #+end_src
+
+   It is also possible -- but not necessary if the objective is only to obtain
+   the ~compile_commands.json~ database -- to build the project with that set
+   up: ~cmake --build build/debug~.
