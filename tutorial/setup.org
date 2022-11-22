@@ -172,9 +172,8 @@ And here is an example of a minimalist initialization file
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (require 'dap-cpptools)
-  (yas-global-mode))
-
-(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+  (yas-global-mode)
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map))
 #+end_src
 
 Note that we define the leader key for =lsp-mode= in the ultimate line:
