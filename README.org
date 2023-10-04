@@ -24,10 +24,13 @@ is also the possibility to implement a runtime-based (=starpu=) version.
 * Getting started
 
 - [[./tutorial/setup.org][Get started!]]
+
+* Expected work
+
+- [[./tutorial/step1-sequential.org][Homework 1: sequential design]]
+- [[./tutorial/step2-omp.org][Homework 2: shared-memory design (=openmp=)]]
+- [[./tutorial/step3-mpi.org][Homework 3: distributed-memory design (=mpi=)]]
+
+* A guide for effective =guix= usage in high-performance computing (HPC)
+
 - [[./tutorial/tuto-chameleon.org][Tutorial]]: from basic /hello world/ to =slurm=, =mpi= and =guix=.
-
-* Steps
-
-- [[./tutorial/step1-sequential.org][step 1: sequential design]]
-- [[./tutorial/step2-omp.org][step 2: shared-memory design (=openmp=)]]
-- [[./tutorial/step3-mpi.org][step 3: distributed-memory design (=mpi=)]]
