@@ -1,0 +1,121 @@
+* In a nutshell
+
+#+begin_src bash
+unset MODULEPATH
+module use ~agullo/mesmodules-chameleon-dev/
+module load bash-minimal/5.1.8 binutils/2.37 bzip2/1.0.8 cmake-minimal/3.21.4 coreutils/8.32 diffutils/3.8 file/5.39 findutils/4.8.0 gawk/5.1.0 gcc/10.3.0 gfortran/10.3.0 glibc/2.33 glibc-utf8-locales/2.33 grep/3.6 gzip/1.10 hwloc-lib/2.8.0 ld-wrapper/0 libpciaccess/0.16 linux-libre-headers/5.10.35 make/4.3 openblas/0.3.20 openmpi/4.1.4 openssh/8.9p1 patch/2.7.6 pkg-config/0.29.2 python/3.9.9 sed/4.8 starpu/1.3.9 tar/1.34 xz/5.2.5
+export CC=gcc
+#+end_src
+
+* Details (only for information)
+
+** Create modules (usually, an admin role)
+
+*** Install ~guix-modules~ extension
+
+guix install guix-modules
+export GUIX_EXTENSIONS_PATH="$HOME/.guix-profile/share/guix/extensions"
+
+*** Export manifest
+
+#+begin_src bash
+guix shell --export-manifest -D chameleon > /tmp/manifest-chameleon.scm
+#+end_src
+
+*** Create the modules
+
+#+begin_src bash
+guix module create -o ~/mesmodules-chameleon-dev --manifest=/tmp/manifest-chameleon.scm
+#+end_src
+
+*** Get the list of corresponding modules
+
+We get a terse (~-t~) list of the available modules (~module av~),
+removing the redundant ~libc~ static library (~grep -v static~) and
+the first line (~tail -n 2~, as it is a section title), and
+concatenating it into a single line (~tr '\n' ' '~):
+
+#+begin_src bash
+module av -t | grep -v static | tail -n +2 |  tr '\n' ' '
+#+end_src
+
+We obtain the list of modules we will load later (see below):
+#+begin_quote
+bash-minimal/5.1.16 binutils/2.38 bzip2/1.0.8 cmake-minimal/3.24.2 coreutils/9.1 diffutils/3.8 file/5.44 findutils/4.9.0 gawk/5.2.1 gcc/11.3.0 gfortran/11.3.0 glibc-utf8-locales/2.35 glibc/2.35 grep/3.8 gzip/1.12 hwloc-lib/2.9.2 ld-wrapper/0 libpciaccess/0.16 linux-libre-headers/5.15.49 make/4.3 openblas/0.3.20 openmpi/4.1.5 openssh/9.4p1 patch/2.7.6 pkg-config/0.29.2 python/3.10.7 sed/4.8 starpu/1.4.1 tar/1.34 xz/5.2.8
+#+end_quote
+
+** Install environment modules on guix system (usually, already available on the supercomputer)
+
+#+begin_src
+guix install modules
+source ~/.guix-profile/init/bash
+#+end_src
+
+** Use the modules
+
+*** Use the modules
+
+#+begin_src bash
+unset MODULEPATH
+module use ~agullo/mesmodules-chameleon-dev/
+#+end_src
+
+*** Load the modules
+
+#+begin_src bash
+module load bash-minimal/5.1.8 binutils/2.37 bzip2/1.0.8 cmake-minimal/3.21.4 coreutils/8.32 diffutils/3.8 file/5.39 findutils/4.8.0 gawk/5.1.0 gcc/10.3.0 gfortran/10.3.0 glibc/2.33 glibc-utf8-locales/2.33 grep/3.6 gzip/1.10 hwloc-lib/2.8.0 ld-wrapper/0 libpciaccess/0.16 linux-libre-headers/5.10.35 make/4.3 openblas/0.3.20 openmpi/4.1.4 openssh/8.9p1 patch/2.7.6 pkg-config/0.29.2 python/3.9.9 sed/4.8 starpu/1.3.9 tar/1.34 xz/5.2.5
+#+end_src
+
+Avoid conflict with potential other C compilers:
+#+begin_src
+export CC=gcc
+#+end_src
+
+
+* Troubleshooting
+
+** Issue with C compiler detection
+
+~cmake~ states:
+
+#+begin_quote
+-- The C compiler identification is GNU 4.8.5
+#+end_quote
+
+The solution is to force the C compiler (~CC~):
+
+#+begin_src
+export CC=gcc
+#+end_src
+
+The ~cmake~ detection can then be performed with the proper recognition.
+
+** Issue with static libraries
+
+#+begin_src bash
+module load bash-minimal/5.1.8 binutils/2.37 bzip2/1.0.8 cmake-minimal/3.21.4 coreutils/8.32 diffutils/3.8 file/5.39 findutils/4.8.0 gawk/5.1.0 gcc/10.3.0 gfortran/10.3.0 glibc/2.33 glibc-static/2.33 glibc-utf8-locales/2.33 grep/3.6 gzip/1.10 hwloc-lib/2.8.0 ld-wrapper/0 libpciaccess/0.16 linux-libre-headers/5.10.35 make/4.3 openblas/0.3.20 openmpi/4.1.4 openssh/8.9p1 patch/2.7.6 pkg-config/0.29.2 python/3.9.9 sed/4.8 starpu/1.3.9 tar/1.34 xz/5.2.5
+#+end_src
+
+The ~glibc-static/2.33~ may cause issue such as:
+
+#+begin_quote
+[  1%] Linking C shared library libalgonum.so
+ld: /gnu/store/4jdghmc65q7i7ib89zmvq66l0ghf7jc4-glibc-2.33-static/lib/libc.a(assert.o): relocation R_X86_64_32 against undefined symbol `__pthread_setcancelstate' can not be used when making a shared object; recompile with -fPIC
+#+end_quote
+
+The solution is to remove the static library:
+
+#+begin_src bash
+module rm glibc-static/2.33
+#+end_src
+
+Note that the ~glibc~ was already available:
+
+#+begin_src bash
+module list -t 2>&1 | grep libc
+#+end_src
+
+#+begin_quote
+/glibc/2.33
+/glibc-utf8-locales/2.33
+#+end_quote

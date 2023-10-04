@@ -24,13 +24,11 @@ cloned and forked. The clone set up must be performed with the
 ~ssh~.
 
 - clone via ~https~:
-
 #+begin_src bash
 git clone --recurse-submodules https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon.git
 #+end_src
 
 - clone via ~ssh~:
-
 #+begin_src bash
 git clone --recurse-submodules git@gitlab.inria.fr:solverstack/mini-examples/mini-chameleon.git
 #+end_src
@@ -40,8 +38,8 @@ option at enseirb-matmeca]].
 
 * Hardware environment
 
-The project is not entitled with any particular hardware environment but we
-provide [[./setup-plafrim.org][here]] specific instructions for the [[https://www.plafrim.fr][plafrim]] machine.
+The project is not entitled with any particular hardware environment
+but we provide specific instructions for the [[https://www.plafrim.fr][plafrim]] machine.
 
 * Software environment
   :PROPERTIES:
@@ -50,14 +48,17 @@ provide [[./setup-plafrim.org][here]] specific instructions for the [[https://ww
 
 label:env
 
-The project comes with advanced [[../cmake_modules][CMake modules]] to ensure the proper detection of
-the software dependencies. We however provide [[./setup-guix.org][here]] specific instructions for the
-=guix= environment. They can be used on any machine onto which =guix= is
-available, including =plafrim=. We also propose =environment modules= in the
-case in the [[./setup-plafrim.org][plafrim]] case. In a nutshell, proceed with
-- either [[./setup-guix.org][guix set up]] (on any machine having =guix= installed, including
-  =plafrim=);
-- or [[./setup-plafrim.org][plafrim modules]] (on =plafrim= only).
+We propose three software environments:
+- [[./setup-plafrim.org][plafrim modules]]:
+  - provided on =plafrim= only;
+  - out-of-the-box;
+- [[./setup-guix.org][guix set up]]:
+  - possible on any machine having [[https://guix.gnu.org/][guix]] installed, including =plafrim= (see [[https://plafrim-users.gitlabpages.inria.fr/doc/#guix][plafrim reference]]);
+  - master your environment;
+- [[./setup-guixmodules.org][plafrim guix modules]]: for those who want to use ~modules~ but have
+  them generated with ~guix~.
+
+You can choose the environment you want.
 
 * Mise en place
 
