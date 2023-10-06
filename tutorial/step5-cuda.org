@@ -1,0 +1,6 @@
+#+TITLE: Produit de matrice et factorisation sur GPU
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+Work in progess.

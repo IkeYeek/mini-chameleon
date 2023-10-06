@@ -1,0 +1,34 @@
+#+TITLE: Getting started
+#+SUBTITLE: Vecto
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+** Produit de matrice par bloc
+
+Qu'optimise-t-on lorsqu'on décompose le produit matriciel en produits matriciels
+par blocs ? Réalisez une routine ~dgemm_bloc~ (qui respecte à nouveau
+l'interface =cblas=) qui effectue le produit de matrices ainsi.
+
+Vous réutiliserez la routine scalaire précédent pour faire les produits de
+blocs. C'est sans doute l'occasion de le renommer en ~dgemm_scalaire~ et
+d'utiliser ~dgemm_seq~ comme une méthode de haut-niveau qui appellera votre
+fonction la plus rapide (c'est ~dgemm_seq~ que nous testerons de notre côté).
+
+** Vectorisation
+
+Vectorisez votre code. A-t-on besoin de vectoriser toutes les routines? Quelle
+routine est-il le plus pertinent de vectoriser? Vous pouvez organisez votre code
+comme vous le souhaitez, mais, /in fine/, faîtes en sorte que la routine
+~dgemm_seq~ tire partie de l'ensemble de vos optimisations (blocage,
+vectorisation, ...).
+
+N'hésitez pas à étudier le code généré (voir notamment [[https://godbolt.org/][godbolt]]).
+
+Notez également qu'en l'état aucune option n'est donnée au compilateur pour
+tirer partie de l'architecture. Il vous incombe de modifier votre
+[[../CMakeLists.txt]] à cet effet, p. ex. en spécifiant l'architecture cible
+~set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=haswell")~, ou, en demandant au
+compilateur d'optimiser pour l'architecture détectée : ~set(CMAKE_C_FLAGS
+"${CMAKE_C_FLAGS} -march=native")~. Vous pouvez également lire la section dédiée
+dans le cas =guix= en fin de [[./setup-guix.org][setup guix]].

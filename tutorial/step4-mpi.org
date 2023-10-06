@@ -1,0 +1,89 @@
+#+TITLE: Produit de matrice et factorisation LU en parallèle distribué
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+* Mise en place
+
+** Affichage
+
+Vous pourrez ré-utiliser la routine ~affiche(m, n, a, lda, flux)~ qui affichait
+la matrice ~a~ de taille $m * n$ sur le flux ~flux~ pour construire une routine
+~affiche_dist(m, n, a, lda, flux)~ distribuée qui centralise la matrice et
+l'affiche. Ce n'est pas obligatoire mais vous sera sans doute très utile. Notez
+que l'API de cette fonction est suggérée mais pas imposée (vous aurez sans doute
+envie de l'adapter selon le format de données, tuilé ou bloc colonne que vous
+aurez choisi).
+
+** Allocation, initialisation et distribution.
+
+Vous aurez également besoin d'un module d'allocation et d'initialisation de
+vecteurs et de matrices de tailles respectives $n$ et $m\times n$ ($m$ lignes, $n$
+colonnes). Vous pourrez ré-utiliser ceux des TPs précédents. Il vous faudra en
+sus développer un module de distribution de la matrice et de centralisation.
+Cette stratégie vous permettra de comparer vos exécutions parallèles et
+séquentielles plus facilement. L'alternative est de développer un module
+d'allocation parallèle distribué mais cela n'est pas demandé.
+
+** Driver
+
+Vous pourrez utiliser les drivers précédents. Il vous faudra comme indiqué
+ci-dessus implémenter en sus une routine de distribution de données et de
+re-centralisation.
+
+* COMMENT Produit scalaire séquentiel
+
+À quels types d'opérations correspondent les routines de type =blas 1, 2 et 3=?
+Quelles opérations réalisent les routines =blas 1=: ~zdot~ et ~saxpy~ ? 
+
+** Implantation de =my_ddot=
+
+Dans un fichier ~ddot.c~, programmez une routine ~my_ddot~ qui effectue
+l'opération ~ddot~ et qui suit l'interface ~cblas~ (voir ressources) où
+vous remplacerez le préfixe ~cblas_~ par ~my_~.
+
+#+begin_src C++ :includes <iostream> :results output :exports both
+double my_ddot(const int N, const double *X, const int incX, const double *Y, const int incY);
+#+end_src
+
+** Complexité
+
+Les vecteurs $x$ et $y$ sont de taille $m$. Evaluez la complexité en calculs
+(nombre d'opérations flottantes réalisées) et la complexité en nombre de
+références mémoire de la routine ~ddot~. Affichez les performances en Mflop/s de
+votre routine ~ddot~ (voir ressources pour exemple de prise de temps.
+
+# \ignore{\textbf{Attention~:} compilez toujours avec l'option \texttt{-O3} et
+# sans \texttt{-g}. Si vous trouvez que votre routine s'exécute plus vite que la
+# primitive MKL, c'est que votre compilateur aura optimisé au delà du raisonnable.
+# Vérifiez alors que les résultats numériques sont identiques, et regardez si cela
+# résoud votre problème\ldot Expliquez le phénomène.}
+
+Réalisez une boucle exponentielle (par incréments de 25%) sur la taille $m$,
+pour des valeurs comprises entre 50 et 1000000, et affichez les performances en
+Mflop/s en fonction de $m$. Tracez les courbes obtenues avec votre fonction.
+Commentez les courbes. Selon vous, par quoi les performances sont-elles limitées?
+
+* Produit de matrices parallèle distribué
+
+Vous mesurerez la performance du produit $C=^tA\times B$ de deux matrices carrées
+$A$ et $B$ de taille $m*m$.
+
+Implémentez un produit de matrice parallèle distribué ~pdgemm~. Nommez votre
+routine ~my_pdgemm~. Le stockage de matrices est fait ou bien en bloc colonnes
+ou bien en tuiles selon les routines que vous aurez implémentées dans les TPs
+précédents. Faîtes une routine ~dgemm_dist_compute_centralize~ qui distribuera
+les matrices d'entrée, calculera en distribué la matrice de sortie avec
+~my_pdgemm~ et recentralisera la matrice.
+
+Votre driver s'occupera de faire la distribution de données. ~pdgemm~ prendra
+une matrice distribuée. Prenez le temps (et déduisez la performance en GFlop/s)
+de votre routine ~my_pdgemm~. Faîtes de même pour restituer la performance
+(amoindrie) comptant la distribution des données et leur rapatriement.
+
+* Factorisation LU (sans pivotage)
+
+Faites de même avec la factorisation LU (sans pivotage).
+
+Optionnel: comment mettre en place une stratégie de pivotage?
+

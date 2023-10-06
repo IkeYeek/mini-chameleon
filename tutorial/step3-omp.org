@@ -1,0 +1,268 @@
+#+TITLE: Produit de matrice et factorisation LU utilisant OpenMP
+#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+PROPERTY: header-args:bash :eval no :exports both
+
+Le but de ce TP est de tester et d'évaluer les performances que l'on peut
+obtenir avec une parallélisation OpenMP des boucles principales d'une
+application. Le parallélisme qu'on étudiera principalement ici est dit
+de type fork-join. On étudiera les performances en terme de scalabilité
+/faible/ et /forte/ sur des opérations telles que le produit matriciel
+et la factorisation LU. Chacune des opérations sera comparée à son
+équivalent en MKL. Une analyse de la différence de performances, ainsi
+que les raisons est attendue. Il est donc fortement recommandé de mettre
+en place des scripts propres permettant de facilement lancer les
+fonctions demandées, ainsi que les scripts d'analyse pour générer les
+courbes. On pourra utiliser les connaissances acquises en cours
+d'analyse de données sur le langage R.
+
+Il peut également être intéressant de jeter un oeil à l'outil
+[[https://gforgeron.gitlab.io/easypap/][EasyPap]] pour permettre une
+meilleure analyse des fonctionnalités implémentées et comprendre les
+raisons qui font qu'une solution sera plus efficace qu'une autre. Le
+rendu pourra inclure des images/traces extraites à l'aide de cet
+environnement.
+
+* Produit matriciel - GEMM
+  :PROPERTIES:
+  :CUSTOM_ID: produit-matriciel---gemm
+  :END:
+
+Le but de cet exercice est d'étudier la parallélisation d'un produit
+matriciel à l'aide de directives OpenMP. On s'intéressera à différentes
+implémentations simples du produit.
+
+** Préambule
+   :PROPERTIES:
+   :CUSTOM_ID: préambule
+   :END:
+
+Toute fonction de produit matriciel que vous implémenterez sera du type
+suivant:
+
+#+BEGIN_SRC C
+typedef int (*dgemm_fct_t)( CBLAS_LAYOUT layout,
+                            CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
+                            int M, int N, int K,
+                            double alpha, const double *A, int lda,
+			                  const double *B, int ldb,
+			    double beta,        double *C, int ldc );
+#+END_SRC
+
+Pour vous aider, dans votre développement deux fonctions sont fournies
+dans le squelette du projet.
+
+#+BEGIN_SRC C
+int testone_dgemm( dgemm_fct_t dgemm,
+                   CBLAS_TRANSPOSE transA,
+                   CBLAS_TRANSPOSE transB,
+                   int M, int N, int K, int check );
+int testall_dgemm( dgemm_fct_t tested_dgemm );
+#+END_SRC
+
+La première fonction vous permettra de tester rapidement la validité de
+votre implémentation sur un cas (=check = 1=), ou d'en étudier la
+performance (=check = 0=).
+
+La seconde fonction vous permettra de tester de manière plus poussée
+votre bibliothèque pour garantir que les résultats de ce que vous
+calculez sont bons.
+
+Chacune des ces fonctions renvoie =0= en cas de succès, et le nombre
+d'échecs sinon. On vous demande dans le cadre du projet de réfléchir
+aux différentes solutions que vous pouvez mettre en oeuvre pour
+accélerer le produit matriciel sur des architectures multi-coeurs.
+
+** Travail à faire
+
+Il va falloir vous poser les bonnes questions et trouver quelles sont
+les meilleures stratégies:
+  - Toutes les boucles doivent elles être parallélisées ? Sinon
+    lesquelles et pourquoi ?
+  - Faut-il paralléliser la version scalaire, ou une version bloquée ?
+  - Si jamais vous parallélisez la version bloquée, quelle est la
+    meilleure taille de bloc ? Comment la choisir ?
+
+* Factorisation LU - GETRF
+  :PROPERTIES:
+  :CUSTOM_ID: factorisation-lu
+  :END:
+
+En parallèle de la parallélisation du produit matriciel, on vous
+demande d'étudier la parallélisation OpenMP de la factorisation LU qui
+ne présente pas le même schéma et les mêmes possibilités de
+parallélisation.
+Pour cela, on considerera le cas simplifié de la factorisation sans
+pivotage. Les valeurs de la diagonale sont artificiellement augmentées
+pour qu'aucun pivotage ne soit nécessaire.
+
+** Préambule
+   :PROPERTIES:
+   :CUSTOM_ID: préambule-1
+   :END:
+
+Toute fonction de factorisation que vous implémenterez sera du type
+suivant:
+
+#+BEGIN_SRC C
+typedef int (*dgetrf_fct_t)( CBLAS_LAYOUT layout,
+                             int m, int n, double *A, int lda );
+#+END_SRC
+
+Pour vous aider, dans votre développement deux fonctions sont fournies
+dans le squelette de projet:
+
+#+BEGIN_SRC C
+int testone_dgetrf( dgetrf_fct_t dgetrf,
+                    int M, int N, int check );
+int testall_dgetrf( dgetrf_fct_t tested_dgetrf );
+#+END_SRC
+
+La première fonction vous permettra de tester rapidement la validité de
+votre implémentation sur un cas (=check = 1=), ou d'en étudier la
+performance (=check = 0=).
+
+La seconde fonction vous permettra de tester de manière plus poussée
+votre bibliothèque pour garantir que les résultats de ce que vous
+calculer sont bons.
+
+Chacune des ces fonctions renvoie =0= en cas de succès, et le nombre
+d'échecs sinon.
+
+** Exploitation du produit matriciel multi-threadé
+   :PROPERTIES:
+   :CUSTOM_ID: exploitation-du-produit-matriciel-multi-threadé
+   :END:
+
+La première version qui vous est demandée consiste à travailler
+récursivement sur une matrice /2x2/ blocs en suivant les 4 étapes vues
+en cours:
+
+#+BEGIN_SRC C
+getrf( A[k][k] )                                       /* Séquentiel: votre implémentation      */
+trsm( A[k][k], A[k+1..m][k] )                          /* Séquentiel cblas_xtrsm                */
+trsm( A[k][k], A[k][k+1..n] )                          /* Séquentiel cblas_xtrsm                */
+gemm( AA[k+1..m][k], A[k][k+1..n], A[k+1..m][k+1..n] ) /* Parallel: votre implémentation OpenMP */
+#+END_SRC
+
+Vous prendrez les versions les plus efficaces pour vos implémentation
+sans oublier de préciser de laquelle il s'agit.
+
+- Quelles sont les limitations de cette implémentation ?
+- Comment peut-on faire mieux ? et pourquoi ?
+
+** Parallélisation OpenMP dédié
+
+Les mêmes questions que pour le produit matriciel peuvent se
+poser pour la parallélisation de la factorisation LU.
+Il vous est demandé de réfléchir à comment paralléliser cet algorithme
+en utilisant les directives OpenMP au mieux. 
+A noter que si vous utilisez des implémentations /bloquées/, vous
+devez faire appel à vos propres implémentations séquentielles pour
+obtenir la meilleure performance.
+
+
+* Versions tuilées
+  :PROPERTIES:
+  :CUSTOM_ID: version-tuilée
+  :END:
+
+Un des soucis qui peut-être rencontré lors de l'évaluation des versions
+précédentes est l'entrelacement des données (leading dimension). La continuité des données
+accédées lors du calcul peut-être faible.
+
+On souhaite donc modifier le format de stockage pour utiliser un stockage
+ /tuilée/ de la matrice. Le format de stockage, se fera de
+manière récursive comme précédemment. Chaque tuile est stockée avec un
+format colonne majeure, et l'ordre de stockage des tuiles est également
+un ordre colonne majeure.
+
+On pourra s'aider des fonctions de conversion fournies dans la
+bibliothèque =libalgonum= et dont le code est fourni ci-dessous:
+
+#+BEGIN_SRC C
+double **
+lapack2tile( int M, int N, int b,
+             const double *Alapack, int lda )
+{
+    /* Let's compute the total number of tiles with a *ceil* */
+    int MT = (M + b - 1) / b;
+    int NT = (N + b - 1) / b;
+    int m, n;
+
+    /* Allocate the array of pointers to the tiles */
+    double **Atile = malloc( MT * NT * sizeof(double*) );
+
+    /* Now, let's copy the tile one by one, in column major order */
+    for( n=0; n<NT; n++) {
+        for( m=0; m<MT; m++) {
+            double *tile = malloc( b * b * sizeof(double) );
+            int mm = m == (MT-1) ? M - m * b : b;
+            int nn = n == (NT-1) ? N - n * b : b;
+
+            /* Let's use LAPACKE to ease the copy */
+            LAPACKE_dlacpy_work( LAPACK_COL_MAJOR, 'A', mm, nn,
+                                 Alapack[ lda * b * n + b * m ], lda,
+                                 tile, b );
+
+            Atile[ MT * n + m ] = tile;
+        }
+    }
+}
+
+void
+tile2lapack( int M, int N, int b,
+             const double **Atile
+             double *A, int lda )
+{
+    /* Let's compute the total number of tiles with a *ceil* */
+    int MT = (M + b - 1) / b;
+    int NT = (N + b - 1) / b;
+    int m, n;
+
+    assert( lda >= M );
+
+    /* Now, let's copy the tile one by one, in column major order */
+    for( n=0; n<NT; n++) {
+        for( m=0; m<MT; m++) {
+            double *tile = Atile[ MT * n + m ];
+            int mm = m == (MT-1) ? M - m * b : b;
+            int nn = n == (NT-1) ? N - n * b : b;
+
+            /* Let's use LAPACKE to ease the copy */
+            LAPACKE_dlacpy_work( LAPACK_COL_MAJOR, 'A', mm, nn,
+                                 tile, b,
+                                 Alapack[ lda * b * n + b * m ], lda );
+        }
+    }
+}
+#+END_SRC
+
+** Comparaison du format de stockage
+   :PROPERTIES:
+   :CUSTOM_ID: comparaison-du-format-de-stockage
+   :END:
+
+Reprenez vos versions du produit matriciel et de la factorisation LU
+utilisant un modèle fork-join sur ce nouveau format de stockage des
+données.
+
+- Analysez ces nouvelles versions de façon pertinente par rapports aux
+  versions précédentes.
+- Est-ce plus intéressant d'utiliser un format tuilé ou un format de
+  stockage /column major/
+
+** Graphe de tâches
+   :PROPERTIES:
+   :CUSTOM_ID: graphe-de-tâches
+   :END:
+
+Enfin, pour aller plus loin, vous pouvez comparer vos implémentations
+du GEMM et du GETRF à celle utilisant StarPU qui vous est fournie dans
+le projet.
+
+Pour conclure, vous bénéficier d'un panel d'implémentation du produit
+matriciel et de la factorisation LU pour permettre de mieux comprendre
+les principes qui peuvent permettre d'atteindre des performances
+optimales sur une architecture. A t'il été possible de reproduire les
+performances de la bibliothèque /Intel MKL/ ?
