@@ -29,12 +29,12 @@ https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon.git~ or
 one may proceed as follows to obtain the proposed =guix= setup :
 
 #+begin_src bash
-mkdir -p ~/.config/guix # prepare the repository in case it does not already exist
-cp ./mini-chameleon/channels.scm ~/.config/guix/channels.scm # position the proposed channels
-guix build hello # avoid issue with permissions
-guix pull --allow-downgrades # set up guix with
-hash guix # make sur the new guix is taken into account by bash
-guix describe --format=channels # check you have the expected channels
+  mkdir -p ~/.config/guix # prepare the repository in case it does not already exist
+  ln -s $(pwd)/mini-chameleon/channels.scm ~/.config/guix/ # position the proposed channels ; alternative: cp ./mini-chameleon/channels.scm ~/.config/guix/channels.scm
+  guix build hello # avoid issue with permissions
+  guix pull --allow-downgrades # set up guix with
+  hash guix # make sur the new guix is taken into account by bash
+  guix describe --format=channels # check you have the expected channels
 #+end_src
 
 These steps are [[id:18996a23-7175-40b6-abd8-8caa5af7b0a7][explained in details below]].
