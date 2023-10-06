@@ -18,7 +18,7 @@ module load trace/fxt/0.3.14
 module load trace/eztrace/1.1-9
 
 # Module StarPU pour la fin du projet (Choose the right one)
-#module load runtime/starpu/1.3.8/mpi
+module load runtime/starpu/1.3.8/mpi
 #module load runtime/starpu/1.3.8/mpi-fxt
 #module load runtime/starpu/1.3.8/mpi-cuda
 #module load runtime/starpu/1.3.8/mpi-cuda-fxt
