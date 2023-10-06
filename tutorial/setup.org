@@ -111,3 +111,4 @@ Once the proper software environment has been set up (with either [[./setup-guix
 
 ** How about auto-completion for IDEs
 
+You may [[./setup-ide.org][visit this page]] if you are interested in auto-completion.
