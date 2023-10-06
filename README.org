@@ -15,11 +15,11 @@ goal is to implement a dense matrix-matrix product (GEMM) and an LU
 factorization (GETRF). The project is named after the fully-featured [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]]
 dense linear algebra library.
 
-The first step of the project consists in implementing a =sequential= version of
-the routines, including blocking strategies and vectorization. The second step
-is a shared-memory (=openmp=) implementation. The third step is a distributed
-memory (=mpi=) version. The fourth step is an hybrid =mpi+openmp= version. There
-is also the possibility to implement a runtime-based (=starpu=) version.
+# The first step of the project consists in implementing a =sequential= version of
+# the routines, including blocking strategies and vectorization. The second step
+# is a shared-memory (=openmp=) implementation. The third step is a distributed
+# memory (=mpi=) version. The fourth step is an hybrid =mpi+openmp= version. There
+# is also the possibility to implement a runtime-based (=starpu=) version.
 
 * Getting started
 
