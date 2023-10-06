@@ -8,13 +8,12 @@
 
  Un des objectifs du TP est d'apprendre à maîtriser votre environnement
  logiciel, en particulier dans un contexte de calcul haute performance. Vous
- avez déjà vu les =modules=, et il est possible de faire le TP avec comme
- indiqué ci-dessus. Nous vous proposons toutefois de manipuler [[https://guix.gnu.org/][guix]] ici. Grâce
- à un effort conjoint des équipes =guix= et =plafrim=, =guix= est immédiatement
- disponible sur votre super-calculateur préféré (et vous pouvez également
- [[https://guix.gnu.org/manual/en/html_node/Binary-Installation.html][l'installer]] sur votre machine =linux= si vous les souhaitez). Il permet un
- contrôle fin de l'environnement, reproductible dans le temps et sur différentes
- machines.
+ avez déjà vu les =modules=, et il est possible de faire le TP avec ceux-ci.
+ Nous vous proposons toutefois de manipuler [[https://guix.gnu.org/][guix]] ici. Grâce à un effort conjoint
+ des équipes =guix= et =plafrim=, =guix= est immédiatement disponible sur votre
+ super-calculateur préféré (et vous pouvez également [[https://guix.gnu.org/manual/en/html_node/Binary-Installation.html][l'installer]] sur votre
+ machine =linux= si vous les souhaitez). Il permet un contrôle fin de
+ l'environnement, reproductible dans le temps et sur différentes machines.
 
 * In a nutshell
 
