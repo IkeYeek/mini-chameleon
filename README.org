@@ -2,9 +2,7 @@
 #+AUTHOR: Emmanuel Agullo and Mathieu Faverge
 #+SETUPFILE: ./include/compose-publish/theme-readtheorginria.setup
 
-* Browse this page
-
-You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] of this page.
+You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] (web) or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] (gitlab) of this page.
 
 * =mini-chameleon=
 
