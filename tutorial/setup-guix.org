@@ -77,33 +77,6 @@ guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain
     cp ./mini-chameleon/channels.scm ~/.config/guix/channels.scm
   #+end_src
 
-  Pour information cela correspond à:
-  #+begin_src scheme :tangle channels.scm
-(list (channel
-        (name 'guix)
-        (url "https://git.savannah.gnu.org/git/guix.git")
-        (branch "master")
-        (commit
-          "5f856c595479c30d9ccdb0063c9124248fdcf5c2")
-        (introduction
-          (make-channel-introduction
-            "9edb3f66fd807b096b48283debdcddccfea34bad"
-            (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
-      (channel
-        (name 'guix-hpc-non-free)
-        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
-        (branch "master")
-        (commit
-          "07d368150436d64eded315f26a3576ee3bdbc160"))
-      (channel
-        (name 'guix-hpc)
-        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
-        (branch "master")
-        (commit
-          "fb01f04fc643eaa345e92ef0abb215b0c5f08775")))
-  #+end_src
-
   # À noter que les canaux ont été *mis à jour le 9 octobre 2021* [[https://issues.guix.gnu.org/51088][pour le support
   # de =clang++= sur =plafrim=]] (un grand merci à Ludovic Courtès!), le *28 octobre
   # 2021* pour le support de [[https://guix.gnu.org/en/blog/2021/from-guix-environment-to-guix-shell/][guix shell]] et [[https://gitlab.inria.fr/solverstack/hello-mpi/][hello-mpi]], le *8 novembre 2021* pour le
