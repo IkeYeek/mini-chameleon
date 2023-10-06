@@ -27,9 +27,11 @@ is also the possibility to implement a runtime-based (=starpu=) version.
 
 * Expected work
 
-- [[./tutorial/step1-sequential.org][Homework 1: sequential design]]
-- [[./tutorial/step2-omp.org][Homework 2: shared-memory design (=openmp=)]]
-- [[./tutorial/step3-mpi.org][Homework 3: distributed-memory design (=mpi=)]]
+- [[./tutorial/step1-sequential.org][Step 1: sequential design]]
+- [[./tutorial/step2-vecto.org][Step 2: blocking and vectorisation]]
+- [[./tutorial/step3-omp.org][Step 3: shared-memory design (=openmp=)]]
+- [[./tutorial/step4-mpi.org][Step 4: distributed-memory design (=mpi=)]]
+- [[./tutorial/step5-cuda.org][Step 5: GPU]]
 
 * A guide for effective =guix= usage in high-performance computing (HPC)
 

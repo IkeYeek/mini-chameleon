@@ -1,26 +1,28 @@
 #+TITLE: Getting started
-#+SUBTITLE: cisd@enseirb-matmeca.bordeaux-inp.fr
+#+SUBTITLE: IS331 CISD @ ENSEIRB-MATMECA
 #+AUTHOR: Emmanuel Agullo and Mathieu Faverge
 #+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
-#+PROPERTY: header-args:bash :eval no :exports both
+#+PROPERTY: heder-args:bash :eval no :exports both
 
 * Objectives
 
-The main objectives of this project is to develop by yourself a small linear
-algebra library (that includes a GEMM, and a GETRF without pivoting) with the
-highest possible performance for:
-- the sequential kernels;
-- the multi-threaded kernels;
-- the MPI only implementation;
-- and, as a bonus, the MPI+thread implementation.
+Dans le contexte de l'option IS331, voici [[https://cours-mf.gitlabpages.inria.fr/is331/][les instructions spécifiques]].
 
-All developments will need to be carefully studied and explained in your report
-for each of these versions. Comparative studies of the results using R figures
-will be asked to show the good performances, and the improvement brought by each
-proposed functionality.
+# The main objectives of this project is to develop by yourself a small linear
+# algebra library (that includes a GEMM, and a GETRF without pivoting) with the
+# highest possible performance for:
+# - the sequential kernels;
+# - the multi-threaded kernels;
+# - the MPI only implementation;
+# - and, as a bonus, the MPI+thread implementation.
 
-As a complement to the report, a presentation of the results will be made. This
-presentation will be taken into account for the evaluation of the English class.
+# All developments will need to be carefully studied and explained in your report
+# for each of these versions. Comparative studies of the results using R figures
+# will be asked to show the good performances, and the improvement brought by each
+# proposed functionality.
+
+# As a complement to the report, a presentation of the results will be made. This
+# presentation will be taken into account for the evaluation of the English class.
 
 * Specific instructions for =enseirb-matmeca= =cisd=:
 
@@ -30,15 +32,29 @@ presentation will be taken into account for the evaluation of the English class.
 
 ** Collaborative set up on the =enseirb= =gitlab= instance
 
-Pour travailler en collaboration via le ~gitlab~ de l'~enseirb~ (et nous permettre
-de suivre vos avancées), nous vous emandons de travailler sur le dépôt qui vous est fourni:
+*** Première séance (6/10/2023)
+
+**** Constitution des équipes
+
+Constituez vos équipes par groupes de 4 personnes (un des groupes sera constitué
+de 3 personnes). Envoyez vos groupes à Mathieu Faverge (gardez en copie tous les
+membres du groupe).
+
+**** Explorez le projet
+
+Rendez-vous [[./setup.org][sur la page de setup]] pour explorer le projet.
+
+*** Séances suivantes (à partir du 13/10/2023)
+
+Vous travaillez de manière collaborative via le ~gitlab~ de l'~enseirb~ sur le dépôt
+qui vous est fourni (suite à votre envoi de la première séance):
 #+begin_src bash :eval no
 TEAMID=X
 git clone --recursive git@gitlab.enseirb-matmeca.dev:cisd/is331/team${TEAMID}.git
 cd team${TEAMID}
 #+end_src
 
-où X doit être remplacé par le uméro de votre équipe.
+où X doit être remplacé par le numéro de votre équipe.
 
 Pour récupérer le code de travail de base et pouvoir intégrer facilement les
 mises à jour, il va falloir l'ajouter en tant que nouvelle remote:
