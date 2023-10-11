@@ -1,6 +1,6 @@
 #+TITLE: Getting started
 #+SUBTITLE: Vecto
-#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+AUTHOR: Emmanuel Agullo, Olivier Aumage, Alycia Lisito and Mathieu Faverge
 #+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 

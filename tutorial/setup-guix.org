@@ -156,16 +156,16 @@ environment.
   
 ** Avec un compilateur récent (utile pour la vectorisation p. ex.)
 
-     Par défaut =guix= fait le choix relativement conservateur d'utiliser =gcc 10.3=
+     Par défaut =guix= fait un choix relativement conservateur sur la version de =gcc=
      afin de garantir le support d'un maximum de paquets. Il est possible de
-     choisir un compilateur plus récent (=gcc 12.2=) en chargeant explicitement
+     choisir un compilateur plus récent (=gcc 13.2=) en chargeant explicitement
      ~gcc-toolchain~:
 
   #+begin_src bash :results output :exports both
     guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain emacs nano vim -- bash --norc
   #+end_src
 
-     On peut choisir un compilateur alternatif, p. ex. =clang 14.0.6= (plus
+     On peut choisir un compilateur alternatif, p. ex. =clang= (plus
      besoin de charger explicitement ~libomb~ en plus de ~clang-toolchain~
      depuis la mise à jour du 16 novembre 2021):
 
@@ -173,12 +173,10 @@ environment.
     guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash clang-toolchain emacs nano vim -- bash --norc
   #+end_src
 
-     Notez que les paquets installés restent compilés avec =gcc 10.3= et qu'il
-     faut être vigilant quant à la compatibilité d'ABI (cf. avertissement dans
-     les [[https://guix.gnu.org/manual/fr/html_node/Options-de-transformation-de-paquets.html][options de transformation de paquets]]). En particulier, les canaux ont
-     été mis à jour le 9 octobre 2021 (cf. note plus haut, et nous vous
-     conseillons donc de mettre à jour vos canaux conformément à la note et de
-     refaire un =guix pull=).
+     Notez que les paquets installés restent compilés avec la version
+     conservatie de =gcc= et qu'il faut être vigilant quant à la
+     compatibilité d'ABI (cf. avertissement dans les [[https://guix.gnu.org/manual/fr/html_node/Options-de-transformation-de-paquets.html][options de
+     transformation de paquets]]).
 
 ** Modifier votre construction pour la vectorisation
 
