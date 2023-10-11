@@ -4,6 +4,9 @@
 #+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
+Dans cette étape, vous allez étendre votre code séquentiel (~-v seq)
+pour supporter le blocage et la vectorisation.
+
 ** Produit de matrice par bloc
 
 Qu'optimise-t-on lorsqu'on décompose le produit matriciel en produits matriciels
