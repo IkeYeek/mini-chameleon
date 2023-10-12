@@ -20,7 +20,30 @@ In the same proper software environment as above (with either [[./setup-guix.org
    the ~compile_commands.json~ database -- to build the project with that set
    up: ~cmake --build build/debug~.
 
-* Front-end: minimal emacs with lsp on plafrim
+* Front-end: emacs-bedrock
+
+A possible minimal IDE can be:
+
+#+begin_src bash
+  guix shell --pure emacs-bedrock-as-default -D mini-chameleon clang-toolchain -- emacs -nw
+#+end_src
+
+Note that we use ~emacs -nw~ on plafrim to have a no (X) window, which
+would otherwise be to slow on =plafrim=. In this context, the top menu
+can be accessed with =F10=. You can for instan press =F10= and =Enter=
+to visit a new file.
+
+When editing a source code file (such as a ~.c~ file), you can turn on
+auto-completion once again by pressing =F10= to access the menu, then
+=Tools= and then =Language Server Support (Eglot)=.
+
+Note that the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/CUA-Bindings.html][usual Windows-like]] cut (~C-x~), copy (~C-c~), and paste
+(~C-v~) can be used.
+
+# Of course, the standard ~emacs~ key bindings are also available. If
+# you prefer ~vim~-like key bindings ...
+
+* COMMENT Front-end: minimal emacs with lsp on plafrim
 
 We follow: https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/, which we adapt with =guix=.
 
