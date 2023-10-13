@@ -77,11 +77,11 @@ file. We provide such a [[https://gitlab.inria.fr/solverstack/mini-examples/mini
 Afterwards, ~emacs-bedrock~ can then be launched with the ~emacs~
 command.
 
-You can the full development environment (including dependencies for developing mini-chameleon) installed via:
+# You can the full development environment (including dependencies for developing mini-chameleon) installed via:
 
-#+begin_src
-guix install -m mini-chameleon-dev-ide-manifest.scm
-#+end_src
+# #+begin_src
+# guix package --manifest=./mini-chameleon-dev-ide-manifest.scm
+# #+end_src
 
 Note that when you update your channels (through ~guix pull
 --allow-downgrades~), you can then uprade your packages (through ~guix
