@@ -1,5 +1,7 @@
 # -*- mode: sh -*-
 
+if [ -f ~/.profile ]; then . ~/.profile; fi
+
 ##############
 # guix setup #
 ##############
@@ -33,4 +35,9 @@ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
 # R
 export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 
+##################
+# end guix setup #
+##################
 
+# Honor per-interactive-shell startup file
+if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
