@@ -101,7 +101,7 @@ Once the proper software environment has been set up (with either [[./setup-guix
    #+begin_src bash :eval no
      cd ./mini-chameleon
      mkdir -p build/default
-     cmake -B build/default -DENABLE_MPI=ON -DENABLE_STARPU=ON .
+     cmake . -B build/default -DENABLE_MPI=ON -DENABLE_STARPU=ON
      cmake --build build/default
    #+end_src
 

@@ -13,7 +13,7 @@ the [[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS
 #+begin_src bash :eval no
   cd ./mini-chameleon
   mkdir -p build/debug/
-  cmake -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DENABLE_MPI=ON -DENABLE_STARPU=ON .
+  cmake . -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DENABLE_MPI=ON -DENABLE_STARPU=ON
   ln -s build/debug/compile_commands.json .
 #+end_src
 
