@@ -56,6 +56,20 @@ cd team${TEAMID}
 
 où X doit être remplacé par le numéro de votre équipe.
 
+Si vous travaillez avec le [[./setup-guix.org][setup guix]], assurez-vous que vos canaux
+=guix= (~/.config/guix/channels.scm~) pointent bien sur ceux
+nouvellement clonés et mettez à jour =guix=:
+
+#+begin_src bash
+  # mkdir -p ~/.config/guix # not requirea priori: should have been done last time; uncomment otherwise
+  mv ~/.config/guix/channels.scm ~/.config/guix/channels-old.scm~ # backup previous channels
+  ln -s $(pwd)/channels.scm ~/.config/guix/ # position the proposed channels ; alternative: cp ./channels.scm ~/.config/guix/channels.scm
+  # guix build hello # not requirea priori: should have been done last time: uncomment otherwise
+  guix pull --allow-downgrades # set up guix with
+  hash guix # make sur the new guix is taken into account by bash
+  guix describe --format=channels # check you have the expected channels
+#+end_src
+
 Pour récupérer le code de travail de base et pouvoir intégrer facilement les
 mises à jour, il va falloir l'ajouter en tant que nouvelle remote:
 
