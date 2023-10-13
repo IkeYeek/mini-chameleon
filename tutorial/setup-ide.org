@@ -5,33 +5,34 @@
 
 * Back-end: building compile-commands.json
 
-In the same proper software environment as above (with either [[./setup-guix.org][guix]] or
-[[./setup-plafrim.org][environment modules]]), you can alternatively build the project with the
-[[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html][-DCMAKE_EXPORT_COMPILE_COMMANDS=ON]] =cmake= option, e.g.:
+In the same proper software environment as proposed (with either [[./setup-guix.org][guix]]
+or [[./setup-plafrim.org][environment modules]]), you can alternatively build the project with
+the [[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html][~-DCMAKE_EXPORT_COMPILE_COMMANDS=ON~]] =cmake= option, e.g.:
 
-   #+begin_src bash :eval no
-     cd ./mini-chameleon
-     mkdir -p build/debug/
-     cmake -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DENABLE_MPI=ON -DENABLE_STARPU=ON .
-     ln -s build/debug/compile_commands.json .
-   #+end_src
 
-   It is also possible -- but not necessary if the objective is only to obtain
-   the ~compile_commands.json~ database -- to build the project with that set
-   up: ~cmake --build build/debug~.
+#+begin_src bash :eval no
+  cd ./mini-chameleon
+  mkdir -p build/debug/
+  cmake -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DENABLE_MPI=ON -DENABLE_STARPU=ON .
+  ln -s build/debug/compile_commands.json .
+#+end_src
+
+# It is also possible -- but not necessary if the objective is only to obtain
+# the ~compile_commands.json~ database -- to build the project with that set
+# up: ~cmake --build build/debug~.
 
 * Front-end: emacs-bedrock
 
-A possible minimal IDE can be:
+A possible minimal IDE can be used with:
 
 #+begin_src bash
   guix shell --pure emacs-bedrock-as-default -D mini-chameleon clang-toolchain -- emacs -nw
 #+end_src
 
-Note that we use ~emacs -nw~ on plafrim to have a no (X) window, which
+Note that we use ~emacs -nw~ on plafrim to have no (X) window, which
 would otherwise be to slow on =plafrim=. In this context, the top menu
-can be accessed with =F10=. You can for instan press =F10= and =Enter=
-to visit a new file.
+can be accessed with =F10=. You can for instance press =F10= and
+=Enter= to visit a new file.
 
 When editing a source code file (such as a ~.c~ file), you can turn on
 auto-completion once again by pressing =F10= to access the menu, then
@@ -40,8 +41,17 @@ auto-completion once again by pressing =F10= to access the menu, then
 Note that the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/CUA-Bindings.html][usual Windows-like]] cut (~C-x~), copy (~C-c~), and paste
 (~C-v~) can be used.
 
-# Of course, the standard ~emacs~ key bindings are also available. If
-# you prefer ~vim~-like key bindings ...
+Of course, the standard ~emacs~ key bindings are also available. If
+you prefer ~vim~-like key bindings, you can add ~(require 'evil)~ in
+your =emacs= init file (typically ~~/.config/emacs/init.el~ or
+~~/.emacs.d/init.el~) or a more fancy configuration such as the
+[[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/.dir-locals.el][~init-evil.el~]] provided at the root of the =mini-chameleon= project.
+
+Note that it is possible to permanently install ~emacs-bedrock~ with
+~guix install emacs-bedrock-as-default~. In this case, you may want to
+use the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/.bash_profile][~.bash_profile~]] file at the root of the =mini-chameleon=
+project as (or within) your own ~~/.bash_profile~. ~emacs-bedrock~ can
+then simply be launched with the ~emacs~ command.
 
 * COMMENT Front-end: minimal emacs with lsp on plafrim
 

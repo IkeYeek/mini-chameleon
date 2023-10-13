@@ -53,4 +53,4 @@
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
         (branch "master")
         (commit
-          "2acec67dbc82769d69fa3064a4859c976c6ed2eb")))
+          "123ba8dba6bf799a28e962eb96069d28efc88350")))
