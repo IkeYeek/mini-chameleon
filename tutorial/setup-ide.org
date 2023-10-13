@@ -42,10 +42,11 @@ Note that the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/CUA-Bi
 (~C-v~) can be used.
 
 Of course, the standard ~emacs~ key bindings are also available. If
-you prefer ~vim~-like key bindings, you can add ~(require 'evil)~ in
-your =emacs= init file (typically ~~/.config/emacs/init.el~ or
-~~/.emacs.d/init.el~) or a more fancy configuration such as the
-[[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/.dir-locals.el][~init-evil.el~]] provided at the root of the =mini-chameleon= project.
+you prefer ~vim~-like key bindings, you can simply add ~(require
+'evil)~ and ~(evil-mode)~ instructions in your =emacs= init file
+(typically ~~/.config/emacs/init.el~ or ~~/.emacs.d/init.el~) or a
+more fancy configuration such as the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/.dir-locals.el][~init-evil.el~]] provided at the
+root of the =mini-chameleon= project.
 
 Note that it is possible to permanently install ~emacs-bedrock~ with
 ~guix install emacs-bedrock-as-default~. In this case, you may want to
