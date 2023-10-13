@@ -23,6 +23,8 @@ the [[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS
 
 * Front-end: emacs-bedrock
 
+** Solution 1: in a =guix= =shell= (most robust)
+
 A possible minimal IDE can be used with:
 
 #+begin_src bash
@@ -30,8 +32,8 @@ A possible minimal IDE can be used with:
 #+end_src
 
 Note that we use ~emacs -nw~ on plafrim to have no (X) window, which
-would otherwise be to slow on =plafrim=. In this context, the top menu
-can be accessed with =F10=. You can for instance press =F10= and
+would otherwise be too slow on =plafrim=. In this context, the top
+menu can be accessed with =F10=. You can for instance press =F10= and
 =Enter= to visit a new file.
 
 When editing a source code file (such as a ~.c~ file), you can turn on
@@ -48,11 +50,32 @@ you prefer ~vim~-like key bindings, you can simply add ~(require
 more fancy configuration such as the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/init-evil.el][~init-evil.el~]] provided at the
 root of the =mini-chameleon= project.
 
-Note that it is possible to permanently install ~emacs-bedrock~ with
-~guix install emacs-bedrock-as-default~. In this case, you may want to
-use the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/.bash_profile][~.bash_profile~]] file at the root of the =mini-chameleon=
-project as (or within) your own ~~/.bash_profile~. ~emacs-bedrock~ can
-then simply be launched with the ~emacs~ command.
+** Solution 2: persistent =guix= =install= (more ergonomic once set up?)
+
+It is also possible to permanently install ~emacs-bedrock~. In this
+case, an [[https://guix.gnu.org/manual/en/html_node/Application-Setup.html][extra guix setup]] is recommended to install and setup [[https://guix.gnu.org/manual/en/html_node/Application-Setup.html#Locales-1][locales]],
+[[https://guix.gnu.org/manual/en/html_node/Application-Setup.html#X_002e509-Certificates-1][certificates]] and [[https://packages.guix.gnu.org/packages/bash-completion/][bash-completion]] in addition to
+~emacs-bedrock-as-default~.
+
+The install step would thus be:
+
+#+begin_src bash
+  guix install glibc-locales nss-certs bash-completion emacs-bedrock-as-default
+#+end_src
+
+The setup step can be done via your ~/.bash_profile~ =bash= =profile=
+file. We provide such a [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/.bash_profile][~.bash_profile~]] file at the root of the
+=mini-chameleon= project. You can use it (~cp~) or add it to your own
+~~/.bash_profile~. For instance:
+
+#+begin_src bash
+  cp ~/.bash_profile ~/.bash_profile.backup
+  cp ./.bash_profile ~/.bash_profile
+#+end_src
+
+Afterwards, ~emacs-bedrock~ can then be launched with the ~emacs~
+command.
+
 
 * COMMENT Front-end: minimal emacs with lsp on plafrim
 
