@@ -28,18 +28,18 @@ the [[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS
 A possible minimal IDE can be used with:
 
 #+begin_src bash
-  guix shell --pure emacs-bedrock-as-default -D mini-chameleon clang-toolchain -- emacs -nw
+  guix shell --pure emacs-bedrock-as-default -D mini-chameleon clang-toolchain -- emacs -nw -f xterm-mouse-mode
 #+end_src
 
 Note that we use ~emacs -nw~ on plafrim to have no (X) window, which
-would otherwise be too slow on =plafrim=. In this context, the top
-[[https://www.gnu.org/software/emacs/manual/html_node/emacs/Menu-Bar.html][emacs menu]] can be accessed with =F10=. You can for instance press
-=F10= and =Enter= to visit a new file. If the =F10= shortcut is aleady
-taken by your window manager (such as =xfce=), you may want to rebind
-it either in your window manager (check according to your window
-manager) or in =emacs= (in this case, add for instance
-~(global-set-key [f5] 'menu-bar-open)~ in your =emacs= ~init.el~ to
-rebind it to =F5=).
+would otherwise be too slow on =plafrim=. We [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Text_002dOnly-Mouse.html][enable mouse-tracking
++support]] with ~-f xterm-mouse-mode~. It is also possible to access
+the top [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Menu-Bar.html][emacs menu]] with =F10=. You can for instance press =F10= and
+=Enter= to visit a new file. If the =F10= shortcut is aleady taken by
+your window manager (such as =xfce=), you may want to rebind it either
+in your window manager (check according to your window manager) or in
+=emacs= (in this case, add for instance ~(global-set-key [f5]
+'menu-bar-open)~ in your =emacs= ~init.el~ to rebind it to =F5=).
 
 When editing a source code file (such as a ~.c~ file), you can turn on
 auto-completion once again by pressing =F10= to access the menu, then
