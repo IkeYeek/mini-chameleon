@@ -35,3 +35,10 @@ tirer partie de l'architecture. Il vous incombe de modifier votre
 compilateur d'optimiser pour l'architecture détectée : ~set(CMAKE_C_FLAGS
 "${CMAKE_C_FLAGS} -march=native")~. Vous pouvez également lire la section dédiée
 dans le cas =guix= en fin de [[./setup-guix.org][setup guix]].
+
+*** Option 1: Intrinsics
+
+*** Option 2: MIPP
+
+You can also consider the [[https://github.com/aff3ct/MIPP][aff3ct MyIntrinsics++ (MIPP)]] portable and
+open-source wrapper for vector intrinsic functions (SIMD).
