@@ -38,6 +38,8 @@ dans le cas =guix= en fin de [[./setup-guix.org][setup guix]].
 
 *** Option 1: Intrinsics
 
+Mettez en oeuvre [[https://moodle.bordeaux-inp.fr/mod/page/view.php?id=121116][votre cours]].
+
 *** Option 2: MIPP
 
 You can also consider the [[https://github.com/aff3ct/MIPP][aff3ct MyIntrinsics++ (MIPP)]] portable and
