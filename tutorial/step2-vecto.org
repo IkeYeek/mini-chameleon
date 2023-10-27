@@ -48,7 +48,7 @@ open-source wrapper for vector intrinsic functions (SIMD).
 *October 27, 2023*: Please *update* =mini-chameleon= (and =guix= if
 you are using it) to benefit from the ~MIPP~ support.
 
-Enable it in =mini-chameleon= with ~-DMIPP=ON~. Assuming being at the
+Enable it in =mini-chameleon= with ~-DENABLE_MIPP=ON~. Assuming being at the
 root of =mini-chameleon=:
 
 #+begin_src bash
