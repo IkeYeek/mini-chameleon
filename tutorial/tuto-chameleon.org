@@ -67,11 +67,10 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
       #+end_src
 
       Pour rappel, on peut tester le =blas= de l'environnement via l'option ~-v
-      mkl~ (qui, contrairement à ce que son nom semble indiquer ne se limite
-      donc pas à =mkl=). Ici on teste ainsi =openblas= puis =mkl=:
+      vendor~. Ici on teste ainsi =openblas= puis =mkl=:
       #+begin_src bash
-        guix shell --pure mini-chameleon openssh -- perf_dgemm -v mkl # c'est bien openblas ici
-        guix shell --pure mini-chameleon openssh --with-input=openblas=mkl -- perf_dgemm -v mkl # et mkl là
+        guix shell --pure mini-chameleon openssh -- perf_dgemm -v vendor # c'est openblas ici
+        guix shell --pure mini-chameleon openssh --with-input=openblas=mkl -- perf_dgemm -v vendor # et mkl là
       #+end_src
 
       On peut jouer avec les tailles de matrice (options ~-M~, ~-N~, ~-K~) et

@@ -21,7 +21,7 @@ set( DDOT_srcs
 # --------------------------------------------
 set( DGEMM_srcs
   dgemm_seq.c
-  dgemm_mkl.c
+  dgemm_vendor.c
   dgemm_omp.c
   dgemm_tiled_omp.c
   dgemm_tiled_mpi.c
@@ -33,7 +33,7 @@ set( DGEMM_srcs
 # ---------------------------------------------
 set( DGETRF_srcs
   dgetrf_seq.c
-  dgetrf_mkl.c
+  dgetrf_vendor.c
   dgetrf_omp.c
   dgetrf_tiled_omp.c
   dgetrf_tiled_mpi.c

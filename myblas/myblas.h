@@ -59,7 +59,7 @@ int dgemm_seq( CBLAS_LAYOUT layout,
                double alpha, const double *A, int lda,
                              const double *B, int ldb,
                double beta,        double *C, int ldc );
-int dgemm_mkl( CBLAS_LAYOUT layout,
+int dgemm_vendor( CBLAS_LAYOUT layout,
                CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
                int M, int N, int K,
                double alpha, const double *A, int lda,
@@ -89,7 +89,7 @@ int dgemm_tiled_starpu( CBLAS_LAYOUT layout,
 
 int dgetrf_seq( CBLAS_LAYOUT layout,
                 int m, int n, double *A, int lda );
-int dgetrf_mkl( CBLAS_LAYOUT layout,
+int dgetrf_vendor( CBLAS_LAYOUT layout,
                 int m, int n, double *A, int lda );
 int dgetrf_omp( CBLAS_LAYOUT layout,
                 int m, int n, double *A, int lda );

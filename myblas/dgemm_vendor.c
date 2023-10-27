@@ -1,11 +1,11 @@
 /**
  *
- * @file dgemm_mkl.c
+ * @file dgemm_vendor.c
  *
  * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
- * @brief Register the MKL function for references
+ * @brief Register the VENDOR function for references
  *
  * This version of the DGEMM should not be modified. It is provided to
  * you in order to have a reference point for the sequential
@@ -18,7 +18,7 @@
  */
 #include "myblas.h"
 
-int dgemm_mkl( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+int dgemm_vendor( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                CBLAS_TRANSPOSE transB, const int M, const int N,
                const int K, const double alpha, const double *A,
                const int lda, const double *B, const int ldb,
@@ -31,25 +31,25 @@ int dgemm_mkl( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 }
 
 /* To make sure we use the right prototype */
-static dgemm_fct_t valid_dgemm_mkl __attribute__ ((unused)) = dgemm_mkl;
+static dgemm_fct_t valid_dgemm_vendor __attribute__ ((unused)) = dgemm_vendor;
 
 /* Declare the variable that will store the information about this version */
-fct_list_t fct_dgemm_mkl;
+fct_list_t fct_dgemm_vendor;
 
 /**
  * @brief Registration function
  */
-void dgemm_mkl_init( void ) __attribute__( ( constructor ) );
+void dgemm_vendor_init( void ) __attribute__( ( constructor ) );
 void
-dgemm_mkl_init( void )
+dgemm_vendor_init( void )
 {
-    fct_dgemm_mkl.mpi    = 0;
-    fct_dgemm_mkl.tiled  = 0;
-    fct_dgemm_mkl.starpu = 0;
-    fct_dgemm_mkl.name   = "mkl";
-    fct_dgemm_mkl.helper = "MKL implementation of the dgemm";
-    fct_dgemm_mkl.fctptr = dgemm_mkl;
-    fct_dgemm_mkl.next   = NULL;
+    fct_dgemm_vendor.mpi    = 0;
+    fct_dgemm_vendor.tiled  = 0;
+    fct_dgemm_vendor.starpu = 0;
+    fct_dgemm_vendor.name   = "vendor";
+    fct_dgemm_vendor.helper = "VENDOR implementation of the dgemm";
+    fct_dgemm_vendor.fctptr = dgemm_vendor;
+    fct_dgemm_vendor.next   = NULL;
 
-    register_fct( &fct_dgemm_mkl, ALGO_GEMM );
+    register_fct( &fct_dgemm_vendor, ALGO_GEMM );
 }
