@@ -73,6 +73,12 @@ if( ENABLE_STARPU )
     )
 endif()
 
+if ( ENABLE_MIPP )
+  list( APPEND myblas_srcs
+    gemm_mipp.cpp
+    )
+endif()
+
 # Add the files of your own myblas library here
 add_library( myblas
   ${myblas_srcs}
@@ -87,6 +93,10 @@ endif()
 
 if(ENABLE_STARPU)
   target_link_libraries( myblas PRIVATE MORSE::STARPU )
+endif()
+
+if(ENABLE_MIPP)
+  target_link_libraries( myblas PRIVATE MIPP::mipp )
 endif()
 
 target_link_libraries( myblas PUBLIC MORSE::LAPACKE )

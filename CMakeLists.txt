@@ -101,6 +101,8 @@ option( ENABLE_STARPU "Define if StarPU support is enabled or not" OFF )
 # Option to enable/disable CUDA support
 option( ENABLE_CUDA "Define if CUDA support is enabled or not" OFF )
 
+# Option to enable/disable the MIPP package
+option( ENABLE_MIPP "Define if MIPP support is enabled or not" OFF )
 
 # Generate the config file that holds the define of the lib
 # ---------------------------------------------------------
@@ -123,6 +125,12 @@ if( ENABLE_STARPU )
 
   find_package( STARPU ${STARPU_REQUIRED_VERSION} REQUIRED )
 endif()
+
+# Search for MyIntrinsics++ (MIPP)
+if ( ENABLE_MIPP )
+  find_package(MIPP REQUIRED)
+endif()
+
 
 # Search for OpenMP
 find_package(OpenMP REQUIRED)
