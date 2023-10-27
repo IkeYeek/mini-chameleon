@@ -42,5 +42,47 @@ Mettez en oeuvre [[https://moodle.bordeaux-inp.fr/mod/page/view.php?id=121116][v
 
 *** Option 2: MIPP
 
-You can also consider the [[https://github.com/aff3ct/MIPP][aff3ct MyIntrinsics++ (MIPP)]] portable and
+You can also consider the [[https://github.com/aff3ct/MIPP][MyIntrinsics++ (MIPP)]] portable and
 open-source wrapper for vector intrinsic functions (SIMD).
+
+*October 27, 2023*: Please *update* =mini-chameleon= (and =guix= if
+you are using it) to benefit from the ~MIPP~ support.
+
+Enable it in =mini-chameleon= with ~-DMIPP=ON~. Assuming being at the
+root of =mini-chameleon=:
+
+#+begin_src bash
+  mkdir -p build/mipp
+  cmake . -B build/mipp -DENABLE_MIPP=ON
+  cmake --build build/mipp
+#+end_src
+
+This will build the ~myblas/gemm_mipp.cpp~ [[https://github.com/aff3ct/MIPP/blob/04d9f5f2733dcc4681d80f87ee0fa76a185dfd12/examples/gemm.cpp][MIPP reference example]] as
+starting point. It will be your responsibility to design a
+fully-featured ~GEMM~ routine by calling your (improved) MIPP routine
+within ~gemm_mipp~ from your ~dgemm_seq~ main sequential routine.
+
+**** IDE set up
+
+Note that you may want to refine your [[./setup-ide.org][IDE setup]]. In this case remove
+your ~compile_commands.json~ at the root of the =mini-chameleon=
+project (if you previously generated it) and re-generate it as follows
+(from a clean ~build/mipp~):
+
+#+begin_src bash
+  mkdir -p build/mipp
+  cmake . -B build/mipp/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DENABLE_MPI=ON -DENABLE_STARPU=ON -DENABLE_MIPP=ON # -DCMAKE_BUILD_TYPE=Debug #
+  ln -s build/mipp/compile_commands.json .
+#+end_src
+
+The ~-DCMAKE_BUILD_TYPE=Debug~ flag may be turned off so that you can
+check the generated code with effective compilation flags. For that,
+in ~emacs-bedrock~, this can be done with enabling [[https://github.com/emacsmirror/rmsbolt/blob/master/doc/rmsbolt.org][rmsbolt]] within your
+~gemm_mipp.cpp~ buffer (~M-x c++-mode~ ~M-x rmsbolt-mode~). You can
+then just press ~C-c C-c~ each time you want to (re-)generate the
+assembly code corresponding to your current code. As a reminder, you
+can run ~emacs-bedrock~ with:
+
+#+begin_src
+guix shell --pure emacs-bedrock-as-default -D mini-chameleon -- emacs -nw -f xterm-mouse-mode
+#+end_src
