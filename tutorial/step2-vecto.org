@@ -78,10 +78,10 @@ project (if you previously generated it) and re-generate it as follows
 The ~-DCMAKE_BUILD_TYPE=Debug~ flag may be turned off so that you can
 check the generated code with effective compilation flags. For that,
 in ~emacs-bedrock~, this can be done with enabling [[https://github.com/emacsmirror/rmsbolt/blob/master/doc/rmsbolt.org][rmsbolt]] within your
-~gemm_mipp.cpp~ buffer (~M-x c++-mode~ ~M-x rmsbolt-mode~). You can
-then just press ~C-c C-c~ each time you want to (re-)generate the
-assembly code corresponding to your current code. As a reminder, you
-can run ~emacs-bedrock~ with:
+~gemm_mipp.cpp~ buffer (~M-x rmsbolt-mode~). You can then just press
+~C-c C-c~ each time you want to (re-)generate the assembly code
+corresponding to your current code. As a reminder, you can run
+~emacs-bedrock~ with:
 
 #+begin_src
 guix shell --pure emacs-bedrock-as-default -D mini-chameleon -- emacs -nw -f xterm-mouse-mode
