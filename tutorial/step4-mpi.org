@@ -3,6 +3,11 @@
 #+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
+* Get started (environment)
+
+Do not hesitate to visite the [[./tutorial/tuto-chameleon.org][tutorial]] from basic /hello world/ to
+=slurm=, =mpi= and =guix=.
+
 * Mise en place
 
 ** Affichage

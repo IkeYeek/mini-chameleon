@@ -3,41 +3,24 @@
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "2de30042674197fe451c220745186e36465d06e2")
+          "842a11f1caa1bb929c427722ad9d7b7c1ff65727")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
             (openpgp-fingerprint
               "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
       (channel
-        (name 'laplacian-example)
-        (url "https://gitlab.inria.fr/agullo/laplacian-example.git")
-        (branch "master")
-        (commit
-          "83b34c4d95b7987369e2e74e6f69066d45310e3b"))
-      (channel
-        (name 'nonguix)
-        (url "https://gitlab.com/nonguix/nonguix")
-        (branch "master")
-        (commit
-          "17d964fa17d4450058f110bf33a727ca5fe37d4f")
-        (introduction
-          (make-channel-introduction
-            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-            (openpgp-fingerprint
-              "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-      (channel
         (name 'guix-hpc-non-free)
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
         (branch "master")
         (commit
-          "1c273f17fd5d57e3626067c06b38966a9c63d652"))
+          "372c5f471448b32c9204f79c1d46e9b984d03c07"))
       (channel
         (name 'guix-science-nonfree)
         (url "https://github.com/guix-science/guix-science-nonfree.git")
         (branch "master")
         (commit
-          "59cf242d7b245612b09f30e212872477549c4d5b")
+          "9a3f3824d8ed289832d706679410edadac1202ae")
         (introduction
           (make-channel-introduction
             "58661b110325fd5d9b40e6f0177cc486a615817e"
@@ -59,4 +42,4 @@
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
         (branch "master")
         (commit
-          "05e0bf9b7e2d12bae98953de75292796bebc6a1b")))
+          "77b7ad70407f4ac167b2c6b89762e200a70fe840")))

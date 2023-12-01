@@ -28,7 +28,7 @@ the [[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS
 A possible minimal IDE can be used with:
 
 #+begin_src bash
-  guix shell --pure emacs-bedrock-as-default -D mini-chameleon clang-toolchain -- emacs -nw -f xterm-mouse-mode
+  guix shell --pure emacs-bedrock-as-default -D mini-chameleon --with-input=slurm=slurm@22 -- emacs -nw -f xterm-mouse-mode -f cua-mode
 #+end_src
 
 Note that we use ~emacs -nw~ on plafrim to have no (X) window, which
@@ -40,7 +40,7 @@ auto-completion by clicking on =Tools= (in the top menu bar) and then
 =Language Server Support (Eglot)=.
 
 Note that the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/CUA-Bindings.html][usual Windows-like]] cut (~C-x~), copy (~C-c~), and paste
-(~C-v~) can be used.
+(~C-v~) can be used (thanks to ~-f cua-mode~ option). 
 
 Of course, the standard ~emacs~ key bindings are also available. If
 you prefer ~vim~-like key bindings, you can simply add ~(require
