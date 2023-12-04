@@ -5,8 +5,8 @@
 
 * Get started (environment)
 
-Do not hesitate to visite the [[./tutorial/tuto-chameleon.org][tutorial]] from basic /hello world/ to
-=slurm=, =mpi= and =guix=.
+Do not hesitate to visit the [[./tutorial/tuto-chameleon.org][tutorial]] from basic /hello world/ to
+=slurm=, =mpi= and =guix= (especially Section 3).
 
 * Mise en place
 

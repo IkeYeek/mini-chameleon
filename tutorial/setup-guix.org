@@ -47,7 +47,7 @@ Once =guix= is properly setup, one may work in an isolated environment, with
 expected dependencies, to develop and assess guix. For instance:
 
 #+begin_src bash
-guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain emacs nano vim --tune -- bash --norc
+guix shell --pure -D mini-chameleon --with-input=slurm=slurm@22 bash gcc-toolchain emacs nano vim --tune -- bash --norc
 #+end_src
 
 [[id:6b325e00-865c-4462-959a-024f345991a3][More options to work in an environment for developing =mini-chameleon= are proposed below.]]
@@ -143,7 +143,7 @@ environment.
   chameleon~), p. ex. via:
 
   #+begin_src bash :results output :exports both
-    guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash emacs nano vim -- bash --norc
+    guix shell --pure -D mini-chameleon --with-input=slurm=slurm@22 --with-input=openblas=mkl bash emacs nano vim -- bash --norc
   #+end_src
 
 ** De manière explicite (pour info)
@@ -162,7 +162,7 @@ environment.
      ~gcc-toolchain~:
 
   #+begin_src bash :results output :exports both
-    guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash gcc-toolchain emacs nano vim -- bash --norc
+    guix shell --pure -D mini-chameleon --with-input=slurm=slurm@22 --with-input=openblas=mkl bash gcc-toolchain emacs nano vim -- bash --norc
   #+end_src
 
      On peut choisir un compilateur alternatif, p. ex. =clang= (plus
@@ -170,7 +170,7 @@ environment.
      depuis la mise à jour du 16 novembre 2021):
 
   #+begin_src bash :results output :exports both
-    guix shell --pure -D mini-chameleon --with-input=openblas=mkl bash clang-toolchain emacs nano vim -- bash --norc
+    guix shell --pure -D mini-chameleon --with-input=slurm=slurm@22 --with-input=openblas=mkl bash clang-toolchain emacs nano vim -- bash --norc
   #+end_src
 
      Notez que les paquets installés restent compilés avec la version
@@ -217,7 +217,7 @@ architecture cible]]. Pour ce faire, il faut alors passer l'option ~--tune~ à
 =guix=, p. ex.:
 
 #+begin_src bash
-guix shell --pure mini-chameleon --tune
+guix shell --pure mini-chameleon --with-input=slurm=slurm@22 --tune
 #+end_src
 
 À noter qu'on peut produire un binaire pour une architecture spécifiée. Il
@@ -226,7 +226,7 @@ suffit comme ici de mettre ~-march=native~ dans le source (~set(CMAKE_C_FLAGS
 ~--tune~ de =guix=:
 
 #+begin_src bash
-guix shell --pure mini-chameleon --tune=haswell
+guix shell --pure mini-chameleon --with-input=slurm=slurm@22 --tune=haswell
 #+end_src
 
 

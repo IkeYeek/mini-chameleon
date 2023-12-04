@@ -245,7 +245,6 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
    OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@22 -- mpiexec --tag-output hello-mpi
    #+end_src
 
-   
 ** Exemple de produit de matrice
   
 *** via votre code (=mini-chameleon=)
@@ -283,11 +282,11 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
      
 ** Libérez les noeuds
 
-     #+begin_src bash
+   #+begin_src bash
      squeue -u <username>
      scancel <jobid>
    #+end_src
-   
+
 * Singularity
   
   Il est possible de [[https://sylabs.io/guides/3.3/user-guide/mpi.html][tourner une application MPI via singularity]].
@@ -430,6 +429,67 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
      squeue -u <username>
      scancel <jobid>
    #+end_src
+
+* GPU (Cuda)
+** Node reservation
+
+We reserve a (single) =sirocco= node (see [[https://plafrim-users.gitlabpages.inria.fr/doc/][plafrim reference]])
+#+begin_src bash
+  salloc -C sirocco
+#+end_src
+
+** (single-node) GPU execution of =chameleon=
+
+We can launch the execution from the frontal node through ~srun~:
+#+begin_src bash
+LD_PRELOAD=/usr/lib64/libcuda.so guix shell --pure --preserve=^LD_PRELOAD chameleon-cuda openssh slurm --with-input=slurm=slurm@22 -- srun chameleon_dtesting -o gemm -H -g 2 -t 2 -m 4000 -n 4000 -k 4000 --check
+#+end_src
+
+It is also possible to explicitly log onto the computational node (assuming we obtained =sirocco06= during the ~salloc~ step). In this case, =slurm= is not necessary:
+#+begin_src bash
+ssh sirocco06 # log onto the computational node
+LD_PRELOAD=/usr/lib64/libcuda.so guix shell --pure --preserve=^LD_PRELOAD chameleon-cuda openssh -- chameleon_dtesting -o gemm -H -g 2 -t 2 -m 4000 -n 4000 -k 4000 --check # execution
+exit # log out from the computational node
+#+end_src
+
+** Development environment for (single-node) GPU execution of =mini-chameleon=
+
+Log onto the computational node:
+#+begin_src bash
+ssh sirocco06 # log onto the computational node
+#+end_src
+
+Enter the guix shell environment for developing mini-chameleon:
+#+begin_src bash
+export LD_PRELOAD=/usr/lib64/libcuda.so
+guix shell --pure -D chameleon-cuda --with-input=slurm=slurm@22 bash gcc-toolchain emacs nano vim --tune -- bash --norc
+#+end_src
+
+You are now in a shell ready to develop your project with =cuda= support.
+
+#+begin_src bash
+  # compile, test, ...
+#+end_src
+
+Once done, you can exit the =guix shell= environment:
+#+begin_src bash
+exit # log out from the guix shell environement
+#+end_src
+
+And exit the computational node:
+
+#+begin_src bash
+exit # log out from the computational node
+#+end_src
+
+You should now be back onto the frontal node.
+
+** Releasing node reservation
+#+begin_src bash
+squeue -u <username>
+scancel <jobid>
+#+end_src
+
 
 * COMMENT Tests 
 
