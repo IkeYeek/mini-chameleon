@@ -3,4 +3,10 @@
 #+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
+* Get started (environment)
+
+Do not hesitate to visit the [[./tutorial/tuto-chameleon.org][tutorial]] for using =guix= with =cuda= (Section 6).
+
+* Actions
+
 Work in progess.
