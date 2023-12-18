@@ -25,6 +25,8 @@ set( DGEMM_srcs
   dgemm_omp.c
   dgemm_tiled_omp.c
   dgemm_tiled_mpi.c
+  dgemm_tiled_cuda.c
+  dgemm_tiled_opacc.c
   # ADD HERE: your additional dgemm implementation
   #  dgemm_xxx.c
 )
@@ -37,6 +39,8 @@ set( DGETRF_srcs
   dgetrf_omp.c
   dgetrf_tiled_omp.c
   dgetrf_tiled_mpi.c
+  dgetrf_tiled_cuda.c
+  dgetrf_tiled_opacc.c
   # ADD HERE: your additional dgetrf implementation
   #  dgetrf_xxx.c
 )
@@ -89,6 +93,14 @@ target_link_libraries( myblas PUBLIC OpenMP::OpenMP_C )
 
 if(ENABLE_MPI)
   target_link_libraries( myblas PUBLIC MPI::MPI_C )
+endif()
+
+if (ENABLE_CUDA)
+    target_link_libraries( myblas PUBLIC CUDA::CUBLAS )
+endif()
+
+if (ENABLE_OPACC)
+    target_link_libraries( myblas PUBLIC OpenACC::OpenACC_C )
 endif()
 
 if(ENABLE_STARPU)
