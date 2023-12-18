@@ -6,7 +6,7 @@ module load tools/git/2.30.0
 
 # Compilateur
 module load compiler/gcc/12.2.0
-module load mpi/openmpi/4.0.7
+module load mpi/openmpi/4.0.3-mlx
 module load compiler/cuda/11.7
 
 # BLAS / LAPACK avec Intel MKL
