@@ -287,8 +287,37 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
      scancel <jobid>
    #+end_src
 
+** With =sbatch=
+
+Here is an =sbatch= example with =mini-chameleon=. We create the
+following ~mini-chameleon.batch~ file:
+
+#+begin_src bash :tangle mini-chameleon.batch
+#!/bin/bash
+#SBATCH --nodes=2            # Number of nodes
+#SBATCH --ntasks-per-node=24 # Number of tasks (MPI processes) per node: you will probably want more than 1
+#SBATCH --cpus-per-task=1    # Number of threads per task
+#SBATCH --exclusive          # Non shared usage of resources
+#SBATCH -C miriel            # Constraint running on a miriel node
+#SBATCH --time=10:00         # Time limit
+#SBATCH --job-name=mini-chameleon
+#SBATCH --output=out_mini-chameleon_%j
+
+## Run the reference mini-chameleon
+OMPI_MCA_pml='^ucx' exec guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" mini-chameleon slurm --with-input=slurm=slurm@22 -- srun check_dgemm -v mpi
+
+## Uncomment the line below to run your own mini-chameleon with sources located in /path/to/my/mini-chameleon
+# OMPI_MCA_pml='^ucx' exec guix shell --pure --tune --preserve="^OMPI|^SLURM|^STARPU" mini-chameleon slurm --with-input=slurm=slurm@22 --with-source=mini-chameleon=/path/to/my/mini-chameleon -- srun check_dgemm -v mpi
+#+end_src
+
+We can then batch it:
+
+#+begin_src bash
+  sbatch mini-chameleon.batch
+#+end_src
+
 * Singularity
-  
+
   Il est possible de [[https://sylabs.io/guides/3.3/user-guide/mpi.html][tourner une application MPI via singularity]].
 
 ** Création de l'image =singularity=
