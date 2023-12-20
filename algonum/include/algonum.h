@@ -124,13 +124,19 @@ typedef struct fct_list_s fct_list_t;
  * @brief Data structure to register an implementation of dgemm/dgetrf
  */
 struct fct_list_s {
-    int         mpi;    /**< True if the function supports MPI      */
-    int         tiled;  /**< True if the function uses tile storage */
-    int         starpu; /**< True if the function uses StarPU       */
-    const char *name;   /**< Short name of the function             */
-    const char *helper; /**< Long description of the implementation */
-    void       *fctptr; /**< function pointer of the implementation */
-    fct_list_t *next;   /**< Link to the next implementation        */
+#if defined(ENABLE_CUDA)
+    int         cuda;    /**< True if the function supports Cuda     */
+#endif
+    int         mpi;     /**< True if the function supports MPI      */
+#if defined(ENABLE_OPENACC)
+    int         openacc; /**< True if the function supports Cuda     */
+#endif
+    int         tiled;   /**< True if the function uses tile storage */
+    int         starpu;  /**< True if the function uses StarPU       */
+    const char *name;    /**< Short name of the function             */
+    const char *helper;  /**< Long description of the implementation */
+    void       *fctptr;  /**< function pointer of the implementation */
+    fct_list_t *next;    /**< Link to the next implementation        */
 };
 
 void register_fct( fct_list_t *fct, int algo );

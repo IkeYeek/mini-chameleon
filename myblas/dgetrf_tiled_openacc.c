@@ -50,7 +50,9 @@ void dgetrf_tiled_openacc_init( void ) __attribute__( ( constructor ) );
 void
 dgetrf_tiled_openacc_init( void )
 {
+#if defined(ENABLE_OPENACC)
     fct_dgetrf_tiled_openacc.openacc = 1;
+#endif
     fct_dgetrf_tiled_openacc.tiled   = 1;
     fct_dgetrf_tiled_openacc.starpu  = 0;
     fct_dgetrf_tiled_openacc.name    = "openacc";

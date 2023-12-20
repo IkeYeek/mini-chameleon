@@ -25,8 +25,6 @@ set( DGEMM_srcs
   dgemm_omp.c
   dgemm_tiled_omp.c
   dgemm_tiled_mpi.c
-  dgemm_tiled_cuda.c
-  dgemm_tiled_opacc.c
   # ADD HERE: your additional dgemm implementation
   #  dgemm_xxx.c
 )
@@ -39,8 +37,6 @@ set( DGETRF_srcs
   dgetrf_omp.c
   dgetrf_tiled_omp.c
   dgetrf_tiled_mpi.c
-  dgetrf_tiled_cuda.c
-  dgetrf_tiled_opacc.c
   # ADD HERE: your additional dgetrf implementation
   #  dgetrf_xxx.c
 )
@@ -83,6 +79,21 @@ if ( ENABLE_MIPP )
     )
 endif()
 
+if ( ENABLE_CUDA )
+  list( APPEND myblas_srcs
+    dgemm_tiled_cuda.c
+    dgetrf_tiled_cuda.c
+    )
+endif()
+
+if ( ENABLE_OPENACC )
+  list( APPEND myblas_srcs
+    dgemm_tiled_openacc.c
+    dgetrf_tiled_openacc.c
+    )
+endif()
+
+
 # Add the files of your own myblas library here
 add_library( myblas
   ${myblas_srcs}
@@ -99,7 +110,7 @@ if (ENABLE_CUDA)
     target_link_libraries( myblas PUBLIC CUDA::CUBLAS )
 endif()
 
-if (ENABLE_OPACC)
+if (ENABLE_OPENACC)
     target_link_libraries( myblas PUBLIC OpenACC::OpenACC_C )
 endif()
 

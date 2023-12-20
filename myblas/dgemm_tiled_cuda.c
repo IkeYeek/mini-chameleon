@@ -65,7 +65,9 @@ void dgemm_tiled_cuda_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_tiled_cuda_init( void )
 {
+#if defined(ENABLE_CUDA)
     fct_dgemm_tiled_cuda.cuda   = 1;
+#endif
     fct_dgemm_tiled_cuda.tiled  = 1;
     fct_dgemm_tiled_cuda.starpu = 0;
     fct_dgemm_tiled_cuda.name   = "cuda";

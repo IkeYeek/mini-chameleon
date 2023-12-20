@@ -102,7 +102,7 @@ option( ENABLE_STARPU "Define if StarPU support is enabled or not" OFF )
 option( ENABLE_CUDA "Define if CUDA support is enabled or not" OFF )
 
 # Option to enable/disable OpenACC support
-option( ENABLE_OPACC "Define if OpenACC support is enabled or not" OFF )
+option( ENABLE_OPENACC "Define if OpenACC support is enabled or not" OFF )
 
 # Option to enable/disable the MIPP package
 option( ENABLE_MIPP "Define if MIPP support is enabled or not" OFF )
@@ -140,7 +140,7 @@ if (ENABLE_CUDA)
 endif()
 
 # Search for OpenACC
-if (ENABLE_OPACC)
+if (ENABLE_OPENACC)
   find_package(OpenACC REQUIRED)
 endif()
 

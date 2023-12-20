@@ -49,7 +49,9 @@ void dgetrf_tiled_cuda_init( void ) __attribute__( ( constructor ) );
 void
 dgetrf_tiled_cuda_init( void )
 {
+#if defined(ENABLE_CUDA)
     fct_dgetrf_tiled_cuda.cuda   = 1;
+#endif
     fct_dgetrf_tiled_cuda.tiled  = 1;
     fct_dgetrf_tiled_cuda.starpu = 0;
     fct_dgetrf_tiled_cuda.name   = "cuda";

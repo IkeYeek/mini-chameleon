@@ -22,7 +22,7 @@ int dgemm_tiled_openacc( CBLAS_LAYOUT layout,
                                        const double **B,
                          double beta,        double **C )
 {
-#if !defined(ENABLE_OPACC)
+#if !defined(ENABLE_OPENACC)
     return ALGONUM_NOT_IMPLEMENTED;
 #else
     const double *Aptr, *Bptr;
@@ -66,7 +66,9 @@ void dgemm_tiled_openacc_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_tiled_openacc_init( void )
 {
+#if defined(ENABLE_OPENACC)
     fct_dgemm_tiled_openacc.openacc = 1;
+#endif
     fct_dgemm_tiled_openacc.tiled   = 1;
     fct_dgemm_tiled_openacc.starpu  = 0;
     fct_dgemm_tiled_openacc.name    = "openacc";
