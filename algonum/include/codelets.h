@@ -51,57 +51,6 @@ extern "C" {            /* Assume C declarations for C++ */
  */
 #include <lapacke.h>
 
-#if defined( ENABLE_CUDA )
-#include <cublas_v2.h>
-
-static inline cublasSideMode_t
-get_cublas_side( CBLAS_SIDE side )
-{
-    if ( side == CblasLeft ) {
-        return CUBLAS_SIDE_LEFT;
-    }
-    else {
-        return CUBLAS_SIDE_RIGHT;
-    }
-}
-
-static inline cublasFillMode_t
-get_cublas_uplo( CBLAS_UPLO uplo )
-{
-    if ( uplo == CblasUpper ) {
-        return CUBLAS_FILL_MODE_UPPER;
-    }
-    else {
-        return CUBLAS_FILL_MODE_LOWER;
-    }
-}
-
-static inline cublasOperation_t
-get_cublas_trans( CBLAS_TRANSPOSE trans )
-{
-    if ( trans == CblasNoTrans ) {
-        return CUBLAS_OP_N;
-    }
-    else if ( trans == CblasTrans ) {
-        return CUBLAS_OP_T;
-    }
-    else {
-        return CUBLAS_OP_C;
-    }
-}
-
-static inline cublasDiagType_t
-get_cublas_diag( CBLAS_DIAG diag )
-{
-    if ( diag == CblasNonUnit ) {
-        return CUBLAS_DIAG_NON_UNIT;
-    }
-    else {
-        return CUBLAS_DIAG_UNIT;
-    }
-}
-#endif /* defined(ENABLE_CUDA) */
-
 /**
  * Control functions
  */

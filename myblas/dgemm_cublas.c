@@ -5,7 +5,11 @@
  * @copyright 2019-2021 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
  *                      Univ. Bordeaux. All rights reserved.
  *
- * @brief Template to develop the OpenMP version
+ * @brief Register the cublas function for references
+ *
+ * This version of the DGEMM should not be modified. It is provided to
+ * you in order to have a reference point for the sequential
+ * algorithm.
  *
  * @version 0.2.0
  * @author Mathieu Faverge
@@ -22,19 +26,12 @@ dgemm_cublas( CBLAS_LAYOUT layout,
                             const double *B,
               double beta,        double *C )
 {
-    if ( transA == CblasNoTrans ) {
-        if ( transB == CblasNoTrans ) {
-            return ALGONUM_NOT_IMPLEMENTED;
-        }
-        else {
-            return ALGONUM_NOT_IMPLEMENTED;
-        }
-    }
-    else {
-        return ALGONUM_NOT_IMPLEMENTED;
-    }
-
-    return ALGONUM_SUCCESS;
+    cublasStatus_t rc;
+    rc = cublasDgemm( my_cublas_handle, get_cublas_trans( transA ), get_cublas_trans( transB ),
+                      M, N, K,
+                      &alpha, A, lda, B, ldb, &beta, C, ldc );
+    cudaDeviceSynchronize();    
+    return (rc == CUBLAS_STATUS_SUCCESS) ? ALGONUM_SUCCESS : ALGONUM_FAIL;
 }
 
 /* To make sure we use the right prototype */

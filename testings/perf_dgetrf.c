@@ -37,6 +37,13 @@ int main( int argc, char **argv )
                                   options->M, options->N,
                                   options->b, options->check );
         }
+#if defined(ENABLE_CUDA)
+        else if ( options->fct->cuda ) {
+            testone_dgetrf_cuda(
+                options->fct->fctptr,
+                options->M, options->N, options->check );
+        }
+#endif
         else {
             testone_dgetrf(
                 options->fct->fctptr,

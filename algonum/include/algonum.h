@@ -79,6 +79,15 @@ void      tile2lapack( int M, int N, int b, const double **Atile, double *A, int
 void      tileFree( int M, int N, int b, double **A );
 
 /**
+ * Data and functions to use CUDA versions
+ */
+#if defined(ENABLE_CUDA)
+extern cublasHandle_t my_cublas_handle;
+#endif
+void myCublasInit();
+void myCublasDestroy();
+
+/**
  * Helpers to generate random matrices in different format
  */
 void CORE_dplrnt( double bump, int m, int n, double *A, int lda,
@@ -216,6 +225,16 @@ int testone_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
                           int M, int N, int b, int check );
 int testall_dgetrf_tiled( dplrnt_tiled_fct_t dplrnt,
                           dgetrf_tiled_fct_t tested_dgetrf );
+
+/**
+ * Testing functions for the GPU implementations
+ */
+int testone_dgetrf_cuda( dgetrf_fct_t dgetrf,
+                         int M, int N, int check );
+int testone_dgemm_cuda( dgemm_fct_t dgemm,
+                        CBLAS_TRANSPOSE transA,
+                        CBLAS_TRANSPOSE transB,
+                        int M, int N, int K, int check );
 
 #ifdef __cplusplus
 }

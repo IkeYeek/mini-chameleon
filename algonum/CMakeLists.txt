@@ -35,6 +35,13 @@ if( ENABLE_STARPU )
     )
 endif()
 
+if( ENABLE_CUDA )
+  list( APPEND algonum_srcs
+    test_dgetrf_cuda.c
+    test_dgemm_cuda.c
+    )
+endif()
+
 add_library( algonum
   ${algonum_srcs}
   )
@@ -53,6 +60,11 @@ endif()
 
 if(ENABLE_STARPU)
   target_link_libraries( algonum PUBLIC MORSE::STARPU )
+endif()
+
+if(ENABLE_CUDA)
+  target_link_libraries( algonum PUBLIC CUDA::CUDA )
+  target_link_libraries( algonum PUBLIC CUDA::CUBLAS )
 endif()
 
 install(TARGETS algonum

@@ -38,6 +38,13 @@ int main( int argc, char **argv )
                                  options->M, options->N, options->K,
                                  options->b, options->check );
         }
+#if defined(ENABLE_CUDA)
+        else if ( options->fct->cuda ) {
+            testone_dgemm_cuda( options->fct->fctptr,
+                                options->transA, options->transB,
+                                options->M, options->N, options->K, options->check );
+        }
+#endif
         else {
             testone_dgemm( options->fct->fctptr,
                            options->transA, options->transB,

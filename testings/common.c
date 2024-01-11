@@ -59,7 +59,7 @@ static struct option long_options[] =
     {"transB",        no_argument,       0,      'B'},
     {"check",         no_argument,       0,      'c'},
     // Performance tests
-    {"iter",          no_argument,       0,      'i'},
+    {"iter",          required_argument, 0,      'i'},
     {0, 0, 0, 0}
 };
 
@@ -202,6 +202,10 @@ algonum_init( int argc, char **argv, option_t *options, int algo )
     }
 #endif
 
+    if ( options->fct->cuda ) {
+        myCublasInit();
+    }
+
     return;
 }
 
@@ -214,6 +218,10 @@ algonum_exit( option_t *options, int algo )
         my_starpu_exit();
     }
 #endif
+
+    if ( options->fct->cuda ) {
+        myCublasDestroy();
+    }
 
 #if defined(ENABLE_MPI)
     MPI_Finalize();

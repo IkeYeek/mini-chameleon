@@ -137,6 +137,42 @@ endif()
 # Search for CUDA
 if (ENABLE_CUDA)
   find_package(CUDA REQUIRED)
+   if (CUDA_FOUND)
+            if(CUDA_VERSION VERSION_LESS "4.0")
+                message(WARNING "Cuda version must be at least 4.0")
+            endif(CUDA_VERSION VERSION_LESS "4.0")
+            message("-- ${Blue}Add definition CHAMELEON_USE_CUDA"
+            " - Activate CUDA in Chameleon${ColourReset}")
+            # create imported target because not provided with old cmake
+            add_library(CUDA::CUDA INTERFACE IMPORTED)
+            add_library(CUDA::CUBLAS INTERFACE IMPORTED)
+            set(CUDA_BUILD_EMULATION OFF)
+            if (CUDA_INCLUDE_DIRS)
+                set_target_properties(CUDA::CUDA PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CUDA_INCLUDE_DIRS}")
+            else()
+                message(WARNING "CHAMELEON_USE_CUDA requires"
+                "\n   CUDA_INCLUDE_DIRS to be found. Be sure you have"
+                "\n   cuda headers with your distribution of CUDA.")
+            endif()
+            if (CUDA_LIBRARIES)
+                set_target_properties(CUDA::CUDA PROPERTIES INTERFACE_LINK_LIBRARIES "${CUDA_LIBRARIES}")
+                # Add cublas if found
+                if (CUDA_CUBLAS_LIBRARIES)
+                    set_target_properties(CUDA::CUBLAS PROPERTIES INTERFACE_LINK_LIBRARIES "${CUDA_CUBLAS_LIBRARIES}")
+                    target_link_libraries(CUDA::CUBLAS INTERFACE CUDA::CUDA)
+                    message("-- ${Blue}Add definition CHAMELEON_USE_CUBLAS"
+                    " - Use GPU kernels from cuBLAS${ColourReset}")
+                else()
+                    message(FATAL_ERROR "CHAMELEON_USE_CUDA requires"
+                    "\n   CUDA_CUBLAS_LIBRARIES to be found. Be sure you have"
+                    "\n   libcublas with your distribution of CUDA.")
+                endif()
+            else()
+                message(FATAL_ERROR "CHAMELEON_USE_CUDA requires"
+                "\n   CUDA_LIBRARIES to be found. Be sure you have"
+                "\n   libcuda with your distribution of CUDA.")
+            endif()
+        endif (CUDA_FOUND)
 endif()
 
 # Search for OpenACC

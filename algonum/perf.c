@@ -38,17 +38,20 @@ option_t global_options = {
     .check   = 0
 };
 
-void perf(perf_t *p) {
+void perf(perf_t *p)
+{
 #if defined(ENABLE_MPI)
     MPI_Barrier( MPI_COMM_WORLD );
 #endif
     gettimeofday( p, NULL );
 }
 
-void perf_diff(const perf_t *begin, perf_t *end) {
+void perf_diff(const perf_t *begin, perf_t *end)
+{
     end->tv_sec  = end->tv_sec  - begin->tv_sec;
     end->tv_usec = end->tv_usec - begin->tv_usec;
-    if (end->tv_usec < 0) {
+    if (end->tv_usec < 0)
+    {
         (end->tv_sec)--;
         end->tv_usec += 1.e6;
     }
@@ -60,7 +63,8 @@ void perf_diff(const perf_t *begin, perf_t *end) {
     }
 }
 
-void perf_printh(const perf_t *p) {
+void perf_printh(const perf_t *p)
+{
     long m = p->tv_sec / 60;
     long s = p->tv_sec - m * 60;
     long ms = p->tv_usec / 1.e3;
@@ -70,14 +74,41 @@ void perf_printh(const perf_t *p) {
     printf("%ld:%ld:%ld:%ld\n", m, s, ms, micros);
 }
 
-void perf_printmicro(const perf_t *p) {
+void perf_printmicro(const perf_t *p)
+{
     printf("%le\n", p->tv_usec + (p->tv_sec * 1.e6));
 }
 
-double perf_mflops(const perf_t *p, const double nb_op) {
+double perf_mflops(const perf_t *p, const double nb_op)
+{
     return nb_op / (p->tv_sec * 1.e6 + p->tv_usec);
 }
 
-double perf_gflops(const perf_t *p, const double nb_op) {
+double perf_gflops(const perf_t *p, const double nb_op)
+{
     return (nb_op / (p->tv_sec * 1.e6 + p->tv_usec)) * 1.e-3;
 }
+
+#if defined(ENABLE_CUDA)
+
+cublasHandle_t my_cublas_handle;
+
+void myCublasInit()
+{
+    cublasCreate(&my_cublas_handle);
+}
+
+void myCublasDestroy()
+{
+    cublasDestroy(my_cublas_handle);
+}
+
+#else
+void myCublasInit()
+{
+}
+
+void myCublasDestroy()
+{
+}
+#endif
