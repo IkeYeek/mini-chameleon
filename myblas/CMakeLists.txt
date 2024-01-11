@@ -81,15 +81,16 @@ endif()
 
 if ( ENABLE_CUDA )
   list( APPEND myblas_srcs
-    dgemm_tiled_cuda.c
-    dgetrf_tiled_cuda.c
+    dgemm_cublas.c
+    dgemm_cuda.c
+    dgetrf_cuda.c
     )
 endif()
 
 if ( ENABLE_OPENACC )
   list( APPEND myblas_srcs
-    dgemm_tiled_openacc.c
-    dgetrf_tiled_openacc.c
+    dgemm_openacc.c
+    dgetrf_openacc.c
     )
 endif()
 
@@ -107,6 +108,7 @@ if(ENABLE_MPI)
 endif()
 
 if (ENABLE_CUDA)
+    target_link_libraries( myblas PUBLIC CUDA::CUDA )
     target_link_libraries( myblas PUBLIC CUDA::CUBLAS )
 endif()
 

@@ -26,18 +26,18 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
     int MT = my_iceil( M, b );
     int NT = my_iceil( N, b );
     int KT = my_iceil( K, b );
-    int m, n, k;
+    int m, n, k, mm, nn, kk;
 
     if ( transA == CblasNoTrans ) {
         if ( transB == CblasNoTrans ) {
             for( m=0; m<MT; m++ ) {
-                int mm = m == (MT-1) ? M - m * b : b;
+                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
-                    int nn = n == (NT-1) ? N - n * b : b;
+                    nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
-                        int kk = k == (KT-1) ? K - k * b : b;
+                        kk = k == (KT-1) ? K - k * b : b;
 
                         lbeta = (k == 0) ? beta : 1.;
                         dgemm_seq( CblasColMajor, transA, transB,
@@ -51,13 +51,13 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
         }
         else {
             for( m=0; m<MT; m++ ) {
-                int mm = m == (MT-1) ? M - m * b : b;
+                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
-                    int nn = n == (NT-1) ? N - n * b : b;
+                    nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
-                        int kk = k == (KT-1) ? K - k * b : b;
+                        kk = k == (KT-1) ? K - k * b : b;
 
                         lbeta = (k == 0) ? beta : 1.;
                         dgemm_seq( CblasColMajor, transA, transB,
@@ -73,13 +73,13 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
     else {
         if ( transB == CblasNoTrans ) {
             for( m=0; m<MT; m++ ) {
-                int mm = m == (MT-1) ? M - m * b : b;
+                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
-                    int nn = n == (NT-1) ? N - n * b : b;
+                    nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
-                        int kk = k == (KT-1) ? K - k * b : b;
+                        kk = k == (KT-1) ? K - k * b : b;
 
                         lbeta = (k == 0) ? beta : 1.;
                         dgemm_seq( CblasColMajor, transA, transB,
@@ -93,13 +93,13 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
         }
         else {
             for( m=0; m<MT; m++ ) {
-                int mm = m == (MT-1) ? M - m * b : b;
+                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
-                    int nn = n == (NT-1) ? N - n * b : b;
+                    nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
-                        int kk = k == (KT-1) ? K - k * b : b;
+                        kk = k == (KT-1) ? K - k * b : b;
 
                         lbeta = (k == 0) ? beta : 1.;
                         dgemm_seq( CblasColMajor, transA, transB,
