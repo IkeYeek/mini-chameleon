@@ -1,5 +1,6 @@
 include:
-  remote: 'https://gitlab.inria.fr/compose/include/compose-publish/-/raw/master/.compose-gitlab-ci.yml'
+  - project: compose/include/compose-publish
+    file: .compose-gitlab-ci.yml
 
 buildrawlatex:
   script:
