@@ -17,20 +17,22 @@
  *
  */
 #include "myblas.h"
+#include <string.h>
 
-int
-dgemm_cublas( CBLAS_LAYOUT layout,
-              CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
-              int M, int N, int K, int b,
-              double alpha, const double *A,
-                            const double *B,
-              double beta,        double *C )
+int dgemm_cublas  ( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+               CBLAS_TRANSPOSE transB, const int M, const int N,
+               const int K, const double alpha, const double *A,
+               const int lda, const double *B, const int ldb,
+               const double beta, double *C, const int ldc )
+
 {
     cublasStatus_t rc;
-    rc = cublasDgemm( my_cublas_handle, get_cublas_trans( transA ), get_cublas_trans( transB ),
+    rc = cublasDgemm( my_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N,
+    // TODO: FIXME: use get_cublas_trans instead of bypassing transA and transB
+    // rc = cublasDgemm( my_cublas_handle, get_cublas_trans( transA ), get_cublas_trans( transB ),
                       M, N, K,
                       &alpha, A, lda, B, ldb, &beta, C, ldc );
-    cudaDeviceSynchronize();    
+    cudaDeviceSynchronize();
     return (rc == CUBLAS_STATUS_SUCCESS) ? ALGONUM_SUCCESS : ALGONUM_FAIL;
 }
 
@@ -47,7 +49,7 @@ void dgemm_cublas_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_cublas_init( void )
 {
-    memset( fct_dgemm_cublas, 0, sizeof( fct_list_t ) );
+    memset( &fct_dgemm_cublas, 0, sizeof( fct_list_t ) );
     fct_dgemm_cublas.cuda   = 1;
     fct_dgemm_cublas.tiled  = 0;
     fct_dgemm_cublas.name   = "cublas";

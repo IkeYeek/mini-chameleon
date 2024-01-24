@@ -13,14 +13,13 @@
  *
  */
 #include "myblas.h"
+#include <string.h>
 
-int
-dgemm_cuda( CBLAS_LAYOUT layout,
-            CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
-            int M, int N, int K, int b,
-            double alpha, const double *A,
-                          const double *B,
-            double beta,        double *C )
+int dgemm_cuda  ( CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+               CBLAS_TRANSPOSE transB, const int M, const int N,
+               const int K, const double alpha, const double *A,
+               const int lda, const double *B, const int ldb,
+               const double beta, double *C, const int ldc )
 {
     if ( transA == CblasNoTrans ) {
         if ( transB == CblasNoTrans ) {
@@ -50,7 +49,7 @@ void dgemm_cuda_init( void ) __attribute__( ( constructor ) );
 void
 dgemm_cuda_init( void )
 {
-    memset( fct_dgemm_cuda, 0, sizeof( fct_list_t ) );
+    memset( &fct_dgemm_cuda, 0, sizeof( fct_list_t ) );
     fct_dgemm_cuda.cuda    = 1;
     fct_dgemm_cuda.tiled   = 0;
     fct_dgemm_cuda.name    = "cuda";

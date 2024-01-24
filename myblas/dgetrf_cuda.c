@@ -13,10 +13,10 @@
  *
  */
 #include "myblas.h"
+#include <string.h>
 
 int
-dgetrf_cuda( CBLAS_LAYOUT layout,
-             int M, int N, int b, double *A )
+dgetrf_cuda( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )
 {
     return ALGONUM_NOT_IMPLEMENTED;
 }
@@ -34,7 +34,7 @@ void dgetrf_cuda_init( void ) __attribute__( ( constructor ) );
 void
 dgetrf_cuda_init( void )
 {
-    memset( fct_dgetrf_cuda, 0, sizeof( fct_list_t ) );
+    memset( &fct_dgetrf_cuda, 0, sizeof( fct_list_t ) );
     fct_dgetrf_cuda.cuda   = 1;
     fct_dgetrf_cuda.tiled  = 0;
     fct_dgetrf_cuda.name   = "cuda";
