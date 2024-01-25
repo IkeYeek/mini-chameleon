@@ -8,12 +8,12 @@
 Do not hesitate to visit the [[./tuto-chameleon.org][tutorial]] for using =guix= with =cuda= (Section 6).
 
 Allocation of a GPU node (~sirocco~)
-   #+begin_src
+   #+begin_src bash
    salloc -C sirocco
    #+end_src
 
 A quick check:
-#+begin_src*
+#+begin_src bash
 LD_PRELOAD=/usr/lib64/libcuda.so guix shell --pure --preserve=^LD_PRELOAD mini-chameleon-cuda openssh slurm --with-input=slurm=slurm@23 -- srun perf_dgemm -v cublas
 #+end_src
 
