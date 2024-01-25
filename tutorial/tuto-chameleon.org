@@ -7,7 +7,7 @@
 * Environnement
 
 Nous nous basons entièrement sur l'[[./setup-guix.org][environnement guix]]. Nous faisons l'hypothèse
-que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
+que, comme =plafrim= au 25 janvier 2024, ~slurm@23~ est utilisé.
 
 * Mono-noeud
 
@@ -193,29 +193,29 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
 
     Une troisième possibilité, sans doute la plus élégante, est d'utiliser le
     client =slurm= fourni par =guix=. Il faut s'assurer de fournir une version
-    compatible avec le =slurmd= du système, en l'occurrence =slurm@22=, en sus
+    compatible avec le =slurmd= du système, en l'occurrence =slurm@23=, en sus
     de préserver les variables d'environnement =slurm= (~--preserve=^SLURM~):
     #+begin_src bash
-    guix shell --pure --preserve=^SLURM inetutils slurm@22 -- srun -l hostname
+    guix shell --pure --preserve=^SLURM inetutils slurm@23 -- srun -l hostname
     #+end_src
    
 ** Vérifiez l'environnement =srun= sur chaque noeud
 
    #+begin_src bash
-   guix shell --pure --preserve=^SLURM coreutils openssh slurm@22 --with-input=slurm=slurm@22 -- srun -l env
+   guix shell --pure --preserve=^SLURM coreutils openssh slurm@23 --with-input=slurm=slurm@23 -- srun -l env
    #+end_src
   
 ** Ping Pong
 
    #+begin_src bash
-   guix shell --pure --preserve=^SLURM intel-mpi-benchmarks openssh slurm@22 --with-input=slurm=slurm@22 -- srun -l IMB-MPI1 Pingpong
+   guix shell --pure --preserve=^SLURM intel-mpi-benchmarks openssh slurm@23 --with-input=slurm=slurm@23 -- srun -l IMB-MPI1 Pingpong
    #+end_src
 
     Notez que sur plafrim actuellement c'est la version 19 de =slurm= qui est
     déployée (~srun --version~). Par défaut, dans votre environnement =guix=,
     c'est la version 20 (~guix shell --pure slurm -- srun --version~). Il est
-    donc préférable de demander explicitement un ~slurm@22~
-    (~--with-input=slurm=slurm@22~).
+    donc préférable de demander explicitement un ~slurm@23~
+    (~--with-input=slurm=slurm@23~).
 
 ** Hello world MPI
 
@@ -225,7 +225,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
    bien de là où ils sont sensés parler:
   
    #+begin_src bash
-   OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@22 -- srun -l hello-mpi
+   OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@23 -- srun -l hello-mpi
    #+end_src
 
    Notez qu'on peut également utiliser directement ~mpiexec~. =openmpi= étant
@@ -234,7 +234,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
    qu'on souhaite lancer (~-n 2~) et le fait de les associer par noeud ~--map-by
    node~):
    #+begin_src bash
-   OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@22 -- mpiexec --tag-output -n 2 --map-by node hello-mpi
+   OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@23 -- mpiexec --tag-output -n 2 --map-by node hello-mpi
    #+end_src
 
    À noter que si la réservation ~salloc~ a été faite en précisant explicitement
@@ -242,7 +242,7 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
    dans notre cas), ~mpiexec~ n'a pas besoin de ces options supplémentaires:
 
    #+begin_src bash
-   OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@22 -- mpiexec --tag-output hello-mpi
+   OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" slurm hello-mpi --with-input=slurm=slurm@23 -- mpiexec --tag-output hello-mpi
    #+end_src
 
 ** Exemple de produit de matrice
@@ -256,28 +256,28 @@ que, comme =plafrim= au 10 octobre 2022, ~slurm@22~ est utilisé.
 
     On peut jouer p. ex. avec la version =starpu=:
     #+begin_src bash
-    guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" coreutils gdb mini-chameleon openmpi openssh slurm xterm --with-input=slurm=slurm@22 --with-source=mini-chameleon=$HOME_IS328 -- srun check_dgemm -v starpu   
+    guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" coreutils gdb mini-chameleon openmpi openssh slurm xterm --with-input=slurm=slurm@23 --with-source=mini-chameleon=$HOME_IS328 -- srun check_dgemm -v starpu   
     #+end_src
     
     Et on peut débugger avec =gdb= via =xterm -e= (il faut s'être connecté à
     =plafrim= avec l'option ~-Y~ d'=ssh=):
     #+begin_src bash
-    guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" coreutils gdb mini-chameleon openmpi openssh slurm xterm --with-input=slurm=slurm@22 --with-debug-info=mini-chameleon --with-debug-info=starpu --with-source=mini-chameleon=$HOME_IS328 -- srun xterm -e gdb --args check_dgemm -v starpu
+    guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" coreutils gdb mini-chameleon openmpi openssh slurm xterm --with-input=slurm=slurm@23 --with-debug-info=mini-chameleon --with-debug-info=starpu --with-source=mini-chameleon=$HOME_IS328 -- srun xterm -e gdb --args check_dgemm -v starpu
    #+end_src
 
 *** via =chameleon=
       #+begin_src bash
-      guix shell --pure --preserve=^SLURM chameleon openssh slurm --with-input=slurm=slurm@22 -- srun chameleon_dtesting -H -o gemm --check
+      guix shell --pure --preserve=^SLURM chameleon openssh slurm --with-input=slurm=slurm@23 -- srun chameleon_dtesting -H -o gemm --check
       #+end_src
 
       Remplaçons =openblas= par =mkl=:
       #+begin_src bash
-      guix shell --pure --preserve=^SLURM chameleon openssh slurm --with-input=slurm=slurm@22 --with-input=openblas=mkl -- srun chameleon_dtesting -H -o gemm --check
+      guix shell --pure --preserve=^SLURM chameleon openssh slurm --with-input=slurm=slurm@23 --with-input=openblas=mkl -- srun chameleon_dtesting -H -o gemm --check
       #+end_src
 
       Sans les erreurs =ucx=:
       #+begin_src bash
-      OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" chameleon openssh slurm --with-input=slurm=slurm@22 --with-input=openblas=mkl -- srun chameleon_dtesting -H -o gemm --check
+      OMPI_MCA_pml='^ucx' guix shell --pure --preserve="^SLURM|^OMPI" chameleon openssh slurm --with-input=slurm=slurm@23 --with-input=openblas=mkl -- srun chameleon_dtesting -H -o gemm --check
       #+end_src
      
 ** Libérez les noeuds
@@ -304,10 +304,10 @@ following ~mini-chameleon.batch~ file:
 #SBATCH --output=out_mini-chameleon_%j
 
 ## Run the reference mini-chameleon
-OMPI_MCA_pml='^ucx' exec guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" mini-chameleon slurm --with-input=slurm=slurm@22 -- srun check_dgemm -v mpi
+OMPI_MCA_pml='^ucx' exec guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" mini-chameleon slurm --with-input=slurm=slurm@23 -- srun check_dgemm -v mpi
 
 ## Uncomment the line below to run your own mini-chameleon with sources located in /path/to/my/mini-chameleon
-# OMPI_MCA_pml='^ucx' exec guix shell --pure --tune --preserve="^OMPI|^SLURM|^STARPU" mini-chameleon slurm --with-input=slurm=slurm@22 --with-source=mini-chameleon=/path/to/my/mini-chameleon -- srun check_dgemm -v mpi
+# OMPI_MCA_pml='^ucx' exec guix shell --pure --tune --preserve="^OMPI|^SLURM|^STARPU" mini-chameleon slurm --with-input=slurm=slurm@23 --with-source=mini-chameleon=/path/to/my/mini-chameleon -- srun check_dgemm -v mpi
 #+end_src
 
 We can then batch it:
@@ -323,7 +323,7 @@ We can then batch it:
 ** Création de l'image =singularity=
   Nous pouvons créer une image =singularity= par exemple ainsi:
   #+begin_src bash
-  guix pack -f squashfs bash coreutils grep hello hello-mpi intel-mpi-benchmarks inetutils openssh sed slurm which --with-input=slurm=slurm@22 -S /bin=bin --entry-point=/bin/bash
+  guix pack -f squashfs bash coreutils grep hello hello-mpi intel-mpi-benchmarks inetutils openssh sed slurm which --with-input=slurm=slurm@23 -S /bin=bin --entry-point=/bin/bash
   #+end_src
 
 ** Réservation multi-noeuds
@@ -421,15 +421,15 @@ We can then batch it:
    =srun= (en lui transmettant les bonnes options). On peut donc faire l'appel
    ainsi:
    #+begin_src bash
-     guix shell --pure --preserve="^SLURM" slurm hello-mpi --with-input=slurm=slurm@22 --with-input=openmpi=nmad -- mpiexec hello-mpi
+     guix shell --pure --preserve="^SLURM" slurm hello-mpi --with-input=slurm=slurm@23 --with-input=openmpi=nmad -- mpiexec hello-mpi
    #+end_src
 
    Il est à noter que l'=nmad= fourni par =guix= n'est pas lui-même linké avec
-   =slurm= et on peut donc se passer de ~--with-input=slurm=slurm@22~ (du moment
-   qu'on charge ~slurm@22~):
+   =slurm= et on peut donc se passer de ~--with-input=slurm=slurm@23~ (du moment
+   qu'on charge ~slurm@23~):
 
    #+begin_src bash
-     guix shell --pure --preserve="^SLURM" hello-mpi openmpi slurm@22 --with-input=openmpi=nmad -- mpiexec hello-mpi
+     guix shell --pure --preserve="^SLURM" hello-mpi openmpi slurm@23 --with-input=openmpi=nmad -- mpiexec hello-mpi
    #+end_src
 
    Notez qu'on aurait pu mettre explicitement ~nmad~ à la place d'~openmpi~ du
@@ -441,15 +441,15 @@ We can then batch it:
    =srun= (en lui transmettant les bonnes options). On peut donc faire l'appel
    ainsi:
    #+begin_src bash
-     guix shell --pure --preserve="^SLURM" chameleon openmpi slurm --with-input=slurm=slurm@22 --with-input=openmpi=nmad --with-input=openblas=mkl -- mpiexec chameleon_dtesting -H -o gemm --check
+     guix shell --pure --preserve="^SLURM" chameleon openmpi slurm --with-input=slurm=slurm@23 --with-input=openmpi=nmad --with-input=openblas=mkl -- mpiexec chameleon_dtesting -H -o gemm --check
    #+end_src
 
    Comme ci-dessus, puisqu'=nmad= fourni par =guix= n'est pas lui-même linké
-   avec =slurm=, on peut se passer de ~--with-input=slurm=slurm@22~ (du moment
-   qu'on charge ~slurm@22~):
+   avec =slurm=, on peut se passer de ~--with-input=slurm=slurm@23~ (du moment
+   qu'on charge ~slurm@23~):
 
    #+begin_src bash
-     guix shell --pure --preserve="^SLURM" chameleon openmpi slurm@22 --with-input=openmpi=nmad --with-input=openblas=mkl -- mpiexec chameleon_dtesting -H -o gemm  --check 
+     guix shell --pure --preserve="^SLURM" chameleon openmpi slurm@23 --with-input=openmpi=nmad --with-input=openblas=mkl -- mpiexec chameleon_dtesting -H -o gemm  --check 
    #+end_src
 
 ** Libérez les noeuds
@@ -471,7 +471,7 @@ We reserve a (single) =sirocco= node (see [[https://plafrim-users.gitlabpages.in
 
 We can launch the execution from the frontal node through ~srun~:
 #+begin_src bash
-LD_PRELOAD=/usr/lib64/libcuda.so guix shell --pure --preserve=^LD_PRELOAD chameleon-cuda openssh slurm --with-input=slurm=slurm@22 -- srun chameleon_dtesting -o gemm -H -g 2 -t 2 -m 4000 -n 4000 -k 4000 --check
+LD_PRELOAD=/usr/lib64/libcuda.so guix shell --pure --preserve=^LD_PRELOAD chameleon-cuda openssh slurm --with-input=slurm=slurm@23 -- srun chameleon_dtesting -o gemm -H -g 2 -t 2 -m 4000 -n 4000 -k 4000 --check
 #+end_src
 
 It is also possible to explicitly log onto the computational node (assuming we obtained =sirocco06= during the ~salloc~ step). In this case, =slurm= is not necessary:
@@ -491,7 +491,7 @@ ssh sirocco06 # log onto the computational node
 Enter the guix shell environment for developing mini-chameleon:
 #+begin_src bash
 export LD_PRELOAD=/usr/lib64/libcuda.so
-guix shell --pure -D chameleon-cuda --with-input=slurm=slurm@22 bash gcc-toolchain emacs nano vim --tune -- bash --norc
+guix shell --pure -D chameleon-cuda --with-input=slurm=slurm@23 bash gcc-toolchain emacs nano vim --tune -- bash --norc
 #+end_src
 
 You are now in a shell ready to develop your project with =cuda= support.
@@ -530,33 +530,33 @@ guix shell --pure --preserve="^OMPI|^SLURM|^STARPU" coreutils gdb mini-chameleon
 
 ** Remove me
   #+begin_src bash
-HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps HOME_CHAMELEON=$HOME/project/gitlab.inria.fr/agullo/chameleon ; OMPI_MCA_pml='^ucx' STARPU_NCPU=35 STARPU_SCHED=lws guix shell --pure --preserve="^SLURM|^OMPI|^STARPU" chameleon openmpi qr_mumps slurm  --with-input=slurm=slurm@22 --with-git-url=chameleon=$HOME_CHAMELEON --with-branch=chameleon=distributed_gemm --with-git-url=qr_mumps=$HOME_QRM --with-branch=qr_mumps=distributed_gemm --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master -- mpiexec chameleon_dtesting -H -o gemm -l 6 -m 348 -n 348 -k 348 -b 512 -P 2 --generic
+HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps HOME_CHAMELEON=$HOME/project/gitlab.inria.fr/agullo/chameleon ; OMPI_MCA_pml='^ucx' STARPU_NCPU=35 STARPU_SCHED=lws guix shell --pure --preserve="^SLURM|^OMPI|^STARPU" chameleon openmpi qr_mumps slurm  --with-input=slurm=slurm@23 --with-git-url=chameleon=$HOME_CHAMELEON --with-branch=chameleon=distributed_gemm --with-git-url=qr_mumps=$HOME_QRM --with-branch=qr_mumps=distributed_gemm --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master -- mpiexec chameleon_dtesting -H -o gemm -l 6 -m 348 -n 348 -k 348 -b 512 -P 2 --generic
   #+end_src
 
 #+begin_src bash
-HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; guix build -L /home/eagullo/project/gitlab.inria.fr/guix-hpc/guix-hpc qr_mumps --with-input=slurm=slurm@22 --with-git-url=qr_mumps=$HOME_QRM --with-branch=qr_mumps=distributed_gemm --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master  
+HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; guix build -L /home/eagullo/project/gitlab.inria.fr/guix-hpc/guix-hpc qr_mumps --with-input=slurm=slurm@23 --with-git-url=qr_mumps=$HOME_QRM --with-branch=qr_mumps=distributed_gemm --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master  
 #+end_src
 
 #+begin_src bash
-HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; guix build -L /home/eagullo/project/gitlab.inria.fr/guix-hpc/guix-hpc qr_mumps --with-input=slurm=slurm@22 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master
+HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; guix build -L /home/eagullo/project/gitlab.inria.fr/guix-hpc/guix-hpc qr_mumps --with-input=slurm=slurm@23 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master
 #+end_src
 
 #+begin_src bash
-HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps guix shell --pure --preserve="^HOME|^STARPU|^SLURM" coreutils nmad qr_mumps slurm --with-input=slurm=slurm@22 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad ^Cwith-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master -- mpiexec dqrm_test_outer -H -t 6 -m 3480 -n 3480 -k 3480 -mb 512 -p 2 -q 1 -r 1 -generic
+HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps guix shell --pure --preserve="^HOME|^STARPU|^SLURM" coreutils nmad qr_mumps slurm --with-input=slurm=slurm@23 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad ^Cwith-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master -- mpiexec dqrm_test_outer -H -t 6 -m 3480 -n 3480 -k 3480 -mb 512 -p 2 -q 1 -r 1 -generic
 #+end_src
 
 ** qrm + nmad
-   
+
 Celui-ci est fonctionnel avec la master nmad:
 
 #+begin_src bash
-echo $(HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; STARPU_NCPU=35 STARPU_SCHED=lws guix shell --pure --preserve="^HOME|^SLURM|^STARPU" coreutils nmad qr_mumps slurm --with-input=slurm=slurm@22 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master -- mpiexec dqrm_test_outer -H -t 6 -m 3480 -n 3480 -k 3480 -mb 512 -p 2 -q 1 -r 1 -generic)
+echo $(HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; STARPU_NCPU=35 STARPU_SCHED=lws guix shell --pure --preserve="^HOME|^SLURM|^STARPU" coreutils nmad qr_mumps slurm --with-input=slurm=slurm@23 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad --with-branch=nmad=master --with-branch=pioman=master --with-branch=padicotm=master --with-branch=puk=master --with-branch=pukabi=master -- mpiexec dqrm_test_outer -H -t 6 -m 3480 -n 3480 -k 3480 -mb 512 -p 2 -q 1 -r 1 -generic)
 #+end_src
 
 Celui-ci est fonctionnel avec la release nmad:
 
 #+begin_src bash
-echo $(HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; STARPU_NCPU=35 STARPU_SCHED=lws guix shell --pure --preserve="^HOME|^SLURM|^STARPU" coreutils nmad qr_mumps slurm --with-input=slurm=slurm@22 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad -- mpiexec dqrm_test_outer -H -t 6 -m 3480 -n 3480 -k 3480 -mb 512 -p 2 -q 1 -r 1 -generic)
+echo $(HOME_QRM=$HOME/project/gitlab.com/qr_mumps/qr_mumps ; STARPU_NCPU=35 STARPU_SCHED=lws guix shell --pure --preserve="^HOME|^SLURM|^STARPU" coreutils nmad qr_mumps slurm --with-input=slurm=slurm@23 --with-source=qr_mumps=$HOME_QRM --with-branch=starpu=fortran-fix_add-sync-task --with-input=openmpi=nmad -- mpiexec dqrm_test_outer -H -t 6 -m 3480 -n 3480 -k 3480 -mb 512 -p 2 -q 1 -r 1 -generic)
 #+end_src
 
 ** Architecture considerations

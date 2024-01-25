@@ -5,7 +5,40 @@
 
 * Get started (environment)
 
-Do not hesitate to visit the [[./tutorial/tuto-chameleon.org][tutorial]] for using =guix= with =cuda= (Section 6).
+Do not hesitate to visit the [[./tuto-chameleon.org][tutorial]] for using =guix= with =cuda= (Section 6).
+
+Allocation of a GPU node (~sirocco~)
+   #+begin_src
+   salloc -C sirocco
+   #+end_src
+
+A quick check:
+#+begin_src*
+LD_PRELOAD=/usr/lib64/libcuda.so guix shell --pure --preserve=^LD_PRELOAD mini-chameleon-cuda openssh slurm --with-input=slurm=slurm@23 -- srun perf_dgemm -v cublas
+#+end_src
+
+Note that the support is minimal and only there for illustration (for
+instance ~check_dgemm -v cublas~ will fail) as a starting point to
+implement your own routines.
+
+Once the proper software environment has been set up (with either [[./setup-guix.org][guix]]
+or [[./setup-plafrim.org][environment modules]]), you can build the project. Use the the
+~mini-chameleon-cuda~ package (rather than ~mini-chameleon~) if you
+rely on =guix=.
+
+   #+begin_src bash :eval no
+     cd ./mini-chameleon
+     mkdir -p build/cuda
+     cmake . -B build/cuda -DENABLE_MPI=ON -DENABLE_STARPU=ON -DENABLE_MIPP=ON -DENABLE_CUDA=ON
+     cmake --build build/cuda
+   #+end_src
+
+You may [[./setup-ide.org][visit this page]] if you are interested in auto-completion (and
+consider the =cuda=-enabled version).
+
+
+
+** How about auto-completion for IDEs
 
 * Actions
 
