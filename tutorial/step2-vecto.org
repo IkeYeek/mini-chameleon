@@ -53,7 +53,7 @@ root of =mini-chameleon=:
 
 #+begin_src bash
   mkdir -p build/mipp
-  cmake . -B build/mipp -DENABLE_MIPP=ON
+  cmake . -B build/mipp -DENABLE_MIPP=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo
   cmake --build build/mipp
 #+end_src
 
