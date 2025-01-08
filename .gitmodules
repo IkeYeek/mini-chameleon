@@ -1,6 +1,3 @@
 [submodule "cmake_modules"]
 	path = cmake_modules
 	url = https://gitlab.inria.fr/solverstack/morse_cmake.git
-[submodule "include/compose-publish"]
-	path = include/compose-publish
-	url = https://gitlab.inria.fr/compose/include/compose-publish.git
