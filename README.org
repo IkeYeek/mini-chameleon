@@ -1,19 +1,44 @@
 #+TITLE: The =mini-chameleon= educational-purpose project
-#+AUTHOR: Emmanuel Agullo and Mathieu Faverge
+#+OPTIONS: author:nil
 #+INCLUDE: https://gitlab.inria.fr/elementaryx/emacs-elementaryx-ox-html-themes/-/raw/main/org/theme-bigblow-less.setup
 
+#+macro: emmanuelagullo [[https://concace.gitlabpages.inria.fr/members/emmanuel-agullo/][Emmanuel Agullo]]
+#+macro: mathieufaverge [[https://mfaverge.vvv.enseirb-matmeca.fr/][Mathieu Faverge]]
+#+macro: mini-chameleon [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon][mini-chameleon]]
+#+macro: chameleon [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]]
+#+macro: elementaryx [[https://elementaryx.gitlabpages.inria.fr/][elementaryx]]
+#+macro: emacs [[https://www.gnu.org/software/emacs/][emacs]]
+#+macro: guix [[https://guix.gnu.org/][guix]]
+#+macro: guix-hpc [[https://gitlab.inria.fr/guix-hpc/guix-hpc][guix-hpc]]
+#+macro: guix-hpc-non-free [[https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free][guix-hpc-non-free]]
+#+macro: guix-hpc-tutorial [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/tutorial/tuto-chameleon.html][guix-hpc-tutorial]]
+#+macro: plafrim [[https://www.plafrim.fr/][plafrim]]
+
+
 * Home
+:PROPERTIES:
+:CUSTOM_ID: home
+:END:
 
 ** About =mini-chameleon=
+:PROPERTIES:
+:CUSTOM_ID: about
+:END:
 
-=mini-chameleon= is an *educational-purpose* project aiming at designing a dense
-linear algebra solver. At the beginning, the project comes only with testing
-routines while the actual computational routines remain to be completed. The
-goal is to implement a dense matrix-matrix product (GEMM) and an LU
-factorization (GETRF). The project is named after the fully-featured [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]]
-dense linear algebra library.
+=mini-chameleon= is an *educational-purpose project* aiming at
+*designing a dense linear algebra solver for modern supercomputers*.
+Initially, the project includes only testing routines, while the
+development of the actual computational routines is yet to be
+completed. The objective is to implement a dense matrix-matrix
+multiplication (GEMM) and an LU factorization (GETRF).
+
+The project is named after the fully-featured [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]] dense linear
+algebra library.
 
 ** Source of the project
+:PROPERTIES:
+:CUSTOM_ID: browse-source
+:END:
 
 You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] (web) or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] (gitlab) of this page.
 
@@ -23,9 +48,122 @@ You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/
 # memory (=mpi=) version. The fourth step is an hybrid =mpi+openmp= version. There
 # is also the possibility to implement a runtime-based (=starpu=) version.
 
-* Getting started
+** Acknowledgements
 
-- [[./tutorial/setup.org][Get started!]]
+The project has been originally written by {{{emmanuelagullo}}} and
+{{{mathieufaverge}}} for the option [[https://cisd.enseirb-matmeca.fr/][« Calcul Intensif et Sciences des
+données (CISD) »]] at Enseirb-Matmeca. Alycia Lisito is currently being
+contributing as well.
+
+We are immensely thankful to the {{{plafrim}}} team for their constant
+and responsive support. We thank all CISD students for their very
+valuable feedback as well.
+
+* Setup
+:PROPERTIES:
+:CUSTOM_ID: get-started
+:END:
+
+** Clone =mini-chameleon=
+:PROPERTIES:
+:CUSTOM_ID: clone-mini-chameleon
+:END:
+
+#+begin_src bash
+git clone --recurse-submodules https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon.git
+#+end_src
+
+In the following, we assume to be in the ~mini-chameleon~ folder:
+#+begin_src bash
+cd mini-chameleon
+#+end_src
+
+** Set up =guix=
+:PROPERTIES:
+:CUSTOM_ID: set-up-guix
+:END:
+
+*** Install {{{guix}}} package management tool
+
+The project can be conducted on any machine with {{{guix}}} package
+management tool [[https://guix.gnu.org/manual/devel/en/html_node/Installation.html][pre-installed]]. If you're on a cluster where {{{guix}}}
+is deployed (see the [[https://hpc.guix.info/about/][list]]), such as [[https://plafrim-users.gitlabpages.inria.fr/doc/][plafrim]], this step can be skipped.
+Otherwise, you can install {{{guix}}} on your Linux laptop in 5
+minutes: just follow the [[https://guix.gnu.org/manual/en/html_node/Binary-Installation.html][binary install instructions]].
+
+*** Set up reference {{{guix}}} channels provided for {{{mini-chameleon}}}
+
+As mentioned above, we assume to be in the ~mini-chameleon~ folder and we position {{{guix}}} to use [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/-/blob/master/channels.scm?ref_type=heads][reference channels for =mini-chameleon=]]
+#+begin_src bash
+mkdir -p ~/.config/guix # in case it does not already exist
+ln -s $(pwd)/channels.scm ~/.config/guix/ # position the proposed channels for later "guix pull" ; alternative: cp ./channels.scm ~/.config/guix/channels.scm
+guix build hello # avoid issue with permissions
+guix pull --allow-downgrades # set up guix with
+hash guix # make sur the new guix is taken into account by bash
+guix describe --format=channels # check you have the expected channels
+#+end_src
+
+*** Enter a =guix= =shell= environment with dependencies for building =mini-chameleon=
+:PROPERTIES:
+:CUSTOM_ID: enter-guix-environment
+:END:
+
+#+begin_src bash
+guix shell --pure -D mini-chameleon bash gcc-toolchain -- bash --norc
+#+end_src
+
+** Build and test mini-chameleon
+:PROPERTIES:
+:CUSTOM_ID: build-and-test-mini-chameleon
+:END:
+
+#+begin_src bash
+  mkdir -p build/debug
+  cmake . -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_MPI=ON -DENABLE_STARPU=ON -DENABLE_MIPP=ON # -DENABLE_CUDA=ON
+  ln -s build/debug/compile_commands.json .
+  # Build:
+  cmake --build build/debug
+  # Test correction
+  ./build/debug/testings/check_dgemm -v seq
+  ./build/debug/testings/check_dgetrf -v seq
+  # Test performance
+  ./build/debug/testings/perf_dgemm -v seq --check
+  ./build/debug/testings/perf_dgetrf -v seq --check
+#+end_src
+
+** How to update?
+:PROPERTIES:
+:CUSTOM_ID: update-environment
+:END:
+
+*** Update =mini-chameleon=
+:PROPERTIES:
+:CUSTOM_ID: update-mini-chameleon
+:END:
+
+We assume your =git= =remote= on [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][gitlab.inria.fr]] is named ~inria~:
+#+begin_src bash
+git remote rename origin inria
+#+end_src
+
+You can then update =mini-chameleon= from [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][gitlab.inria.fr]] reference with:
+#+begin_src bash
+git pull inria
+#+end_src
+
+*** Update =guix= (if required)
+:PROPERTIES:
+:CUSTOM_ID: update-guix-if-required
+:END:
+
+Thanks to the [[#set-up-guix][above]] symbolic link to ~~/.config/guix/channels.scm~,
+[[#update-mini-chameleon][updating =mini-chameleon=]] directly positions up-to-date {{{guix}}}
+=channels=. We thus can thus simply update {{{guix}}} itself with:
+
+#+begin_src bash
+guix pull --allow-downgrades
+#+end_src
+
 
 * Expected work
 
@@ -35,8 +173,9 @@ You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/
 - [[./tutorial/step4-mpi.org][Step 4: distributed-memory design (=mpi=)]]
 - [[./tutorial/step5-cuda.org][Step 5: GPU]]
 
-* A guide for effective =guix= usage in high-performance computing (HPC)
+* Tutorials
 
+- Further notes to [[./tutorial/setup.org][on getting started started.]]
 - [[./tutorial/tuto-chameleon.org][Tutorial]]: from basic /hello world/ to =slurm=, =mpi= and =guix=.
 
 # Local Variables:
