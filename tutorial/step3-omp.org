@@ -1,6 +1,6 @@
 #+TITLE: Produit de matrice et factorisation LU utilisant OpenMP
 #+AUTHOR: Emmanuel Agullo and Mathieu Faverge
-#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+INCLUDE: https://gitlab.inria.fr/elementaryx/emacs-elementaryx-ox-html-themes/-/raw/main/org/theme-bigblow-less.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
 Le but de ce TP est de tester et d'évaluer les performances que l'on peut

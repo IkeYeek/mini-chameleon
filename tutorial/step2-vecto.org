@@ -1,7 +1,7 @@
 #+TITLE: Getting started
 #+SUBTITLE: Vecto
 #+AUTHOR: Emmanuel Agullo, Olivier Aumage, Alycia Lisito and Mathieu Faverge
-#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+INCLUDE: https://gitlab.inria.fr/elementaryx/emacs-elementaryx-ox-html-themes/-/raw/main/org/theme-bigblow-less.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
 Dans cette étape, vous allez étendre votre code séquentiel (~-v seq~)

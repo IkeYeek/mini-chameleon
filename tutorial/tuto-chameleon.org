@@ -1,7 +1,7 @@
 #+TITLE: =chameleon= mini-tutorial
 #+TITLE: with =plafrim= and =guix=
 #+AUTHOR: E. Agullo & M. Faverge
-#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+INCLUDE: https://gitlab.inria.fr/elementaryx/emacs-elementaryx-ox-html-themes/-/raw/main/org/theme-bigblow-less.setup
 #+PROPERTY: header-args:bash :eval no :exports both
 
 * Environnement

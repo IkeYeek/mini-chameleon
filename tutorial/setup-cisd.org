@@ -1,7 +1,7 @@
 #+TITLE: Getting started
 #+SUBTITLE: IS331 CISD @ ENSEIRB-MATMECA
 #+AUTHOR: Emmanuel Agullo and Mathieu Faverge
-#+SETUPFILE: ../include/compose-publish/theme-readtheorginria.setup
+#+INCLUDE: https://gitlab.inria.fr/elementaryx/emacs-elementaryx-ox-html-themes/-/raw/main/org/theme-bigblow-less.setup
 #+PROPERTY: heder-args:bash :eval no :exports both
 
 * Objectives

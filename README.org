@@ -1,10 +1,10 @@
 #+TITLE: The =mini-chameleon= educational-purpose project
 #+AUTHOR: Emmanuel Agullo and Mathieu Faverge
-#+SETUPFILE: ./include/compose-publish/theme-readtheorginria.setup
+#+INCLUDE: https://gitlab.inria.fr/elementaryx/emacs-elementaryx-ox-html-themes/-/raw/main/org/theme-bigblow-less.setup
 
-You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] (web) or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] (gitlab) of this page.
+* Home
 
-* =mini-chameleon=
+** About =mini-chameleon=
 
 =mini-chameleon= is an *educational-purpose* project aiming at designing a dense
 linear algebra solver. At the beginning, the project comes only with testing
@@ -12,6 +12,10 @@ routines while the actual computational routines remain to be completed. The
 goal is to implement a dense matrix-matrix product (GEMM) and an LU
 factorization (GETRF). The project is named after the fully-featured [[https://gitlab.inria.fr/solverstack/chameleon][chameleon]]
 dense linear algebra library.
+
+** Source of the project
+
+You can [[https://solverstack.gitlabpages.inria.fr/mini-examples/mini-chameleon/][browse]] (web) or visit the [[https://gitlab.inria.fr/solverstack/mini-examples/mini-chameleon/][source]] (gitlab) of this page.
 
 # The first step of the project consists in implementing a =sequential= version of
 # the routines, including blocking strategies and vectorization. The second step
@@ -34,3 +38,7 @@ dense linear algebra library.
 * A guide for effective =guix= usage in high-performance computing (HPC)
 
 - [[./tutorial/tuto-chameleon.org][Tutorial]]: from basic /hello world/ to =slurm=, =mpi= and =guix=.
+
+# Local Variables:
+# jinx-languages: "en"
+# End:
