@@ -1,24 +1,3 @@
 include:
-  - project: compose/include/compose-publish
-    file: .compose-gitlab-ci.yml
-
-buildrawlatex:
-  script:
-    - echo $CI_PROJECT_NAME
-  rules:
-  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /mini-chameleon/
-
-pages:
-  rules:
-  - if: $CI_COMMIT_BRANCH == "master" && $CI_PROJECT_NAME =~ /mini-chameleon/
-
-# before_script:
-#   # Use a fixed GUIX profile for maximum reproducibility:
-#   - mkdir -p $HOME/.guix-extra/compose/
-#   - >
-#        guix pull --channels=.guix-extra/channels-compose-fixed.scm
-#        --profile=$HOME/.guix-extra/compose/guix --allow-downgrades
-#   - export GUIX_PROFILE="$HOME/.guix-extra/compose/guix"
-#   - . "$GUIX_PROFILE/etc/profile"
-#   - mkdir -p public/
-#   - guix describe --format=channels | tee public/channels.scm
+  - project: elementaryx/elementaryx-cicd
+    file: .elementaryx-gitlab-ci.yml
