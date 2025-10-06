@@ -1,15 +1,18 @@
+;; https://guix.bordeaux.inria.fr/eval/8999995
+;; 2025-10-06 02:42:50
+
 (list (channel
         (name 'guix-hpc-non-free)
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git")
         (branch "master")
         (commit
-          "eda5cf04145af29fb33d2405bc7e5742fc8d56ec"))
+          "56b927455a37a600e6bec4413d70d7f6b5959d13"))
       (channel
         (name 'guix)
-        (url "https://git.savannah.gnu.org/git/guix.git")
+        (url "https://git.guix.gnu.org/guix.git")
         (branch "master")
         (commit
-          "89f4f11accf17198bcab8abfff6188bc51d2d822")
+          "7e2029f7e760bad4d48059143ae8c3ec76671e13")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -20,13 +23,13 @@
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
         (branch "master")
         (commit
-          "dad11be829a6fef129799600e1641bd537fc3141"))
+          "c32f48de84ab8be52aa483da3763383470b4ea64"))
       (channel
         (name 'guix-science-nonfree)
-        (url "https://github.com/guix-science/guix-science-nonfree.git")
+        (url "https://codeberg.org/guix-science/guix-science-nonfree.git")
         (branch "master")
         (commit
-          "7987ff4b5d493e633641d1edccc1802e7d11b6e7")
+          "c6b01b7e9e163822123b68541b7cde81d8a14cd4")
         (introduction
           (make-channel-introduction
             "58661b110325fd5d9b40e6f0177cc486a615817e"
@@ -34,10 +37,10 @@
               "CA4F 8CF4 37D7 478F DA05  5FD4 4213 7701 1A37 8446"))))
       (channel
         (name 'guix-science)
-        (url "https://github.com/guix-science/guix-science.git")
+        (url "https://codeberg.org/guix-science/guix-science.git")
         (branch "master")
         (commit
-          "3736b80cf569511cc0a13f87cb03411761290dd8")
+          "d40aa0576bc06744752d3aa811e042cba4f5ae64")
         (introduction
           (make-channel-introduction
             "b1fe5aaff3ab48e798a4cce02f0212bc91f423dc"
@@ -45,10 +48,10 @@
               "CA4F 8CF4 37D7 478F DA05  5FD4 4213 7701 1A37 8446"))))
       (channel
         (name 'guix-past)
-        (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+        (url "https://codeberg.org/guix-science/guix-past.git")
         (branch "master")
         (commit
-          "792d830606345bddf5712252a1ed4fd87ee55c42")
+          "c3bc94ee752ec545e39c1b8a29f739405767b51c")
         (introduction
           (make-channel-introduction
             "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
