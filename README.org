@@ -118,7 +118,7 @@ guix shell --pure -D mini-chameleon bash gcc-toolchain -- bash --norc
 
 #+begin_src bash
   mkdir -p build/debug
-  cmake . -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_STARPU=ON -DENABLE_MIPP=ON # -DENABLE_CUDA=ON
+  cmake . -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_STARPU=ON # -DENABLE_CUDA=ON
   ln -s build/debug/compile_commands.json .
   # Build:
   cmake --build build/debug
