@@ -12,7 +12,7 @@ the [[https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS
 #+begin_src bash :eval no
   cd ./mini-chameleon
   mkdir -p build/debug/
-  cmake . -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_MPI=ON -DENABLE_STARPU=ON -DENABLE_MIPP=ON
+  cmake . -B build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_MPI=ON -DENABLE_STARPU=ON
   ln -s build/debug/compile_commands.json .
 #+end_src
 
@@ -25,7 +25,7 @@ If you consider also =cuda=:
 #+begin_src bash :eval no
   cd ./mini-chameleon
   mkdir -p build/debug-cuda
-  cmake . -B build/debug-cuda/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_MPI=ON -DENABLE_STARPU=ON -DENABLE_MIPP=ON -DENABLE_CUDA=ON
+  cmake . -B build/debug-cuda/ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_MPI=ON -DENABLE_STARPU=ON -DENABLE_CUDA=ON
   ln -s build/debug-cuda/compile_commands.json .
 #+end_src
 
