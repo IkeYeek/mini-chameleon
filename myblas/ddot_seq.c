@@ -17,7 +17,11 @@
 double ddot_seq( int N, const double *X, int incX,
                         const double *Y, int incY )
 {
-    return 0.;
+    double dot_product_sum = 0;
+    for (int i = 0; i < N; i++) {
+        dot_product_sum += X[i * incX] * Y[i * incY];
+    }
+    return dot_product_sum;
 }
 
 /* To make sure we use the right prototype */
