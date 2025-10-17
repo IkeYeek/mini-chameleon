@@ -12,22 +12,24 @@
  * @date 2021-09-30
  *
  */
-#include <stdlib.h>
-#include <stdio.h>
 #include "algonum.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-int main( int argc, char **argv )
-{
-    option_t *options = &global_options;
-    int i;
+int main(int argc, char **argv) {
+  option_t *options = &global_options;
+  int i, rep;
 
-    algonum_init( argc, argv, options, ALGO_DDOT );
+  algonum_init(argc, argv, options, ALGO_DDOT);
+  FILE *output = fopen("./eval_ddot.txt", "w+");
 
-    for( i=0; i<options->iter; i++ ) {
-        testone_ddot( options->fct->fctptr, options->N, options->check );
+  for (rep = 0; rep < 10; rep++)
+    for (i = 0; i < options->iter; i++) {
+      testone_ddot_real(options->fct->fctptr, 2 << i, options->check, output);
     }
+  fclose(output);
 
-    algonum_exit( options, ALGO_DDOT );
+  algonum_exit(options, ALGO_DDOT);
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
