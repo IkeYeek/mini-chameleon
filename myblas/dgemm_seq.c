@@ -15,6 +15,7 @@
 #include "myblas.h"
 #include <stdio.h>
 #include <immintrin.h>
+#include <string.h>
 
 // Exemple of ways to add additionnal parameters to your kernel
 // See the registration function to change its value
@@ -309,5 +310,5 @@ void dgemm_seq_init(void) {
   register_fct(&fct_dgemm_seq, ALGO_GEMM);
 
   /* Read the value of dgemm_block_size */
-  dgemm_seq_block_size = myblas_getenv_value_int("BLOCKSIZE", 32);
+  dgemm_seq_block_size = myblas_getenv_value_int("BLOCKSIZE", 1);
 }
