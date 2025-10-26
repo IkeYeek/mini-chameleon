@@ -151,59 +151,18 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   return ALGONUM_SUCCESS;
 }
 
-int dgemm_avx2_microkernel(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-                           CBLAS_TRANSPOSE transB, const int M, const int N,
-                           const int K, const double alpha, const double *A,
-                           const int lda, const double *B, const int ldb,
-                           const double beta, double *C, const int ldc) {
-
-  int n, k;
-
-  __m256d A_vec_1, A_vec_2, A_vec_3, A_vec_4;
-  __m256d B_broadcast_1, B_broadcast_2, B_broadcast_3, B_broadcast_4;
-  __m256d C_vec;
-
-  A_vec_1 = _mm256_loadu_pd(A);
-  A_vec_2 = _mm256_loadu_pd(A + lda);
-  A_vec_3 = _mm256_loadu_pd(A + lda * 2);
-  A_vec_4 = _mm256_loadu_pd(A + lda * 3);
-
-  __m256d alpha_vec = _mm256_set1_pd(alpha);
-  A_vec_1 = _mm256_mul_pd(A_vec_1, alpha_vec);
-  A_vec_2 = _mm256_mul_pd(A_vec_2, alpha_vec);
-  A_vec_3 = _mm256_mul_pd(A_vec_3, alpha_vec);
-  A_vec_4 = _mm256_mul_pd(A_vec_4, alpha_vec);
-
-  for (n = 0; n < 4; n++) {
-    B_broadcast_1 = _mm256_set1_pd(B[ldb * n]);
-    B_broadcast_2 = _mm256_set1_pd(B[ldb * n + 1]);
-    B_broadcast_3 = _mm256_set1_pd(B[ldb * n + 2]);
-    B_broadcast_4 = _mm256_set1_pd(B[ldb * n + 3]);
-    C_vec = _mm256_loadu_pd(&C[ldc * n]);
-
-    C_vec = _mm256_fmadd_pd(A_vec_1, B_broadcast_1, C_vec);
-    C_vec = _mm256_fmadd_pd(A_vec_2, B_broadcast_2, C_vec);
-    C_vec = _mm256_fmadd_pd(A_vec_3, B_broadcast_3, C_vec);
-    C_vec = _mm256_fmadd_pd(A_vec_4, B_broadcast_4, C_vec);
-
-    _mm256_storeu_pd(C + ldc * n, C_vec);
-  }
-
-  return ALGONUM_SUCCESS;
-}
-
 int dgemm_avx2_microkernel_4x4(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                                CBLAS_TRANSPOSE transB, const int M, const int N,
                                const int K, const double alpha, const double *A,
                                const int lda, const double *B, const int ldb,
                                const double beta, double *C, const int ldc) {
-  int k, n;
-  __m256d C_vecs[4];
+  int k;
+  __m256d C_vec_0, C_vec_1, C_vec_2, C_vec_3;
 
-  C_vecs[0] = _mm256_loadu_pd(C);
-  C_vecs[1] = _mm256_loadu_pd(C + ldc);
-  C_vecs[2] = _mm256_loadu_pd(C + ldc * 2);
-  C_vecs[3] = _mm256_loadu_pd(C + ldc * 3);
+  C_vec_0 = _mm256_loadu_pd(C + 0 * 0);
+  C_vec_1 = _mm256_loadu_pd(C + ldc);
+  C_vec_2 = _mm256_loadu_pd(C + ldc * 2);
+  C_vec_3 = _mm256_loadu_pd(C + ldc * 3);
 
   for (k = 0; k < K / 4; k += 1) {
     int k4 = k * 4;
@@ -212,22 +171,55 @@ int dgemm_avx2_microkernel_4x4(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     __m256d A_vec_3 = _mm256_loadu_pd(A + (k4 * lda) + 2 * lda);
     __m256d A_vec_4 = _mm256_loadu_pd(A + (k4 * lda) + 3 * lda);
 
-    for (n = 0; n < 4; n++) {
-      __m256d B_b0 = _mm256_set1_pd(alpha * B[ldb * n + k4 + 0]);
-      __m256d B_b1 = _mm256_set1_pd(alpha * B[ldb * n + k4 + 1]);
-      __m256d B_b2 = _mm256_set1_pd(alpha * B[ldb * n + k4 + 2]);
-      __m256d B_b3 = _mm256_set1_pd(alpha * B[ldb * n + k4 + 3]);
-      C_vecs[n] = _mm256_fmadd_pd(A_vec_1, B_b0, C_vecs[n]);
-      C_vecs[n] = _mm256_fmadd_pd(A_vec_2, B_b1, C_vecs[n]);
-      C_vecs[n] = _mm256_fmadd_pd(A_vec_3, B_b2, C_vecs[n]);
-      C_vecs[n] = _mm256_fmadd_pd(A_vec_4, B_b3, C_vecs[n]);
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 3]);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_0);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_0);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_0);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_0);
+    }
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 3]);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_1);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_1);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_1);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_1);
+    }
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 3]);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_2);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_2);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_2);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_2);
+    }
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 3]);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_3);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_3);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_3);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_3);
     }
   }
 
-  _mm256_storeu_pd(C, C_vecs[0]);
-  _mm256_storeu_pd(C + ldc, C_vecs[1]);
-  _mm256_storeu_pd(C + ldc * 2, C_vecs[2]);
-  _mm256_storeu_pd(C + ldc * 3, C_vecs[3]);
+  _mm256_storeu_pd(C + 0 * 0, C_vec_0);
+  _mm256_storeu_pd(C + ldc, C_vec_1);
+  _mm256_storeu_pd(C + ldc * 2, C_vec_2);
+  _mm256_storeu_pd(C + ldc * 3, C_vec_3);
   return ALGONUM_SUCCESS;
 }
 
@@ -264,8 +256,8 @@ int dgemm_avx2_bloc(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
       dgemm_avx2_microkernel_4x4(layout, transA, transB, MB, NB, K4, alpha,
                                  A_block, lda, B_block, ldb, 1.0, C_block, ldc);
 
-      for (k = K4; k < K; ++k) {
-        for (int nn = 0; nn < NB; ++nn) {
+      for (k = K4; k < K; k++) {
+        for (int nn = 0; nn < NB; nn++) {
           const double b = alpha * B_block[ldb * nn + k];
           const double *A_col = A_block + k * lda;
           __m256d A_vec = _mm256_loadu_pd(A_col);
