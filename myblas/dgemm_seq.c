@@ -13,8 +13,9 @@
  *
  */
 #include "myblas.h"
-#include <stdio.h>
 #include <immintrin.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 // Exemple of ways to add additionnal parameters to your kernel
@@ -85,15 +86,16 @@ int dgemm_scalaire(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 
 #define VEC_BLOCK_SIZE 4
 int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-              CBLAS_TRANSPOSE transB, const int M, const int N, const int K,
-              const double alpha, const double *A, const int lda,
-              const double *B, const int ldb, const double beta, double *C,
-              const int ldc) {
+               CBLAS_TRANSPOSE transB, const int M, const int N, const int K,
+               const double alpha, const double *A, const int lda,
+               const double *B, const int ldb, const double beta, double *C,
+               const int ldc) {
 
-  //TODO: is it possible to know when we could use store/load instead of storeu/loadu without introducing conditional branchment in the loops?
-  //TODO: is treating sequentially first and not least an issue ?
-  //TODO: AVX512???
-  //TODO: compare with and without fmadd
+  // TODO: is it possible to know when we could use store/load instead of
+  // storeu/loadu without introducing conditional branchment in the loops?
+  // TODO: is treating sequentially first and not least an issue ?
+  // TODO: AVX512???
+  // TODO: compare with and without fmadd
   int m, n, k;
   // the remainder of M % VEC_BLOCK_SIZE that we'll treat sequentially
   int rem = M % VEC_BLOCK_SIZE;
@@ -134,18 +136,36 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   return ALGONUM_SUCCESS;
 }
 
-int dgemm_custom(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-              CBLAS_TRANSPOSE transB, const int M, const int N, const int K,
-              const double alpha, const double *A, const int lda,
-              const double *B, const int ldb, const double beta, double *C,
-              const int ldc) {
+// micro-kernel is MRxNR
+#define MR (4)
+#define NR (4)
+// panels of A are MCxKC, panels of B are KCxN, panels of C are MCxN
+#define KC (192)
+#define MC (128)
+#if (KC % MR != 0 || KC % NR != 0 || MC % MR != 0 || MC % NR != 0)
+#error "KC or MC is not a multiple of MKR"
+#endif
 
+static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                              CBLAS_TRANSPOSE transB, const int M, const int N,
+                              const int K, const double alpha, const double *A,
+                              const int lda, const double *B, const int ldb,
+                              const double beta, double *C, const int ldc) {}
+
+static inline void dgepp(const int M, const int N, const int K,
+                         const double *A_panel, const double *B_panel,
+                         double *C);
+
+static inline void dgebp(const int M, const int N, const int K,
+                         const double *A_block, const double *B_panel,
+                         double *C);
+
+int dgemm_kernel(const int M, const int N, const int K, const double alpha,
+                 const double *A, const int lda, const double *B, const int ldb,
+                 const double beta, double *C, const int ldc) {
   int m, n, k;
 
   for (n = 0; n < N; n++) {
-    for (m = 0; m < M; m++) {
-      C[ldc * n + m] = beta * C[ldc * n + m];
-    }
     for (k = 0; k < K; k++) {
       for (m = 0; m < M; m++) {
         C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
@@ -285,14 +305,16 @@ void dgemm_seq_init(void) {
     for (int i = 0; i < sizeof(versions) / sizeof(versions[0]); i++) {
       char *cur_version = versions[i];
       void *cur_ptr = fcptrs[i];
-      if (env_version_env_len == strlen(cur_version) && strncmp(env_version, cur_version, env_version_env_len) == 0) {
+      if (env_version_env_len == strlen(cur_version) &&
+          strncmp(env_version, cur_version, env_version_env_len) == 0) {
         found = true;
         ver_idx = i;
         break;
       }
     }
     if (!found) {
-      fprintf(stderr, "Couldn't find seq version matching %s. Aborting.\n", env_version);
+      fprintf(stderr, "Couldn't find seq version matching %s. Aborting.\n",
+              env_version);
       exit(1);
     }
   }
@@ -301,7 +323,10 @@ void dgemm_seq_init(void) {
   fct_dgemm_seq.tiled = 0;
   fct_dgemm_seq.starpu = 0;
   fct_dgemm_seq.name = "seq";
-  char *helper = calloc(255, sizeof(char));  //TODO: find where in the app lifecycle I could free this one
+  char *helper = calloc(
+      255,
+      sizeof(
+          char)); // TODO: find where in the app lifecycle I could free this one
   snprintf(helper, 255, "Sequential version of DGEMM, %s.", versions[ver_idx]);
   fct_dgemm_seq.helper = helper;
   fct_dgemm_seq.fctptr = fcptrs[ver_idx];
