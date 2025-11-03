@@ -8,7 +8,8 @@
 #  @date 2021-09-30
 #
 ###
-
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 # Define here the list of DDOT implementation
 # -------------------------------------------
 set( DDOT_srcs
