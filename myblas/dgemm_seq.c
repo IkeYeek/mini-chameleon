@@ -150,30 +150,106 @@ static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                               CBLAS_TRANSPOSE transB, const int M, const int N,
                               const int K, const double alpha, const double *A,
                               const int lda, const double *B, const int ldb,
-                              const double beta, double *C, const int ldc) {}
+                              const double beta, double *C, const int ldc);
 
 static inline void dgepp(const int M, const int N, const int K,
-                         const double *A_panel, const double *B_panel,
-                         double *C);
+                         const double alpha, const double *A_panel,
+                         const int lda, const double *B, const int ldb,
+                         double *B_packed, double *C);
 
 static inline void dgebp(const int M, const int N, const int K,
-                         const double *A_block, const double *B_panel,
+                         const double alpha, const double *A_block,
+                         const int lda, const double *B_panel, const int ldb,
                          double *C);
 
-int dgemm_kernel(const int M, const int N, const int K, const double alpha,
-                 const double *A, const int lda, const double *B, const int ldb,
-                 const double beta, double *C, const int ldc) {
+static inline void dgemm_kernel(const int M, const int N, const int K,
+                                const double alpha, const double *A,
+                                const int lda, const double *B, const int ldb,
+                                double *C);
+
+static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                              CBLAS_TRANSPOSE transB, const int M, const int N,
+                              const int K, const double alpha, const double *A,
+                              const int lda, const double *B, const int ldb,
+                              const double beta, double *C, const int ldc) {
+  int k, n, m;
+  double *B_packed = aligned_alloc(32, sizeof(double) * N * KC);
+
+  int rem = M % VEC_BLOCK_SIZE;
+  __m256d C_mn_subvec;
+  if (beta != 1.0) {
+    for (n = 0; n < N; n++) {
+      for (m = 0; m < M - rem; m += VEC_BLOCK_SIZE) {
+        C_mn_subvec = _mm256_loadu_pd(&C[ldc * n + m]);
+        C_mn_subvec = _mm256_mul_pd(C_mn_subvec, _mm256_set1_pd(beta));
+        _mm256_storeu_pd(&C[ldc * n + m], C_mn_subvec);
+      }
+      for (int m = M - rem; m < M; m++) {
+        C[ldc * n + m] *= beta;
+      }
+    }
+  }
+
+  for (k = 0; k < K; k += KC) {
+    dgepp(M, N, KC, alpha, &A[lda * k], lda, &B[k], ldb, B_packed, C);
+  }
+
+  // TODO: handle remainder
+  free(B_packed);
+}
+
+static inline void dgepp(const int M, const int N, const int K,
+                         const double alpha, const double *A_panel,
+                         const int lda, const double *B_panel, const int ldb,
+                         double *B_packed, double *C) {
+  // TODO: verify pack B into \hat{b}
+  int m, n, k;
+  for (n = 0; n < N; n++) {
+    for (k = 0; k < K; k++) {
+      B_packed[n * K + k] = B_panel[n * ldb + k];
+    }
+  }
+  for (m = 0; m < M; m += MC) {
+    dgebp(MC, N, K, alpha, A_panel + m, lda, B_packed, K, &C[m]);
+  }
+}
+
+static inline void dgebp(const int M, const int N, const int K,
+                         const double alpha, const double *A_block,
+                         const int lda, const double *B_panel, const int ldb,
+                         double *C) {
+  // TODO: pack A into \hat{b}
+  double *A_packed = aligned_alloc(32, K * M * sizeof(double));
+  double *C_aux = aligned_alloc(32, MR * NR * sizeof(float));
+  int m, mm, k, n;
+  for (m = 0; m < M; m += MR) {
+    for (k = 0; k < K; k++) {
+      for (mm = 0; mm < 4; mm++) {
+        A_packed[mm + 4 * k + K * m] = A_block[m + mm + lda * k];
+      }
+    }
+  }
+  for (n = 0; n < N; n += NR) {
+    for (m = 0; m < M; m += MR) {
+      dgemm_kernel(MR, NR, K, alpha, &A_packed[m * 4], lda, B_panel, ldb,
+                   C_aux);
+    }
+  }
+}
+
+static inline void dgemm_kernel(const int M, const int N, const int K,
+                                const double alpha, const double *A,
+                                const int lda, const double *B, const int ldb,
+                                double *C) {
   int m, n, k;
 
   for (n = 0; n < N; n++) {
     for (k = 0; k < K; k++) {
       for (m = 0; m < M; m++) {
-        C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
+        C[MR * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
       }
     }
   }
-
-  return ALGONUM_SUCCESS;
 }
 
 void scale_block(const int M, const int N, const double beta, double *C,
@@ -295,8 +371,8 @@ void dgemm_seq_init(void) __attribute__((constructor));
 void dgemm_seq_init(void) {
   int ver_idx = 0;
 
-  char *versions[] = {"scalaire", "custom", "bloc", "avx2"};
-  void *fcptrs[] = {dgemm_scalaire, dgemm_custom, dgemm_bloc, dgemm_avx2};
+  char *versions[] = {"scalaire", "goto", "bloc", "avx2"};
+  void *fcptrs[] = {dgemm_scalaire, dgemm_goto, dgemm_bloc, dgemm_avx2};
   char *env_version = getenv("SEQ_VER");
 
   if (env_version != NULL) {
@@ -323,10 +399,9 @@ void dgemm_seq_init(void) {
   fct_dgemm_seq.tiled = 0;
   fct_dgemm_seq.starpu = 0;
   fct_dgemm_seq.name = "seq";
-  char *helper = calloc(
-      255,
-      sizeof(
-          char)); // TODO: find where in the app lifecycle I could free this one
+  char *helper = calloc(255,
+                        sizeof(char)); // TODO: find where in the app
+                                       // lifecycle I could free this one
   snprintf(helper, 255, "Sequential version of DGEMM, %s.", versions[ver_idx]);
   fct_dgemm_seq.helper = helper;
   fct_dgemm_seq.fctptr = fcptrs[ver_idx];
