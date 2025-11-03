@@ -8,6 +8,7 @@
 #  @date 2021-09-30
 #
 ###
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=haswell")
 
 # Define here the list of DDOT implementation
 # -------------------------------------------
