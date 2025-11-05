@@ -175,6 +175,7 @@ static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   int k, n, m;
   double *B_packed = aligned_alloc(32, sizeof(double) * N * KC);
 
+  // first we scale the whole matrix. TODO: optimize this?
   int rem = M % VEC_BLOCK_SIZE;
   __m256d C_mn_subvec;
   if (beta != 1.0) {
@@ -190,6 +191,7 @@ static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     }
   }
 
+  // and now we go through each block KC on the K dimension to construct C
   for (k = 0; k < K; k += KC) {
     dgepp(M, N, KC, alpha, &A[lda * k], lda, &B[k], ldb, B_packed, C);
   }
@@ -202,13 +204,15 @@ static inline void dgepp(const int M, const int N, const int K,
                          const double alpha, const double *A_panel,
                          const int lda, const double *B_panel, const int ldb,
                          double *B_packed, double *C) {
-  // TODO: verify pack B into \hat{b}
+  // we pack B into a contiguous array. b is still stored column major
+  // (problem?)
   int m, n, k;
   for (n = 0; n < N; n++) {
     for (k = 0; k < K; k++) {
       B_packed[n * K + k] = B_panel[n * ldb + k];
     }
   }
+  // we go line by line on each panel
   for (m = 0; m < M; m += MC) {
     dgebp(MC, N, K, alpha, A_panel + m, lda, B_packed, K, &C[m]);
   }
@@ -233,6 +237,10 @@ static inline void dgebp(const int M, const int N, const int K,
     for (m = 0; m < M; m += MR) {
       dgemm_kernel(MR, NR, K, alpha, &A_packed[m * 4], lda, B_panel, ldb,
                    C_aux);
+    }
+  }
+  for (n = 0; n < NR; n++) {
+    for (m = 0; m < NR; n++) {
     }
   }
 }
