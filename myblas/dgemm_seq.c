@@ -146,118 +146,226 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 #error "KC or MC is not a multiple of MKR"
 #endif
 
-static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-                              CBLAS_TRANSPOSE transB, const int M, const int N,
-                              const int K, const double alpha, const double *A,
-                              const int lda, const double *B, const int ldb,
-                              const double beta, double *C, const int ldc);
+static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                             CBLAS_TRANSPOSE transB, const int M, const int N,
+                             const int K, const double alpha, const double *A,
+                             const int lda, const double *B, const int ldb,
+                             const double beta, double *C, const int ldc);
 
 static inline void dgepp(const int M, const int N, const int K,
                          const double alpha, const double *A_panel,
-                         const int lda, const double *B, const int ldb,
-                         double *B_packed, double *C);
+                         const int lda, const double *B_panel, const int ldb,
+                         double *B_packed, double *C, const int ldc,
+                         double *A_packed, double *C_aux);
 
 static inline void dgebp(const int M, const int N, const int K,
                          const double alpha, const double *A_block,
                          const int lda, const double *B_panel, const int ldb,
-                         double *C);
+                         double *C, const int ldc, double *A_packed,
+                         double *C_aux);
 
 static inline void dgemm_kernel(const int M, const int N, const int K,
-                                const double alpha, const double *A,
-                                const int lda, const double *B, const int ldb,
-                                double *C);
+                                const double alpha, const double *A_packed,
+                                const double *B_panel, double *C_aux);
 
-static inline void dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-                              CBLAS_TRANSPOSE transB, const int M, const int N,
-                              const int K, const double alpha, const double *A,
-                              const int lda, const double *B, const int ldb,
-                              const double beta, double *C, const int ldc) {
-  int k, n, m;
+static inline void scale_C(const int M, const int N, const double beta,
+                           double *C, const int ldc);
+
+#define MIN(a, b) ((a < b) ? a : b)
+
+/**
+ * (poorly) based on the latest version of this paper:
+ * https://www.cs.utexas.edu/~pingali/CS378/2008sp/papers/gotoPaper.pdf
+ *
+ * The goal is to implement GEMM using GEPP and GEBP for respectively Panel x
+ * Panel and Block x Panel multiplication and computing into a small microkernel
+ * optimized for the architecture
+ *
+ * Even though no code was used from it, this repo
+ * https://github.com/ytsutano/dgemm-goto-in-c/ (and especially its drawings)
+ * helped me understanding better the packing of A and the use of \hat{A} with
+ * C_{aux} (and how it differs from the packing of B)
+ */
+static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                             CBLAS_TRANSPOSE transB, const int M, const int N,
+                             const int K, const double alpha, const double *A,
+                             const int lda, const double *B, const int ldb,
+                             const double beta, double *C, const int ldc) {
+  /* TODO:
+   * - [x] alloc only once!
+   * - [ ] AVX microkernel (gotta take the one I already wrote in bloc_vec)
+   * - [ ] review packing of B, pretty sure I'm doing it wrong
+   * - [ ] make sure there are no cases where aligned_alloc might fail. Perhaps
+   * add some assertions
+   * - [ ] handle remainder because for now it only works on matrix that are
+   * multiple of MC/KC
+   * - [ ] profiling the code
+   * - [ ] find a better way to do scaling as I'm pretty sure it's a bottleneck
+   * right now
+   * - [ ] optimize parameters for the architecture
+   * - [ ]check the actual impact of aligned vs unaligned load and stores on
+   * haswell.
+   */
+
+  // Will hold panels of B re-packed into a contiguous array in order to make it
+  // easily fit inside of cache lines. It is aligned on 32 bytes to make sure we
+  // can use aligned load/stores as it seems to have an impact on haswell
   double *B_packed = aligned_alloc(32, sizeof(double) * N * KC);
 
-  // first we scale the whole matrix. TODO: optimize this?
-  int rem = M % VEC_BLOCK_SIZE;
-  __m256d C_mn_subvec;
-  if (beta != 1.0) {
-    for (n = 0; n < N; n++) {
-      for (m = 0; m < M - rem; m += VEC_BLOCK_SIZE) {
-        C_mn_subvec = _mm256_loadu_pd(&C[ldc * n + m]);
-        C_mn_subvec = _mm256_mul_pd(C_mn_subvec, _mm256_set1_pd(beta));
-        _mm256_storeu_pd(&C[ldc * n + m], C_mn_subvec);
-      }
-      for (int m = M - rem; m < M; m++) {
-        C[ldc * n + m] *= beta;
-      }
-    }
-  }
+  // Allocating them here so we only do it once
+  double *A_packed = aligned_alloc(32, M * K * sizeof(double));
+  double *C_aux = aligned_alloc(32, MR * NR * sizeof(double));
+
+  // first we scale the whole matrix.
+  scale_C(M, N, beta, C, ldc);
 
   // and now we go through each block KC on the K dimension to construct C
+  int k;
   for (k = 0; k < K; k += KC) {
-    dgepp(M, N, KC, alpha, &A[lda * k], lda, &B[k], ldb, B_packed, C);
+    int Kb = MIN(KC, K - k);
+    const double *A_panel = &A[lda * k];
+    const double *B_panel = &B[k];
+    dgepp(M, N, KC, alpha, A_panel, lda, B_panel, ldb, B_packed, C, ldc,
+          A_packed, C_aux);
   }
 
-  // TODO: handle remainder
   free(B_packed);
+  free(A_packed);
+  free(C_aux);
+
+  return ALGONUM_SUCCESS;
+}
+
+static inline void scale_C(const int M, const int N, const double beta,
+                           double *C, const int ldc) {
+  if (beta == 1.0)
+    return;
+  int rem = M % VEC_BLOCK_SIZE;
+
+  __m256d C_mn_subvec;
+  for (int n = 0; n < N; n++) {
+    int m;
+    for (m = 0; m < M - rem; m += VEC_BLOCK_SIZE) {
+      C_mn_subvec = _mm256_loadu_pd(&C[ldc * n + m]);
+      C_mn_subvec = _mm256_mul_pd(C_mn_subvec, _mm256_set1_pd(beta));
+      _mm256_storeu_pd(&C[ldc * n + m], C_mn_subvec);
+    }
+    for (; m < M; m++) {
+      C[ldc * n + m] *= beta;
+    }
+  }
 }
 
 static inline void dgepp(const int M, const int N, const int K,
                          const double alpha, const double *A_panel,
                          const int lda, const double *B_panel, const int ldb,
-                         double *B_packed, double *C) {
-  // we pack B into a contiguous array. b is still stored column major
-  // (problem?)
-  int m, n, k;
-  for (n = 0; n < N; n++) {
-    for (k = 0; k < K; k++) {
+                         double *B_packed, double *C, const int ldc,
+                         double *A_packed, double *C_aux) {
+  // We pack B into a contiguous array. B is still stored column major
+  // As we will work multiple times with B, it is actually worth to spend some
+  // time reshaping it in order to get an array of working data only so we can
+  // be cache efficient.
+  for (int n = 0; n < N; n++) {
+    for (int k = 0; k < K; k++) {
       B_packed[n * K + k] = B_panel[n * ldb + k];
     }
   }
-  // we go line by line on each panel
+
+  int m;
   for (m = 0; m < M; m += MC) {
-    dgebp(MC, N, K, alpha, A_panel + m, lda, B_packed, K, &C[m]);
+    int Mb = MIN(MC, M - m);
+    dgebp(Mb, N, K, alpha, A_panel + m, lda, B_packed, K, &C[m], ldc, A_packed,
+          C_aux);
   }
 }
 
 static inline void dgebp(const int M, const int N, const int K,
                          const double alpha, const double *A_block,
                          const int lda, const double *B_panel, const int ldb,
-                         double *C) {
-  // TODO: pack A into \hat{b}
-  double *A_packed = aligned_alloc(32, K * M * sizeof(double));
-  double *C_aux = aligned_alloc(32, MR * NR * sizeof(float));
-  int m, mm, k, n;
-  for (m = 0; m < M; m += MR) {
-    for (k = 0; k < K; k++) {
-      for (mm = 0; mm < 4; mm++) {
-        A_packed[mm + 4 * k + K * m] = A_block[m + mm + lda * k];
+                         double *C, const int ldc, double *A_packed,
+                         double *C_aux) {
+  /*
+   * say we have this bloc
+   * 1 5 9  13
+   * 2 6 10 14
+   * 3 7 11 15
+   * 4 8 12 16
+
+   * which is stored as [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+   * now say we work with a 2x2 kernel.
+   * We're reducing on K, so I use 1,2 - 5,6 - 9,10 (...).
+   * It would be beneficial if they were contiguously stored (kind of as a work
+   array):
+   * [1, 2, 5, 6, 9, 10, 13, 14, 3, 4, 7, 8, 11, 12, 15, 16]
+   * That is what A_packed is for (and how it differs from the packing of B)
+  */
+  for (int m = 0; m < M; m += MR) {
+    int Mb = MIN(MR, M - m);
+    int base = m * K;
+    for (int k = 0; k < K; k++) {
+      for (int mm = 0; mm < MR; mm++) {
+        int block_m = m + mm;
+        // the kernel does not care about edge cases so we're zeroing oob
+        // cells
+        if (block_m < M)
+          A_packed[base + k * MR + mm] = A_block[block_m + lda * k];
+        else
+          A_packed[base + k * MR + mm] = 0.;
       }
     }
   }
-  for (n = 0; n < N; n += NR) {
-    for (m = 0; m < M; m += MR) {
-      dgemm_kernel(MR, NR, K, alpha, &A_packed[m * 4], lda, B_panel, ldb,
-                   C_aux);
-    }
-  }
-  for (n = 0; n < NR; n++) {
-    for (m = 0; m < NR; n++) {
+
+  for (int n = 0; n < N; n += NR) {
+    int Nb = MIN(NR, N - n);
+    for (int m = 0; m < M; m += MR) {
+      int Mb = MIN(MR, M - m);
+      // todo check if _mm256_stream_pd could go faster
+      memset(C_aux, 0, MR * NR * sizeof(double));
+
+      for (int k = 0; k < K; k += KC) {
+        int Kb = MIN(KC, K - k);
+        dgemm_kernel(Mb, Nb, Kb, alpha, A_packed + m * K + k * MR,
+                     B_panel + n * K + k * NR, C_aux);
+      }
+
+      // unpacking C_aux into C
+      for (int nn = 0; nn < Nb; nn++)
+        for (int mm = 0; mm < Mb; mm++)
+          C[(n + nn) * ldc + (m + mm)] += C_aux[nn * MR + mm];
     }
   }
 }
 
 static inline void dgemm_kernel(const int M, const int N, const int K,
-                                const double alpha, const double *A,
-                                const int lda, const double *B, const int ldb,
-                                double *C) {
-  int m, n, k;
+                                const double alpha, const double *A_packed,
+                                const double *B_panel, double *C_aux) {
+  __m256d alpha_vec = _mm256_set1_pd(alpha);
 
-  for (n = 0; n < N; n++) {
-    for (k = 0; k < K; k++) {
-      for (m = 0; m < M; m++) {
-        C[MR * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
-      }
+  for (int n = 0; n < MR; n++) {
+    for (int k = 0; k < K; k++) {
+      __m256d b_vec = _mm256_set1_pd(B_panel[n * K + k]);
+
+      const double *Ap = &A_packed[k * M];
+      __m256d a_vec = _mm256_load_pd(Ap);
+      __m256d c_vec = _mm256_load_pd(&C_aux[n * M]);
+      c_vec = _mm256_fmadd_pd(alpha_vec, _mm256_mul_pd(a_vec, b_vec), c_vec);
+      _mm256_store_pd(&C_aux[n * M], c_vec);
     }
   }
+}
+
+static inline void dgemm_kernel_micro(const int M, const int N, const int K,
+                                      const double alpha,
+                                      const double *A_packed,
+                                      const double *B_panel, double *C_aux) {
+  int k;
+  __m256d C_vec0, C_vec1, C_vec2, C_vec3;
+
+  C_vec0 = _mm256_load_pd(C_aux);
+  C_vec1 = _mm256_load_pd(C_aux + MR);
+  C_vec2 = _mm256_load_pd(C_aux + MR * 2);
+  C_vec3 = _mm256_load_pd(C_aux + MR * 3);
 }
 
 void scale_block(const int M, const int N, const double beta, double *C,
