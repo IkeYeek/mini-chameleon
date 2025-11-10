@@ -22,6 +22,16 @@
 // See the registration function to change its value
 static int dgemm_seq_block_size = -1;
 
+void affiche(int M, int N, double *A) {
+  for (int n = 0; n < N; n++) {
+    for (int m = 0; m < M; m++) {
+      printf("%lf ", A[n * M + m]);
+    }
+    printf("\n");
+  }
+  printf("\n");
+}
+
 int dgemm_scalaire(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                    CBLAS_TRANSPOSE transB, const int M, const int N,
                    const int K, const double alpha, const double *A,
@@ -140,8 +150,16 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 #define MR (4)
 #define NR (4)
 // panels of A are MCxKC, panels of B are KCxN, panels of C are MCxN
-#define KC (192)
-#define MC (128)
+/*
+ * Paper states that KC*NR*sizeof(double) < L1/2, with NR=4 it leaves us with
+ * KC*32<16KB, so let's say KC=500
+ */
+#define KC (512)
+/*
+ * It then states that MC*KC*sizeof(double) < L2/2, with KC=500 it leaves us
+ * with MC=32
+ */
+#define MC (32)
 #if (KC % MR != 0 || KC % NR != 0 || MC % MR != 0 || MC % NR != 0)
 #error "KC or MC is not a multiple of MKR"
 #endif
@@ -164,9 +182,9 @@ static inline void dgebp(const int M, const int N, const int K,
                          double *C, const int ldc, double *A_packed,
                          double *C_aux);
 
-static inline void dgemm_kernel(const int M, const int N, const int K,
-                                const double alpha, const double *A_packed,
-                                const double *B_panel, double *C_aux);
+static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
+                                    const double alpha, const double *A_packed,
+                                    const double *B_panel, double *C_aux);
 
 static inline void scale_C(const int M, const int N, const double beta,
                            double *C, const int ldc);
@@ -193,17 +211,17 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                              const double beta, double *C, const int ldc) {
   /* TODO:
    * - [x] alloc only once!
-   * - [ ] AVX microkernel (gotta take the one I already wrote in bloc_vec)
-   * - [ ] review packing of B, pretty sure I'm doing it wrong
-   * - [ ] make sure there are no cases where aligned_alloc might fail. Perhaps
+   * - [x] AVX microkernel (gotta take the one I already wrote in bloc_vec)
+   * - [x] review packing of B, pretty sure I'm doing it wrong
+   * - [x] make sure there are no cases where aligned_alloc might fail. Perhaps
    * add some assertions
    * - [ ] handle remainder because for now it only works on matrix that are
    * multiple of MC/KC
    * - [ ] profiling the code
-   * - [ ] find a better way to do scaling as I'm pretty sure it's a bottleneck
+   * - [x] find a better way to do scaling as I'm pretty sure it's a bottleneck
    * right now
    * - [ ] optimize parameters for the architecture
-   * - [ ] check the actual impact of aligned vs unaligned load and stores on
+   * - [x] check the actual impact of aligned vs unaligned load and stores on
    * haswell.
    */
 
@@ -216,6 +234,11 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   double *A_packed = aligned_alloc(32, M * K * sizeof(double));
   double *C_aux = aligned_alloc(32, MR * NR * sizeof(double));
 
+  if (!B_packed || !A_packed || !C_aux) {
+    perror("Aligned Alloc Error");
+    exit(1);
+  }
+
   // first we scale the whole matrix.
   scale_C(M, N, beta, C, ldc);
 
@@ -225,7 +248,7 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     int Kb = MIN(KC, K - k);
     const double *A_panel = &A[lda * k];
     const double *B_panel = &B[k];
-    dgepp(M, N, KC, alpha, A_panel, lda, B_panel, ldb, B_packed, C, ldc,
+    dgepp(M, N, Kb, alpha, A_panel, lda, B_panel, ldb, B_packed, C, ldc,
           A_packed, C_aux);
   }
 
@@ -275,19 +298,22 @@ static inline void dgepp(const int M, const int N, const int K,
 
    *  that would be stored as [1, 2, 3, 4, 5, 6, 7, 8, 9...30].
    *  We want to keep only the panel so it is then stored as
-   *  [1, 2, 7, 8, 13, 14, 19, 20, 25, 26]
-  */
-
-  for (int n = 0; n < N; n++) { // TODO: vectorizable ?
-    for (int k = 0; k < K; k++) {
-      B_packed[n * K + k] = B_panel[n * ldb + k];
-    }
-  }
-
-  /*
-   * Actually let's try another way! instead we want to go to
    * [1, 7, 13, 19, 2, 8, 14, 20, 25(...)]
    */
+  for (int n = 0; n < N; n += NR) {
+    int Nb = MIN(NR, N - n);
+    int n_block = n / NR;
+    for (int k = 0; k < K; k++) {
+      for (int nn = 0; nn < NR; nn++) {
+        if (n + nn < N) {
+          B_packed[n_block * NR * K + k * NR + nn] =
+              B_panel[k + (n + nn) * ldb];
+        } else {
+          B_packed[n_block * NR * K + k * NR + nn] = 0.0;
+        }
+      }
+    }
+  }
 
   int m;
   for (m = 0; m < M; m += MC) {
@@ -318,76 +344,97 @@ static inline void dgebp(const int M, const int N, const int K,
    * [1, 2, 5, 6, 9, 10, 13, 14, 3, 4, 7, 8, 11, 12, 15, 16]
    * That is what A_packed is for (and how it differs from the packing of B)
   */
-  for (int m = 0; m < M; m += MR) { // TODO: vectorizable ?
+  for (int m = 0; m < M; m += MR) {
     int Mb = MIN(MR, M - m);
-    int base = m * K;
+    int m_block = m / MR;
+    int base = m_block * MR * K;
     for (int k = 0; k < K; k++) {
       for (int mm = 0; mm < MR; mm++) {
-        int block_m = m + mm;
-        // the kernel does not care about edge cases so we're zeroing oob
-        // cells
-        if (block_m < M)
-          A_packed[base + k * MR + mm] = A_block[block_m + lda * k];
-        else
-          A_packed[base + k * MR + mm] = 0.;
+        if (m + mm < M) {
+          A_packed[base + k * MR + mm] = A_block[m + mm + lda * k];
+        } else {
+          A_packed[base + k * MR + mm] = 0.0;
+        }
       }
     }
   }
 
   for (int n = 0; n < N; n += NR) {
     int Nb = MIN(NR, N - n);
+    int n_block = n / NR;
     for (int m = 0; m < M; m += MR) {
       int Mb = MIN(MR, M - m);
-      // TODO: check if _mm256_stream_pd could go faster
+      int m_block = m / MR;
+
       memset(C_aux, 0, MR * NR * sizeof(double));
 
-      for (int k = 0; k < K; k += KC) {
-        int Kb = MIN(KC, K - k);
-        dgemm_kernel(Mb, Nb, Kb, alpha, A_packed + m * K + k * MR,
-                     B_panel + n * K + k * NR, C_aux);
-      }
+      dgemm_kernel_4x4(Mb, Nb, K, alpha, A_packed + m_block * MR * K,
+                       B_panel + n_block * NR * K, C_aux);
 
       // unpacking C_aux into C
-      for (int nn = 0; nn < Nb; nn++) // TODO: vectorizable ?
-        for (int mm = 0; mm < Mb; mm++)
+      for (int nn = 0; nn < Nb; nn++) {
+        for (int mm = 0; mm < Mb; mm++) {
           C[(n + nn) * ldc + (m + mm)] += C_aux[nn * MR + mm];
+        }
+      }
     }
   }
 }
 
-static inline void dgemm_kernel(const int M, const int N, const int K,
-                                const double alpha, const double *A_packed,
-                                const double *B_panel, double *C_aux) {
-  __m256d alpha_vec = _mm256_set1_pd(alpha);
-
-  for (int n = 0; n < MR; n++) {
-    for (int k = 0; k < K; k++) {
-      __m256d b_vec = _mm256_set1_pd(B_panel[n * K + k]);
-
-      const double *Ap = &A_packed[k * M];
-      __m256d a_vec = _mm256_load_pd(Ap);
-      __m256d c_vec = _mm256_load_pd(&C_aux[n * M]);
-      c_vec = _mm256_fmadd_pd(alpha_vec, _mm256_mul_pd(a_vec, b_vec), c_vec);
-      _mm256_store_pd(&C_aux[n * M], c_vec);
-    }
-  }
-}
-
-static inline void dgemm_kernel_micro(const int M, const int N, const int K,
+static inline void dgemm_kernel_naive(const int M, const int N, const int K,
                                       const double alpha,
                                       const double *A_packed,
                                       const double *B_panel, double *C_aux) {
-  int k;
+  for (int n = 0; n < N; n++) {
+    for (int m = 0; m < M; m++) {
+      double sum = 0.0;
+      for (int k = 0; k < K; k++) {
+        sum += A_packed[k * MR + m] * B_panel[k * NR + n];
+      }
+      C_aux[n * MR + m] += alpha * sum;
+    }
+  }
+}
+
+// the use of preproc is totally inspired by the code there:
+// "github.com/ytsutano/dgemm-goto-in-c/blob/master/dgemm-goto.c"
+#define KERNEL_ITER(k)                                                         \
+  do {                                                                         \
+    A_vec0 = _mm256_load_pd(&A_packed[(k) * MR]);                              \
+                                                                               \
+    B_bcast0 = _mm256_set1_pd(alpha * B_panel[(k) * NR]);                      \
+    B_bcast1 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 1]);                  \
+    B_bcast2 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 2]);                  \
+    B_bcast3 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 3]);                  \
+                                                                               \
+    C_vec0 = _mm256_fmadd_pd(A_vec0, B_bcast0, C_vec0);                        \
+    C_vec1 = _mm256_fmadd_pd(A_vec0, B_bcast1, C_vec1);                        \
+    C_vec2 = _mm256_fmadd_pd(A_vec0, B_bcast2, C_vec2);                        \
+    C_vec3 = _mm256_fmadd_pd(A_vec0, B_bcast3, C_vec3);                        \
+  } while (0);
+
+static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
+                                    const double alpha, const double *A_packed,
+                                    const double *B_panel, double *C_aux) {
+  __m256d alpha_vec = _mm256_set1_pd(alpha);
+  __m256d A_vec0;
+  __m256d B_bcast0, B_bcast1, B_bcast2, B_bcast3;
   __m256d C_vec0, C_vec1, C_vec2, C_vec3;
-  __m256d B_bcase0, B_bcast1, B_bcast2, B_bcast3;
 
   C_vec0 = _mm256_load_pd(C_aux);
   C_vec1 = _mm256_load_pd(C_aux + MR);
   C_vec2 = _mm256_load_pd(C_aux + MR * 2);
   C_vec3 = _mm256_load_pd(C_aux + MR * 3);
 
-#define KR (1)
-  for (k = 0; k < K; k += KR) {
+  for (int k = 0; k < K; k += 8) {
+    KERNEL_ITER(k);
+    KERNEL_ITER(k + 1);
+    KERNEL_ITER(k + 2);
+    KERNEL_ITER(k + 3);
+    KERNEL_ITER(k + 4);
+    KERNEL_ITER(k + 5);
+    KERNEL_ITER(k + 6);
+    KERNEL_ITER(k + 7);
   }
 
   _mm256_store_pd(C_aux, C_vec0);
