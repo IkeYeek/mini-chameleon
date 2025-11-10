@@ -203,7 +203,7 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
    * - [ ] find a better way to do scaling as I'm pretty sure it's a bottleneck
    * right now
    * - [ ] optimize parameters for the architecture
-   * - [ ]check the actual impact of aligned vs unaligned load and stores on
+   * - [ ] check the actual impact of aligned vs unaligned load and stores on
    * haswell.
    */
 
@@ -261,15 +261,33 @@ static inline void dgepp(const int M, const int N, const int K,
                          const int lda, const double *B_panel, const int ldb,
                          double *B_packed, double *C, const int ldc,
                          double *A_packed, double *C_aux) {
-  // We pack B into a contiguous array. B is still stored column major
-  // As we will work multiple times with B, it is actually worth to spend some
-  // time reshaping it in order to get an array of working data only so we can
-  // be cache efficient.
-  for (int n = 0; n < N; n++) {
+  /*
+   * Say I have this 6x5 matrix, and panels are 2x5.
+   * We want to go from this:
+   * |-------------|
+   * |1 7  13 19 25|
+   * |2 8  14 20 26|
+   * |-------------|
+   *  3 9  15 21 27
+   *  4 10 16 22 28
+   *  5 11 17 23 29
+   *  6 12 18 24 30
+
+   *  that would be stored as [1, 2, 3, 4, 5, 6, 7, 8, 9...30].
+   *  We want to keep only the panel so it is then stored as
+   *  [1, 2, 7, 8, 13, 14, 19, 20, 25, 26]
+  */
+
+  for (int n = 0; n < N; n++) { // TODO: vectorizable ?
     for (int k = 0; k < K; k++) {
       B_packed[n * K + k] = B_panel[n * ldb + k];
     }
   }
+
+  /*
+   * Actually let's try another way! instead we want to go to
+   * [1, 7, 13, 19, 2, 8, 14, 20, 25(...)]
+   */
 
   int m;
   for (m = 0; m < M; m += MC) {
@@ -285,7 +303,7 @@ static inline void dgebp(const int M, const int N, const int K,
                          double *C, const int ldc, double *A_packed,
                          double *C_aux) {
   /*
-   * say we have this bloc
+   * Say we have this bloc
    * 1 5 9  13
    * 2 6 10 14
    * 3 7 11 15
@@ -293,14 +311,14 @@ static inline void dgebp(const int M, const int N, const int K,
 
    * which is stored as [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
-   * now say we work with a 2x2 kernel.
+   * Now say we work with a 2x2 kernel.
    * We're reducing on K, so I use 1,2 - 5,6 - 9,10 (...).
    * It would be beneficial if they were contiguously stored (kind of as a work
    array):
    * [1, 2, 5, 6, 9, 10, 13, 14, 3, 4, 7, 8, 11, 12, 15, 16]
    * That is what A_packed is for (and how it differs from the packing of B)
   */
-  for (int m = 0; m < M; m += MR) {
+  for (int m = 0; m < M; m += MR) { // TODO: vectorizable ?
     int Mb = MIN(MR, M - m);
     int base = m * K;
     for (int k = 0; k < K; k++) {
@@ -320,7 +338,7 @@ static inline void dgebp(const int M, const int N, const int K,
     int Nb = MIN(NR, N - n);
     for (int m = 0; m < M; m += MR) {
       int Mb = MIN(MR, M - m);
-      // todo check if _mm256_stream_pd could go faster
+      // TODO: check if _mm256_stream_pd could go faster
       memset(C_aux, 0, MR * NR * sizeof(double));
 
       for (int k = 0; k < K; k += KC) {
@@ -330,7 +348,7 @@ static inline void dgebp(const int M, const int N, const int K,
       }
 
       // unpacking C_aux into C
-      for (int nn = 0; nn < Nb; nn++)
+      for (int nn = 0; nn < Nb; nn++) // TODO: vectorizable ?
         for (int mm = 0; mm < Mb; mm++)
           C[(n + nn) * ldc + (m + mm)] += C_aux[nn * MR + mm];
     }
@@ -361,11 +379,21 @@ static inline void dgemm_kernel_micro(const int M, const int N, const int K,
                                       const double *B_panel, double *C_aux) {
   int k;
   __m256d C_vec0, C_vec1, C_vec2, C_vec3;
+  __m256d B_bcase0, B_bcast1, B_bcast2, B_bcast3;
 
   C_vec0 = _mm256_load_pd(C_aux);
   C_vec1 = _mm256_load_pd(C_aux + MR);
   C_vec2 = _mm256_load_pd(C_aux + MR * 2);
   C_vec3 = _mm256_load_pd(C_aux + MR * 3);
+
+#define KR (1)
+  for (k = 0; k < K; k += KR) {
+  }
+
+  _mm256_store_pd(C_aux, C_vec0);
+  _mm256_store_pd(C_aux + MR, C_vec1);
+  _mm256_store_pd(C_aux + MR * 2, C_vec2);
+  _mm256_store_pd(C_aux + MR * 3, C_vec3);
 }
 
 void scale_block(const int M, const int N, const double beta, double *C,
