@@ -126,10 +126,7 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     // actual alpha*A*B+beta*C
     for (k = 0; k < K; k++) {
       B_nk_vec = _mm256_set1_pd(B[ldb * n + k]);
-      for (m = 0; m < rem; m++) {
-        C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
-      }
-      for (m = rem; m < M; m += VEC_BLOCK_SIZE) {
+      for (m = 0; m < M - rem; m += VEC_BLOCK_SIZE) {
         A_mk_subvec = _mm256_loadu_pd(&A[lda * k + m]);
         C_mn_subvec = _mm256_loadu_pd(&C[ldc * n + m]);
 
@@ -139,6 +136,9 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
         //     _mm256_add_pd(C_mn_subvec, _mm256_mul_pd(A_mk_subvec, B_nk_vec));
 
         _mm256_storeu_pd(&C[m + ldc * n], C_mn_subvec);
+      }
+      for (; m < rem; m++) {
+        C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
       }
     }
   }
@@ -230,7 +230,7 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
 
   // Allocating them here so we only do it once
-  double *A_packed = aligned_alloc(32, M * K * sizeof(double));
+  double *A_packed = aligned_alloc(32, MC * KC * sizeof(double));
   double *C_aux = aligned_alloc(32, MR * NR * sizeof(double));
 
   if (!B_packed || !A_packed || !C_aux) {
@@ -307,7 +307,7 @@ static inline void dgepp(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
       for (int nn = 0; nn < NR; nn++) {
         if (n + nn < N) {
           B_packed[n_block * NR * K + k * NR + nn] =
-              B_panel[k + (n + nn) * ldb];
+              alpha * B_panel[k + (n + nn) * ldb];
         } else {
           B_packed[n_block * NR * K + k * NR + nn] = 0.0;
         }
@@ -407,12 +407,12 @@ static inline void dgemm_kernel_naive(const int M, const int N, const int K,
   do {                                                                         \
     A_vec0 = _mm256_load_pd(&A_packed[(k) * MR]);                              \
                                                                                \
-    B_bcast0 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 0]);                  \
-    B_bcast1 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 1]);                  \
-    B_bcast2 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 2]);                  \
-    B_bcast3 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 3]);                  \
-    B_bcast4 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 4]);                  \
-    B_bcast5 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 5]);                  \
+    B_bcast0 = _mm256_set1_pd(B_panel[(k) * NR + 0]);                          \
+    B_bcast1 = _mm256_set1_pd(B_panel[(k) * NR + 1]);                          \
+    B_bcast2 = _mm256_set1_pd(B_panel[(k) * NR + 2]);                          \
+    B_bcast3 = _mm256_set1_pd(B_panel[(k) * NR + 3]);                          \
+    B_bcast4 = _mm256_set1_pd(B_panel[(k) * NR + 4]);                          \
+    B_bcast5 = _mm256_set1_pd(B_panel[(k) * NR + 5]);                          \
                                                                                \
     C_vec0 = _mm256_fmadd_pd(A_vec0, B_bcast0, C_vec0);                        \
     C_vec1 = _mm256_fmadd_pd(A_vec0, B_bcast1, C_vec1);                        \
@@ -425,7 +425,6 @@ static inline void dgemm_kernel_naive(const int M, const int N, const int K,
 static inline void dgemm_kernel_4x6(const int M, const int N, const int K,
                                     const double alpha, const double *A_packed,
                                     const double *B_panel, double *C_aux) {
-  __m256d alpha_vec = _mm256_set1_pd(alpha);
   __m256d A_vec0;
   __m256d B_bcast0, B_bcast1, B_bcast2, B_bcast3, B_bcast4, B_bcast5;
   __m256d C_vec0, C_vec1, C_vec2, C_vec3, C_vec4, C_vec5;
