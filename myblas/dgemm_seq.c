@@ -148,21 +148,18 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 
 // micro-kernel is MRxNR
 #define MR (4)
-#define NR (4)
+#define NR (6)
 // panels of A are MCxKC, panels of B are KCxN, panels of C are MCxN
 /*
- * Paper states that KC*NR*sizeof(double) < L1/2, with NR=4 it leaves us with
- * KC*32<16KB, so let's say KC=500
+ * Paper states that KC*NR*sizeof(double) < L1/2, with NR=6 it leaves us with
+ * KC*48<16KB, so let's say KC=320
  */
-#define KC (512)
+#define KC (320)
 /*
- * It then states that MC*KC*sizeof(double) < L2/2, with KC=500 it leaves us
+ * It then states that MC*KC*sizeof(double) < L2/2, with KC=320 it leaves us
  * with MC=32
  */
 #define MC (32)
-#if (KC % MR != 0 || KC % NR != 0 || MC % MR != 0 || MC % NR != 0)
-#error "KC or MC is not a multiple of MKR"
-#endif
 
 static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                              CBLAS_TRANSPOSE transB, const int M, const int N,
@@ -183,7 +180,7 @@ static inline void dgebp(const int M, const int N, const int K,
                          double *C, const int ldc, double *A_packed,
                          double *C_aux);
 
-static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
+static inline void dgemm_kernel_4x6(const int M, const int N, const int K,
                                     const double alpha, const double *A_packed,
                                     const double *B_panel, double *C_aux);
 
@@ -216,7 +213,7 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
    * - [x] review packing of B, pretty sure I'm doing it wrong
    * - [x] make sure there are no cases where aligned_alloc might fail. Perhaps
    * add some assertions
-   * - [ ] handle remainder because for now it only works on matrix that are
+   * - [x] handle remainder because for now it only works on matrix that are
    * multiple of MC/KC
    * - [ ] profiling the code
    * - [x] find a better way to do scaling as I'm pretty sure it's a bottleneck
@@ -229,7 +226,7 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   // Will hold panels of B re-packed into a contiguous array in order to make it
   // easily fit inside of cache lines. It is aligned on 32 bytes to make sure we
   // can use aligned load/stores as it seems to have an impact on haswell
-  int ldbp = N + N % 4;
+  int ldbp = N + ((NR - (N % NR)) % NR); // TODO: check this
   double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
 
   // Allocating them here so we only do it once
@@ -376,7 +373,7 @@ static inline void dgebp(const int M, const int N, const int K,
 
       memset(C_aux, 0, MR * NR * sizeof(double));
 
-      dgemm_kernel_4x4(Mb, Nb, K, alpha, A_packed + m_block * MR * K,
+      dgemm_kernel_4x6(Mb, Nb, K, alpha, A_packed + m_block * MR * K,
                        B_panel + n_block * NR * K, C_aux);
 
       // unpacking C_aux into C
@@ -410,29 +407,35 @@ static inline void dgemm_kernel_naive(const int M, const int N, const int K,
   do {                                                                         \
     A_vec0 = _mm256_load_pd(&A_packed[(k) * MR]);                              \
                                                                                \
-    B_bcast0 = _mm256_set1_pd(alpha * B_panel[(k) * NR]);                      \
+    B_bcast0 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 0]);                  \
     B_bcast1 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 1]);                  \
     B_bcast2 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 2]);                  \
     B_bcast3 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 3]);                  \
+    B_bcast4 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 4]);                  \
+    B_bcast5 = _mm256_set1_pd(alpha * B_panel[(k) * NR + 5]);                  \
                                                                                \
     C_vec0 = _mm256_fmadd_pd(A_vec0, B_bcast0, C_vec0);                        \
     C_vec1 = _mm256_fmadd_pd(A_vec0, B_bcast1, C_vec1);                        \
     C_vec2 = _mm256_fmadd_pd(A_vec0, B_bcast2, C_vec2);                        \
     C_vec3 = _mm256_fmadd_pd(A_vec0, B_bcast3, C_vec3);                        \
+    C_vec4 = _mm256_fmadd_pd(A_vec0, B_bcast4, C_vec4);                        \
+    C_vec5 = _mm256_fmadd_pd(A_vec0, B_bcast5, C_vec5);                        \
   } while (0);
 
-static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
+static inline void dgemm_kernel_4x6(const int M, const int N, const int K,
                                     const double alpha, const double *A_packed,
                                     const double *B_panel, double *C_aux) {
   __m256d alpha_vec = _mm256_set1_pd(alpha);
   __m256d A_vec0;
-  __m256d B_bcast0, B_bcast1, B_bcast2, B_bcast3;
-  __m256d C_vec0, C_vec1, C_vec2, C_vec3;
+  __m256d B_bcast0, B_bcast1, B_bcast2, B_bcast3, B_bcast4, B_bcast5;
+  __m256d C_vec0, C_vec1, C_vec2, C_vec3, C_vec4, C_vec5;
 
-  C_vec0 = _mm256_load_pd(C_aux);
-  C_vec1 = _mm256_load_pd(C_aux + MR);
-  C_vec2 = _mm256_load_pd(C_aux + MR * 2);
-  C_vec3 = _mm256_load_pd(C_aux + MR * 3);
+  C_vec0 = _mm256_load_pd(C_aux + 0 * MR);
+  C_vec1 = _mm256_load_pd(C_aux + 1 * MR);
+  C_vec2 = _mm256_load_pd(C_aux + 2 * MR);
+  C_vec3 = _mm256_load_pd(C_aux + 3 * MR);
+  C_vec4 = _mm256_load_pd(C_aux + 4 * MR);
+  C_vec5 = _mm256_load_pd(C_aux + 5 * MR);
 
   int k;
 #define KR 8
@@ -452,12 +455,13 @@ static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
     }
   }
 
-  _mm256_store_pd(C_aux, C_vec0);
-  _mm256_store_pd(C_aux + MR, C_vec1);
-  _mm256_store_pd(C_aux + MR * 2, C_vec2);
-  _mm256_store_pd(C_aux + MR * 3, C_vec3);
+  _mm256_store_pd(C_aux + 0 * MR, C_vec0);
+  _mm256_store_pd(C_aux + 1 * MR, C_vec1);
+  _mm256_store_pd(C_aux + 2 * MR, C_vec2);
+  _mm256_store_pd(C_aux + 3 * MR, C_vec3);
+  _mm256_store_pd(C_aux + 4 * MR, C_vec4);
+  _mm256_store_pd(C_aux + 5 * MR, C_vec5);
 }
-
 void scale_block(const int M, const int N, const double beta, double *C,
                  const int ldc) {
   for (int bn = 0; bn < dgemm_seq_block_size; bn++) {
