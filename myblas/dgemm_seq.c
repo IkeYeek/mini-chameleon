@@ -170,11 +170,12 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                              const int lda, const double *B, const int ldb,
                              const double beta, double *C, const int ldc);
 
-static inline void dgepp(const int M, const int N, const int K,
-                         const double alpha, const double *A_panel,
+static inline void dgepp(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                         CBLAS_TRANSPOSE transB, const int M, const int N,
+                         const int K, const double alpha, const double *A_panel,
                          const int lda, const double *B_panel, const int ldb,
-                         double *B_packed, double *C, const int ldc,
-                         double *A_packed, double *C_aux);
+                         double *B_packed, const double beta, double *C,
+                         const int ldc, double *A_packed, double *C_aux);
 
 static inline void dgebp(const int M, const int N, const int K,
                          const double alpha, const double *A_block,
@@ -220,7 +221,7 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
    * - [ ] profiling the code
    * - [x] find a better way to do scaling as I'm pretty sure it's a bottleneck
    * right now
-   * - [ ] optimize parameters for the architecture
+   * - [x] optimize parameters for the architecture
    * - [x] check the actual impact of aligned vs unaligned load and stores on
    * haswell.
    */
@@ -228,7 +229,8 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   // Will hold panels of B re-packed into a contiguous array in order to make it
   // easily fit inside of cache lines. It is aligned on 32 bytes to make sure we
   // can use aligned load/stores as it seems to have an impact on haswell
-  double *B_packed = aligned_alloc(32, sizeof(double) * N * KC);
+  int ldbp = N + N % 4;
+  double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
 
   // Allocating them here so we only do it once
   double *A_packed = aligned_alloc(32, M * K * sizeof(double));
@@ -248,8 +250,8 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     int Kb = MIN(KC, K - k);
     const double *A_panel = &A[lda * k];
     const double *B_panel = &B[k];
-    dgepp(M, N, Kb, alpha, A_panel, lda, B_panel, ldb, B_packed, C, ldc,
-          A_packed, C_aux);
+    dgepp(layout, transA, transB, M, N, Kb, alpha, A_panel, lda, B_panel, ldb,
+          B_packed, beta, C, ldc, A_packed, C_aux);
   }
 
   free(B_packed);
@@ -279,11 +281,12 @@ static inline void scale_C(const int M, const int N, const double beta,
   }
 }
 
-static inline void dgepp(const int M, const int N, const int K,
-                         const double alpha, const double *A_panel,
+static inline void dgepp(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                         CBLAS_TRANSPOSE transB, const int M, const int N,
+                         const int K, const double alpha, const double *A_panel,
                          const int lda, const double *B_panel, const int ldb,
-                         double *B_packed, double *C, const int ldc,
-                         double *A_packed, double *C_aux) {
+                         double *B_packed, const double beta, double *C,
+                         const int ldc, double *A_packed, double *C_aux) {
   /*
    * Say I have this 6x5 matrix, and panels are 2x5.
    * We want to go from this:
@@ -316,10 +319,15 @@ static inline void dgepp(const int M, const int N, const int K,
   }
 
   int m;
-  for (m = 0; m < M; m += MC) {
+  for (m = 0; m + MC < M; m += MC) {
     int Mb = MIN(MC, M - m);
-    dgebp(Mb, N, K, alpha, A_panel + m, lda, B_packed, K, &C[m], ldc, A_packed,
+    dgebp(Mb, N, K, alpha, A_panel + m, lda, B_packed, K, C + m, ldc, A_packed,
           C_aux);
+  }
+  if (m < M) {
+    int Mb = M - m;
+    dgemm_scalaire(layout, transA, transB, Mb, N, K, alpha, A_panel + m, lda,
+                   B_panel, ldb, 1.0, C + m, ldc);
   }
 }
 
@@ -426,7 +434,9 @@ static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
   C_vec2 = _mm256_load_pd(C_aux + MR * 2);
   C_vec3 = _mm256_load_pd(C_aux + MR * 3);
 
-  for (int k = 0; k < K; k += 8) {
+  int k;
+#define KR 8
+  for (k = 0; k + KR < K + 1; k += KR) {
     KERNEL_ITER(k);
     KERNEL_ITER(k + 1);
     KERNEL_ITER(k + 2);
@@ -435,6 +445,11 @@ static inline void dgemm_kernel_4x4(const int M, const int N, const int K,
     KERNEL_ITER(k + 5);
     KERNEL_ITER(k + 6);
     KERNEL_ITER(k + 7);
+  }
+  if (k < K) {
+    for (; k < K; k += 1) {
+      KERNEL_ITER(k);
+    }
   }
 
   _mm256_store_pd(C_aux, C_vec0);
