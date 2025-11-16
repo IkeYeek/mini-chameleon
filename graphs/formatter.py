@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if args.auto_label == True:
         parts = args.input.split('-')
         if len(parts) > 1:
-            args.label = parts[1] + ("_" + parts[-1] if len(parts) >= 4 else "")
+            args.label = parts[1] + ("_" + parts[-1].split(".")[0] if len(parts) >= 4 else "")
         else:
             args.label = args.input
 
