@@ -12,6 +12,10 @@ RFILES="../r_scripts/template.R ../r_scripts/template_simple.R"
 # Comment guix shell command
 # To enable bash lang syntax highlight
 
+echo "Compiling project"
+
+source ./helpers/project_compile.sh
+
 echo "Creating GUIX shell"
 
 guix shell --pure -D mini-chameleon bash gcc-toolchain -- \

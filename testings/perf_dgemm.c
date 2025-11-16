@@ -46,10 +46,10 @@ int main( int argc, char **argv )
         }
 #endif
         else {
-            for (int i=0; i<options->iter; i++)
-                testone_dgemm( options->fct->fctptr,
-                            options->transA, options->transB,
-                            options->M, options->N, options->K, options->check );
+            testone_dgemm( options->fct->fctptr,
+                    options->transA, options->transB,
+                    options->M, options->N, options->K, options->check );
+                
         }
     }
 
