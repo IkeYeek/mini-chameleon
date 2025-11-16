@@ -94,7 +94,6 @@ int dgemm_scalaire(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
 
   return ALGONUM_SUCCESS;
 }
-
 #define VEC_BLOCK_SIZE 4
 static inline void scale_vec(const int M, const int N, const int rem,
                              const double beta, double *C, const int ldc) {
@@ -142,7 +141,10 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
     // actual alpha*A*B+beta*C
     for (k = 0; k < K; k++) {
       B_nk_vec = _mm256_set1_pd(B[ldb * n + k]);
-      for (m = 0; m < M - rem; m += VEC_BLOCK_SIZE) {
+      for (m = 0; m < rem; m++) {
+        C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
+      }
+      for (m = rem; m < M; m += VEC_BLOCK_SIZE) {
         A_mk_subvec = _mm256_loadu_pd(&A[lda * k + m]);
         C_mn_subvec = _mm256_loadu_pd(&C[ldc * n + m]);
 
@@ -753,10 +755,8 @@ void dgemm_seq_init(void) __attribute__((constructor));
 void dgemm_seq_init(void) {
   int ver_idx = 0;
 
-  char *versions[] = {"scalaire", "goto", "bloc", "avx2"};
-  void *fcptrs[] = {dgemm_scalaire, dgemm_goto, dgemm_bloc, dgemm_avx2};
-  char *versions[] = {"scalaire", "custom", "bloc", "avx2", "avx2_bloc"};
-  void *fcptrs[] = {dgemm_scalaire, dgemm_custom, dgemm_bloc, dgemm_avx2,
+  char *versions[] = {"scalaire", "goto", "custom", "bloc", "avx2", "avx2_bloc"};
+  void *fcptrs[] = {dgemm_scalaire, dgemm_goto, dgemm_custom, dgemm_bloc, dgemm_avx2,
                     dgemm_avx2_bloc};
   char *env_version = getenv("SEQ_VER");
 
