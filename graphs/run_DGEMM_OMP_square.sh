@@ -2,7 +2,8 @@
 
 TEST_PATH="../build/debug/testings/perf_dgemm"
 BLOCK_SIZES="64"
-VARIANTS="vendor goto"
+NUM_THREADS="4 8 16"
+VARIANTS="vendor omp"
 SIDE_SIZES="256 320 384 512 640 832 1024 1280 1600 1984 2496 3136 3904 4864"
 ITER=5
 FILE=$(date '+%Y-%m-%d-%H:%M:%S')
@@ -28,11 +29,9 @@ current_dir=$(pwd)
 if [[ $current_dir == *graphs ]]; then
   echo "Compiling project"
 else
-    echo "Not running from graphs/ folder (cd into graphs)"
+    echo "Not running from graphs/ folder (cd into graphs)."
     exit 1
 fi
-
-echo "Compiling project"
 
 source ./helpers/project_compile.sh
 
@@ -50,45 +49,18 @@ mkdir -p "$FILE"
 
 for size in $SIDE_SIZES; do
   for var in $VARIANTS; do
-    
-    if [ "$var" = "scalaire" ]; then
-      echo "Launching: BS=N/A, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER"
-      OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}.raw"
-      
-      if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-          SEQ_VER=$var $TEST_PATH -v seq -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
-      else
-          echo "Skipping experiment (output file exists and complete)"
-      fi
-      
-
-    else
-      if [ "$var" = "vendor" ]; then
+      for num_threads in $NUM_THREADS; do
         for bs in $BLOCK_SIZES; do
-          echo "Launching: BS=N/A, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER"
-          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}.raw"
-
-          if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-            OMP_NUM_THREADS=1 $TEST_PATH -v vendor -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
-          else
-            echo "Skipping experiment (output file exists and complete)"
-          fi
-        done
-      else
-        for bs in $BLOCK_SIZES; do
-          echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER"
-          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${bs}.raw"
+          echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, Threads=$num_threads"
+          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${bs}-${num_threads}.raw"
           
           if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-            SEQ_VER=$var BLOCKSIZE=$bs $TEST_PATH -v seq -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
+            OMP_NUM_THREADS=$num_threads OMP_PLACES=cores BLOCKSIZE=$bs $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
           else
             echo "Skipping experiment (output file exists and complete)"
           fi
         done
-      fi
-      
-    fi
-    
+      done
   done
 done
 
