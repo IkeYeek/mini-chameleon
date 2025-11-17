@@ -742,13 +742,8 @@ int dgemm_seq(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
               const double alpha, const double *A, const int lda,
               const double *B, const int ldb, const double beta, double *C,
               const int ldc) {
-  if (dgemm_seq_block_size != 1) {
-    dgemm_bloc(layout, transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C,
+  dgemm_goto(layout, transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C,
                ldc);
-  } else {
-    dgemm_goto(layout, transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C,
-               ldc);
-  }
 
   return ALGONUM_SUCCESS;
 }
@@ -766,9 +761,9 @@ void dgemm_seq_init(void) __attribute__((constructor));
 void dgemm_seq_init(void) {
   int ver_idx = 0;
 
-  char *versions[] = {"scalaire", "goto", "custom", "bloc", "avx2", "avx2_bloc"};
-  void *fcptrs[] = {dgemm_scalaire, dgemm_goto, dgemm_custom, dgemm_bloc, dgemm_avx2,
-                    dgemm_avx2_bloc};
+  char *versions[] = {"goto", "custom", "bloc", "avx2", "avx2_bloc", "scalaire"};
+  void *fcptrs[] = {dgemm_goto, dgemm_custom, dgemm_bloc, dgemm_avx2,
+                    dgemm_avx2_bloc, dgemm_scalaire};
   char *env_version = getenv("SEQ_VER");
 
   if (env_version != NULL) {
