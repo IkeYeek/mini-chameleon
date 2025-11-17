@@ -1,0 +1,63 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\graphicspath{ {./res/} }
+\usepackage{placeins}
+
+% style from https://www.overleaf.com/learn/latex/Code_listing
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+\title{Rapport Projet HPC}
+\author{Mathilde Chollon, Valentin Jonquière, Lucas Marques, Léo Paillé}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+\section{Versions Séquentielles}
+\subsection{Blocking}
+\subsection{Vectorisation}
+\section{Mémoire partagée - OpenMP}
+\section{Mémoire distribuée - MPI}
+\section{GPU}
+
+
+\end{document}
