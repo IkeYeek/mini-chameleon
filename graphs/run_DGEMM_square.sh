@@ -3,10 +3,10 @@
 TEST_PATH="../build/debug/testings/perf_dgemm"
 BLOCK_SIZES="64"
 VARIANTS="scalaire bloc avx2_bloc vendor"
-SIDE_SIZES="256 320 384 512 640 832 1024 1280 1600 1984 2496 3136 3904 4864 6080 7616 9536"
+SIDE_SIZES="256 320 384 512"
 ITER=5
 FILE=$(date '+%Y-%m-%d-%H:%M:%S')
-RFILES="../r_scripts/template.R ../r_scripts/template_simple.R"
+RFILES="../r_scripts/template.R ../r_scripts/template_simple.R ../r_scripts/bar.R"
 RESUMING=false
 
 need_run() {
@@ -94,6 +94,6 @@ done
 for file in *.out; do
   echo "Processing text file: $file"
    for script in $RFILES; do
-    guix shell r r-ggplot2 r-dplyr -- Rscript "$script" "$file"
+    guix shell r r-ggplot2 r-dplyr r-tidyr -- Rscript "$script" "$file"
   done
 done
