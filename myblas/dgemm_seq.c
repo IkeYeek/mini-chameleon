@@ -121,6 +121,9 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   // TODO: is treating sequentially first and not least an issue ?
   // TODO: AVX512???
   // TODO: compare with and without fmadd
+  if(transA != CblasNoTrans || transB != CblasNoTrans){
+    return ALGONUM_NOT_IMPLEMENTED;
+  }
   int m, n, k;
   // the remainder of M % VEC_BLOCK_SIZE that we'll treat sequentially
   int rem = M % VEC_BLOCK_SIZE;
@@ -238,6 +241,9 @@ int dgemm_avx2_bloc(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                     const int K, const double alpha, const double *A,
                     const int lda, const double *B, const int ldb,
                     const double beta, double *C, const int ldc) {
+  if(transA != CblasNoTrans || transB != CblasNoTrans){
+    return ALGONUM_NOT_IMPLEMENTED;
+  }
   const int MB = 4;
   const int NB = 4;
   int m0, n0, k;
@@ -300,7 +306,9 @@ int dgemm_custom(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
                  const double alpha, const double *A, const int lda,
                  const double *B, const int ldb, const double beta, double *C,
                  const int ldc) {
-
+  if(transA != CblasNoTrans || transB != CblasNoTrans){
+    return ALGONUM_NOT_IMPLEMENTED;
+  }
   int m, n, k;
 
   if (beta != 1.0) {
@@ -401,6 +409,9 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   // Will hold panels of B re-packed into a contiguous array in order to make it
   // easily fit inside of cache lines. It is aligned on 32 bytes to make sure we
   // can use aligned load/stores as it seems to have an impact on haswell
+  if(transA != CblasNoTrans || transB != CblasNoTrans){
+    return ALGONUM_NOT_IMPLEMENTED;
+  }
   int ldbp = N + ((NR - (N % NR)) % NR);
   double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
 
