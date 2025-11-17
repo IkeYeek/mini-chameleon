@@ -29,7 +29,8 @@ plot <- ggplot(data = df, mapping = aes(x = N, y = GFlops_mean, colour = Label))
   geom_line() +
   geom_point(aes(y=GFlops_mean))+
   scale_x_continuous(trans='log2') + 
+  scale_y_continuous(trans='log2') +
   geom_ribbon(aes(ymin = GFlops_min, ymax = GFlops_max, fill = Label),alpha = 0.2,color = NA) +
-  labs(x="Matrix size (N=M)", y="Performance (GFlop/s)")
+  labs(x="Matrix size (N=M=k)", y="Performance (GFlop/s)")
 
 ggsave(paste(input_file, ".png", sep=""), plot = plot, width = 10, height = 6, dpi = 300)
