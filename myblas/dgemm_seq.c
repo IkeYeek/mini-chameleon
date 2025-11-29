@@ -122,7 +122,7 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   // TODO: AVX512???
   // TODO: compare with and without fmadd
   if(transA != CblasNoTrans || transB != CblasNoTrans){
-    return ALGONUM_NOT_IMPLEMENTED;
+    return dgemm_scalaire(layout,transA,transB,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc);
   }
   int m, n, k;
   // the remainder of M % VEC_BLOCK_SIZE that we'll treat sequentially
@@ -159,6 +159,143 @@ int dgemm_avx2(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
         _mm256_storeu_pd(&C[m + ldc * n], C_mn_subvec);
       }
     }
+  }
+
+  return ALGONUM_SUCCESS;
+}
+
+int dgemm_avx2_microkernel_4x4(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                               CBLAS_TRANSPOSE transB, const int M, const int N,
+                               const int K, const double alpha, const double *A,
+                               const int lda, const double *B, const int ldb,
+                               const double beta, double *C, const int ldc) {
+  int k;
+  __m256d C_vec_0, C_vec_1, C_vec_2, C_vec_3;
+
+  C_vec_0 = _mm256_loadu_pd(C + 0 * 0);
+  C_vec_1 = _mm256_loadu_pd(C + ldc);
+  C_vec_2 = _mm256_loadu_pd(C + ldc * 2);
+  C_vec_3 = _mm256_loadu_pd(C + ldc * 3);
+
+  for (k = 0; k < K / 4; k += 1) {
+    int k4 = k * 4;
+    __m256d A_vec_1 = _mm256_loadu_pd(A + (k4 * lda));
+    __m256d A_vec_2 = _mm256_loadu_pd(A + (k4 * lda) + lda);
+    __m256d A_vec_3 = _mm256_loadu_pd(A + (k4 * lda) + 2 * lda);
+    __m256d A_vec_4 = _mm256_loadu_pd(A + (k4 * lda) + 3 * lda);
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[0 * ldb + k4 + 3]);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_0);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_0);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_0);
+      C_vec_0 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_0);
+    }
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[1 * ldb + k4 + 3]);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_1);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_1);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_1);
+      C_vec_1 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_1);
+    }
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[2 * ldb + k4 + 3]);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_2);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_2);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_2);
+      C_vec_2 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_2);
+    }
+
+    {
+      __m256d B_b0 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 0]);
+      __m256d B_b1 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 1]);
+      __m256d B_b2 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 2]);
+      __m256d B_b3 = _mm256_set1_pd(alpha * B[3 * ldb + k4 + 3]);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_1, B_b0, C_vec_3);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_2, B_b1, C_vec_3);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_3, B_b2, C_vec_3);
+      C_vec_3 = _mm256_fmadd_pd(A_vec_4, B_b3, C_vec_3);
+    }
+  }
+
+  _mm256_storeu_pd(C + 0 * 0, C_vec_0);
+  _mm256_storeu_pd(C + ldc, C_vec_1);
+  _mm256_storeu_pd(C + ldc * 2, C_vec_2);
+  _mm256_storeu_pd(C + ldc * 3, C_vec_3);
+  return ALGONUM_SUCCESS;
+}
+
+int dgemm_avx2_bloc(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                    CBLAS_TRANSPOSE transB, const int M, const int N,
+                    const int K, const double alpha, const double *A,
+                    const int lda, const double *B, const int ldb,
+                    const double beta, double *C, const int ldc) {
+  if(transA != CblasNoTrans || transB != CblasNoTrans){
+    return dgemm_scalaire(layout,transA,transB,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc);
+  }
+  const int MB = 4;
+  const int NB = 4;
+  int m0, n0, k;
+
+  if (beta != 1.0) {
+    scale_vec(M, N, M % MB, beta, C, ldc);
+  }
+
+  // we compute the parts that can be handled by microkernel
+  const int M4 = (M / MB) * MB;
+  const int N4 = (N / NB) * NB;
+  const int K4 = (K / 4) * 4;
+
+  if (K4 == 0 || M4 == 0 || N4 == 0) {
+    return dgemm_avx2(layout, transA, transB, M, N, K, alpha, A, lda, B, ldb,
+                      1.0, C, ldc);
+  }
+
+  for (n0 = 0; n0 < N4; n0 += NB) {
+    const double *B_block = B + n0 * ldb;
+    double *C_col = C + n0 * ldc;
+
+    for (m0 = 0; m0 < M4; m0 += MB) {
+      const double *A_block = A + m0;
+      double *C_block = C_col + m0;
+      dgemm_avx2_microkernel_4x4(layout, transA, transB, MB, NB, K4, alpha,
+                                 A_block, lda, B_block, ldb, 1.0, C_block, ldc);
+
+      for (k = K4; k < K; k++) {
+        for (int nn = 0; nn < NB; nn++) {
+          const double b = alpha * B_block[ldb * nn + k];
+          const double *A_col = A_block + k * lda;
+          __m256d A_vec = _mm256_loadu_pd(A_col);
+          __m256d C_vec = _mm256_loadu_pd(C_block + nn * ldc);
+          __m256d B_broadcase = _mm256_set1_pd(b);
+          C_vec = _mm256_fmadd_pd(A_vec, B_broadcase, C_vec);
+          _mm256_storeu_pd(C_block + nn * ldc, C_vec);
+        }
+      }
+    }
+  }
+
+  if (N4 < N && M4 > 0) {
+    const int N_right = N - N4;
+    dgemm_avx2(layout, transA, transB, M4, N_right, K, alpha, A, lda,
+               B + N4 * ldb, ldb, 1.0, C + N4 * ldc, ldc);
+  }
+
+  if (M4 < M) {
+    const int M_bottom = M - M4;
+    dgemm_avx2(layout, transA, transB, M_bottom, N, K, alpha, A + M4, lda, B,
+               ldb, 1.0, C + M4, ldc);
   }
 
   return ALGONUM_SUCCESS;
@@ -244,6 +381,9 @@ static inline int dgemm_goto(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
   // Will hold panels of B re-packed into a contiguous array in order to make it
   // easily fit inside of cache lines. It is aligned on 32 bytes to make sure we
   // can use aligned load/stores as it seems to have an impact on haswell
+  if(transA != CblasNoTrans || transB != CblasNoTrans){
+    return dgemm_scalaire(layout,transA,transB,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc);
+  }
   int ldbp = N + ((NR - (N % NR)) % NR); // TODO: check this
   double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
 
@@ -593,8 +733,8 @@ void dgemm_seq_init(void) __attribute__((constructor));
 void dgemm_seq_init(void) {
   int ver_idx = 0;
 
-  char *versions[] = {"scalaire", "goto", "bloc", "avx2"};
-  void *fcptrs[] = {dgemm_scalaire, dgemm_goto, dgemm_bloc, dgemm_avx2};
+  char *versions[] = {"goto", "scalaire","bloc", "avx2","avx2_bloc"}; // Goto as default if SEQ_VER not defined
+  void *fcptrs[] = {dgemm_goto, dgemm_scalaire, dgemm_bloc, dgemm_avx2,dgemm_avx2_bloc};
   char *env_version = getenv("SEQ_VER");
 
   if (env_version != NULL) {
