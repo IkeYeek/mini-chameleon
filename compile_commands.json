@@ -1,1 +1,308 @@
-build/debug/compile_commands.json
+[
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/core_dplrnt.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/core_dplrnt.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/core_dplrnt.c",
+  "output": "algonum/CMakeFiles/algonum.dir/core_dplrnt.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/tile.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/tile.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/tile.c",
+  "output": "algonum/CMakeFiles/algonum.dir/tile.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/perf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/perf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/perf.c",
+  "output": "algonum/CMakeFiles/algonum.dir/perf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/check_ddot.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/check_ddot.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/check_ddot.c",
+  "output": "algonum/CMakeFiles/algonum.dir/check_ddot.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/test_ddot.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_ddot.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_ddot.c",
+  "output": "algonum/CMakeFiles/algonum.dir/test_ddot.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/check_dgemm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/check_dgemm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/check_dgemm.c",
+  "output": "algonum/CMakeFiles/algonum.dir/check_dgemm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/test_dgemm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgemm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgemm.c",
+  "output": "algonum/CMakeFiles/algonum.dir/test_dgemm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/test_dgemm_tiled.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgemm_tiled.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgemm_tiled.c",
+  "output": "algonum/CMakeFiles/algonum.dir/test_dgemm_tiled.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/check_dgetrf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/check_dgetrf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/check_dgetrf.c",
+  "output": "algonum/CMakeFiles/algonum.dir/check_dgetrf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/test_dgetrf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgetrf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgetrf.c",
+  "output": "algonum/CMakeFiles/algonum.dir/test_dgetrf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/test_dgetrf_tiled.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgetrf_tiled.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/test_dgetrf_tiled.c",
+  "output": "algonum/CMakeFiles/algonum.dir/test_dgetrf_tiled.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/codelet_dplrnt.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dplrnt.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dplrnt.c",
+  "output": "algonum/CMakeFiles/algonum.dir/codelet_dplrnt.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/codelet_dlacpy.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dlacpy.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dlacpy.c",
+  "output": "algonum/CMakeFiles/algonum.dir/codelet_dlacpy.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/codelet_dgemm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dgemm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dgemm.c",
+  "output": "algonum/CMakeFiles/algonum.dir/codelet_dgemm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/codelet_dgetrf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dgetrf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dgetrf.c",
+  "output": "algonum/CMakeFiles/algonum.dir/codelet_dgetrf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/codelet_dtrsm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dtrsm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/codelet_dtrsm.c",
+  "output": "algonum/CMakeFiles/algonum.dir/codelet_dtrsm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/starpu.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/starpu.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/starpu.c",
+  "output": "algonum/CMakeFiles/algonum.dir/starpu.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/starpu_dplrnt.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/starpu_dplrnt.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/starpu_dplrnt.c",
+  "output": "algonum/CMakeFiles/algonum.dir/starpu_dplrnt.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dalgonum_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fPIC -o CMakeFiles/algonum.dir/starpu_dlacpy.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/starpu_dlacpy.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/starpu_dlacpy.c",
+  "output": "algonum/CMakeFiles/algonum.dir/starpu_dlacpy.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/fctlist.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/fctlist.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/fctlist.c",
+  "output": "myblas/CMakeFiles/myblas.dir/fctlist.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/ddot_seq.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/ddot_seq.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/ddot_seq.c",
+  "output": "myblas/CMakeFiles/myblas.dir/ddot_seq.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgemm_seq.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_seq.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_seq.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgemm_seq.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgemm_vendor.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_vendor.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_vendor.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgemm_vendor.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -fopenmp -o CMakeFiles/myblas.dir/dgemm_omp.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_omp.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_omp.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgemm_omp.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -fopenmp -o CMakeFiles/myblas.dir/dgemm_tiled_omp.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_tiled_omp.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_tiled_omp.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgemm_tiled_omp.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgemm_tiled_mpi.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_tiled_mpi.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_tiled_mpi.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgemm_tiled_mpi.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgetrf_seq.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_seq.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_seq.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgetrf_seq.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgetrf_vendor.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_vendor.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_vendor.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgetrf_vendor.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgetrf_omp.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_omp.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_omp.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgetrf_omp.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgetrf_tiled_omp.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_tiled_omp.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_tiled_omp.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgetrf_tiled_omp.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgetrf_tiled_mpi.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_tiled_mpi.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_tiled_mpi.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgetrf_tiled_mpi.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgemm_tiled_starpu.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_tiled_starpu.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgemm_tiled_starpu.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgemm_tiled_starpu.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/myblas",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc -Dmyblas_EXPORTS -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include  -O3 -march=haswell -O2 -g -DNDEBUG -fPIC -fopenmp -o CMakeFiles/myblas.dir/dgetrf_tiled_starpu.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_tiled_starpu.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/myblas/dgetrf_tiled_starpu.c",
+  "output": "myblas/CMakeFiles/myblas.dir/dgetrf_tiled_starpu.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/check_ddot.dir/check_ddot.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/check_ddot.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/check_ddot.c",
+  "output": "testings/CMakeFiles/check_ddot.dir/check_ddot.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/check_ddot.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/check_ddot.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/check_dgemm.dir/check_dgemm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/check_dgemm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/check_dgemm.c",
+  "output": "testings/CMakeFiles/check_dgemm.dir/check_dgemm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/check_dgemm.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/check_dgemm.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/check_dgetrf.dir/check_dgetrf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/check_dgetrf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/check_dgetrf.c",
+  "output": "testings/CMakeFiles/check_dgetrf.dir/check_dgetrf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/check_dgetrf.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/check_dgetrf.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/perf_ddot.dir/perf_ddot.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/perf_ddot.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/perf_ddot.c",
+  "output": "testings/CMakeFiles/perf_ddot.dir/perf_ddot.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/perf_ddot.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/perf_ddot.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/perf_dgemm.dir/perf_dgemm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/perf_dgemm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/perf_dgemm.c",
+  "output": "testings/CMakeFiles/perf_dgemm.dir/perf_dgemm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/perf_dgemm.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/perf_dgemm.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/perf_dgetrf.dir/perf_dgetrf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/perf_dgetrf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/perf_dgetrf.c",
+  "output": "testings/CMakeFiles/perf_dgetrf.dir/perf_dgetrf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/perf_dgetrf.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/perf_dgetrf.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/warm_ddot.dir/warm_ddot.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/warm_ddot.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/warm_ddot.c",
+  "output": "testings/CMakeFiles/warm_ddot.dir/warm_ddot.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/warm_ddot.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/warm_ddot.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/warm_dgemm.dir/warm_dgemm.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/warm_dgemm.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/warm_dgemm.c",
+  "output": "testings/CMakeFiles/warm_dgemm.dir/warm_dgemm.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/warm_dgemm.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/warm_dgemm.dir/common.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/warm_dgetrf.dir/warm_dgetrf.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/warm_dgetrf.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/warm_dgetrf.c",
+  "output": "testings/CMakeFiles/warm_dgetrf.dir/warm_dgetrf.c.o"
+},
+{
+  "directory": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/testings",
+  "command": "/gnu/store/9x5nm2khckw4pajnplknx5qfsmsmxr0l-profile/bin/gcc  -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/algonum/include -I/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/build/debug/algonum/include -isystem /gnu/store/krxcx4inxn2p23zbygyfx5cn6vq5s8i7-starpu-1.4.8/include/starpu/1.4 -isystem /gnu/store/vjdc7vss30gkrjnbwhhba6rzddwi5qmv-hwloc-2.12.2-lib/include -isystem /gnu/store/c0sf0shhwsq9g1q26v4yrl8gqdzxyw62-libpciaccess-0.18.1/include -isystem /gnu/store/a2jnc1avp7jdyp01r9kpp8q1i72kk8g0-zlib-1.3.1/include -O2 -g -DNDEBUG -fopenmp -o CMakeFiles/warm_dgetrf.dir/common.c.o -c /home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "file": "/home/luk/Cours/M2/Cours/ProjHPC/mini-chameleon/testings/common.c",
+  "output": "testings/CMakeFiles/warm_dgetrf.dir/common.c.o"
+}
+]
