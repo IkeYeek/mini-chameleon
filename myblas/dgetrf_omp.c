@@ -15,13 +15,47 @@
 #include "myblas.h"
 #include <assert.h>
 
+static int dgetrf_seq_block_size = 8;
+
 int
 dgetrf_omp( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )
 {
     int m, n, k;
-    int K = ( M > N ) ? N : M;
+    int small_dim = M<N ? M :N;
+    for (int k = 0; k < small_dim; k += dgetrf_seq_block_size) {
+        int size = (small_dim - k < dgetrf_seq_block_size) ? (small_dim - k) : dgetrf_seq_block_size;
 
-    return ALGONUM_NOT_IMPLEMENTED; /* Success */
+        dgetrf_seq(layout, size, size, &A[k + k * lda], lda);
+
+        if (k + size < N) {
+            cblas_dtrsm(layout,
+                        CblasLeft, CblasLower, CblasNoTrans, CblasUnit,
+                        size, N - (k + size), 1.0,
+                        &A[k + k * lda], lda,
+                        &A[k + (k + size) * lda], lda);
+        }
+
+        if (k + size < M) {
+            cblas_dtrsm(layout,
+                        CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit,
+                        M - (k + size), size, 1.0,
+                        &A[k + k * lda], lda,
+                        &A[k + size + k * lda], lda);
+        }
+
+        if (k + size < M && k + size < N) {
+            dgemm_omp(layout,
+                      CblasNoTrans, CblasNoTrans,
+                      M - (k + size), N - (k + size), size,
+                      -1.0,
+                      &A[k + size + k * lda], lda,
+                      &A[k + (k + size) * lda], lda,
+                      1.0,
+                      &A[k + size + (k + size) * lda], lda);
+        }
+    }
+
+    return ALGONUM_SUCCESS; /* Success */
 }
 
 /* To make sure we use the right prototype */
