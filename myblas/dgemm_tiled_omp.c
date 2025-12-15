@@ -32,9 +32,9 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
         if ( transB == CblasNoTrans ) {
             #pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)
             for( m=0; m<MT; m++ ) {
-                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
+                    mm = m == (MT-1) ? M - m * b : b;
                     nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
@@ -53,9 +53,9 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
         else {
             #pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)
             for( m=0; m<MT; m++ ) {
-                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
+                    mm = m == (MT-1) ? M - m * b : b;
                     nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
@@ -76,9 +76,9 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
         if ( transB == CblasNoTrans ) {
             #pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)
             for( m=0; m<MT; m++ ) {
-                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
+                     mm = m == (MT-1) ? M - m * b : b;
                     nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
@@ -97,9 +97,9 @@ int dgemm_tiled_omp( CBLAS_LAYOUT layout,
         else {
             #pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)
             for( m=0; m<MT; m++ ) {
-                mm = m == (MT-1) ? M - m * b : b;
 
                 for( n=0; n<NT; n++ ) {
+                    mm = m == (MT-1) ? M - m * b : b;
                     nn = n == (NT-1) ? N - n * b : b;
 
                     for( k=0; k<KT; k++ ) {
