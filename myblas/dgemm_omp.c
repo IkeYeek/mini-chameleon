@@ -28,7 +28,7 @@
 // panels of A are MCxKC, panels of B are KCxN, panels of C are MCxN
 // KC and MC where obtaind through empirical testing
 #define KC (256)
-#define MC (2048)
+#define MC (256)
 
 #if STATIC_INLINE
 static inline
