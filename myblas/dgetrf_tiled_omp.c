@@ -50,12 +50,14 @@ dgetrf_tiled_omp( CBLAS_LAYOUT layout,
 
             for( n=k+1; n<NT; n++) {
                 int nn = n == (NT-1) ? N - n * b : b;
+                const double ** mata =  (const double **)(A+( MT * k + m ));
+                const double ** matb = (const double **)(A+ (MT * n + k)) ;
 
-                dgemm_seq( CblasColMajor, CblasNoTrans, CblasNoTrans,
-                           mm, nn, kk,
-                           -1., A[ MT * k + m ], b,
-                                A[ MT * n + k ], b,
-                           1.,  A[ MT * n + m ], b );
+                dgemm_tiled_omp( CblasColMajor, CblasNoTrans, CblasNoTrans,
+                           mm, nn, kk,b,
+                           -1., mata,
+                             matb ,
+                           1.,  (A+ (MT * n + m)));
             }
         }
     }
