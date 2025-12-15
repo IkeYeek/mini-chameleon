@@ -14,6 +14,7 @@
  */
 #include "myblas.h"
 #include <immintrin.h>
+#include <omp.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -52,7 +53,7 @@ __attribute__((noinline))
           const int M, const int N, const int K, const double alpha,
           const double *A_panel, const int lda, const double *B_panel,
           const int ldb, double *B_packed, const double beta, double *C,
-          const int ldc, double *A_packed, double *C_aux);
+          const int ldc, double **A_packed, double **C_aux);
 
 #if STATIC_INLINE
 static inline
@@ -121,13 +122,23 @@ __attribute__((noinline))
   int ldbp = N + ((NR - (N % NR)) % NR);
   double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
 
-  // Allocating them here so we only do it once
-  double *A_packed = aligned_alloc(32, MC * KC * sizeof(double));
-  double *C_aux = aligned_alloc(32, MR * NR * sizeof(double));
-
-  if (!B_packed || !A_packed || !C_aux) {
+  if (!B_packed) {
     perror("Aligned Alloc Error");
     exit(1);
+  }
+  // Allocating them here so we only do it once
+  // contrarely to the seq implem, we are going to allocate one array per thread
+  int max_threads = omp_get_max_threads();
+  double *A_packed[max_threads];
+  double *C_aux[max_threads];
+
+  for (int thread_idx = 0; thread_idx < max_threads; thread_idx++) {
+    A_packed[thread_idx] = aligned_alloc(32, MC * KC * sizeof(double));
+    C_aux[thread_idx] = aligned_alloc(32, MR * NR * sizeof(double));
+    if (!A_packed[thread_idx] || !C_aux[thread_idx]) {
+      perror("Aligned Alloc Error");
+      exit(1);
+    }
   }
 
   // first we scale the whole matrix.
@@ -145,8 +156,10 @@ __attribute__((noinline))
   }
 
   free(B_packed);
-  free(A_packed);
-  free(C_aux);
+  for (int thread_idx = 0; thread_idx < max_threads; thread_idx++) {
+    free(A_packed[thread_idx]);
+    free(C_aux[thread_idx]);
+  }
 
   return ALGONUM_SUCCESS;
 }
@@ -188,7 +201,7 @@ __attribute__((noinline))
           const int M, const int N, const int K, const double alpha,
           const double *A_panel, const int lda, const double *B_panel,
           const int ldb, double *B_packed, const double beta, double *C,
-          const int ldc, double *A_packed, double *C_aux) {
+          const int ldc, double **A_packed, double **C_aux) {
   /*
    * Say I have this 6x5 matrix, and panels are 2x5.
    * We want to go from this:
@@ -223,16 +236,12 @@ __attribute__((noinline))
   }
 
   __builtin_prefetch(B_packed); // noticed small improvements when doing that
-#pragma omp parallel for private(A_packed, C_aux) schedule(static)             \
-    shared(B_packed, C)
+#pragma omp parallel for schedule(static) shared(A_packed, C_aux, B_packed, C)
   for (int m = 0; m < M; m += MC) {
-    A_packed = aligned_alloc(32, MC * KC * sizeof(double));
-    C_aux = aligned_alloc(32, MR * NR * sizeof(double));
     int Mb = MIN(MC, M - m);
-    dgebp(Mb, N, K, alpha, A_panel + m, lda, B_packed, K, C + m, ldc, A_packed,
-          C_aux);
-    free(A_packed);
-    free(C_aux);
+    int thread_idx = omp_get_thread_num();
+    dgebp(Mb, N, K, alpha, A_panel + m, lda, B_packed, K, C + m, ldc,
+          A_packed[thread_idx], C_aux[thread_idx]);
   }
 }
 
