@@ -15,6 +15,7 @@
 #include "algonum.h"
 #include "myblas.h"
 #include <immintrin.h>
+#include <omp.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -229,7 +230,6 @@ __attribute__((noinline))
   }
 
   __builtin_prefetch(B_packed); // noticed small improvements when doing that
-#pragma omp parallel for
   for (int m = 0; m < M; m += MC) {
     int Mb = MIN(MC, M - m);
     dgebp(Mb, N, K, alpha, A_panel + m, lda, B_packed, K, C + m, ldc, A_packed,
