@@ -223,7 +223,8 @@ __attribute__((noinline))
   }
 
   __builtin_prefetch(B_packed); // noticed small improvements when doing that
-#pragma omp parallel for shared(A_panel, B_packed, C, C_aux) private(A_packed)
+#pragma omp parallel for shared(A_panel, B_packed, C, C_aux) private(A_packed) \
+    schedule(guided)
   for (int m = 0; m < M; m += MC) {
     A_packed = aligned_alloc(32, MC * KC * sizeof(double));
     int Mb = MIN(MC, M - m);
