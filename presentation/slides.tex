@@ -8,6 +8,9 @@
 }
 \setbeamercolor{footline}{fg=blue}
 \setbeamerfont{footline}{series=\bfseries}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{matrix, positioning, arrows.meta}
 
 
 
@@ -24,6 +27,31 @@
 \begin{document}
 
 \frame{\titlepage}
+
+\begin{frame}{The Team}
+    \begin{columns}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \rule{2cm}{2cm} \\ % Placeholder for photo
+            L. Marques
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \rule{2cm}{2cm} \\ % Placeholder for photo
+            L. Paillé
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \rule{2cm}{2cm} \\ % Placeholder for photo
+            M. Chollon
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \rule{2cm}{2cm} \\ % Placeholder for photo
+            V. Jonquière
+        \end{column}
+    \end{columns}
+\end{frame}
 
 \begin{frame}
 \frametitle{Table of Contents}
