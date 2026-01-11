@@ -1,7 +1,6 @@
 #!/bin/bash
 
 TEST_PATH="../build/debug/testings/perf_dgemm"
-BLOCK_SIZES="32 64 128"
 VARIANTS="goto omp"
 SIDE_SIZES="256 512 1024 2048 4096"
 THREADS=" 4 8 12 24"
@@ -56,11 +55,7 @@ for size in $SIDE_SIZES; do
       else
         for threads in $THREADS; do
           echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$threads"
-          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${bs}-t-${threads}.raw"
-          if [ "$var" = "omp-t" ]; then
-          OUTPUT_FILE="gemm-omp_t-${size}x${size}x${size}-${bs}-t-${threads}.raw"
-          fi
-          
+          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${threads}_threads.raw"
           if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
             OMP_NUM_THREADS=$threads SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
           else

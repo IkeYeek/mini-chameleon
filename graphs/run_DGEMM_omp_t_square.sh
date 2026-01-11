@@ -56,11 +56,7 @@ for size in $SIDE_SIZES; do
       else
         for threads in $THREADS; do
           echo "Launching: BS=$BLOCK_SIZES, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$threads"
-          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${BLOCK_SIZES}-t-${threads}.raw"
-          if [ "$var" = "omp-t" ]; then
-          OUTPUT_FILE="gemm-omp_t-${size}x${size}x${size}-${BLOCK_SIZES}-t-${threads}.raw"
-          fi
-          
+          OUTPUT_FILE="gemm-omp_t-${size}x${size}x${size}-${threads}_threads_bs_${BLOCK_SIZES}.raw"
           if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
             OMP_NUM_THREADS=$threads SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size -b $BLOCK_SIZES > "$FILE/$OUTPUT_FILE"
           else

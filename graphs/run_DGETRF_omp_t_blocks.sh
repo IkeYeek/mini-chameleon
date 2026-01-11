@@ -56,11 +56,7 @@ for size in $SIDE_SIZES; do
       else
         for bs in $BLOCK_SIZES; do
           echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$THREADS"
-          OUTPUT_FILE="getrf-${var}-${size}x${size}x${size}-${bs}-t-${THREADS}.raw"
-          if [ "$var" = "omp-t" ]; then
-          OUTPUT_FILE="getrf-omp_t-${size}x${size}x${size}-${bs}-t-${THREADS}.raw"
-          fi
-          
+          OUTPUT_FILE="getrf-omp_t-${size}x${size}x${size}-${THREADS}_threads_bs_${bs}.raw"
           if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
             OMP_NUM_THREADS=$THREADS SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -b $bs > "$FILE/$OUTPUT_FILE"
           else
