@@ -15,7 +15,7 @@
 #include "myblas.h"
 #include <assert.h>
 
-static int dgetrf_seq_block_size = 1;
+static int dgetrf_seq_block_size = 128;
 
 int
 dgetrf_scalaire( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 TEST_PATH="../build/debug/testings/perf_dgemm"
-BLOCK_SIZES="32 64 128"
-VARIANTS="goto omp"
+BLOCK_SIZES="32 64 128 256"
+VARIANTS="omp-t"
 SIDE_SIZES="256 512 1024 2048 4096"
-THREADS=" 4 8 12 24"
+THREADS=12
 ITER=5
 FILE=$(date '+%Y-%m-%d-%H:%M:%S')
 RFILES="../r_scripts/template.R ../r_scripts/template_simple.R ../r_scripts/bar.R"
@@ -44,25 +44,25 @@ mkdir -p "$FILE"
 for size in $SIDE_SIZES; do
   for var in $VARIANTS; do
     
-    if [ "$var" = "goto" ]; then
+    if [ "$var" = "seq" ]; then
       echo "Launching: BS=N/A, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER"
-      OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}.raw"
+      OUTPUT_FILE="getrf-${var}-${size}x${size}x${size}.raw"
       
       if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-          SEQ_VER=goto $TEST_PATH -v seq -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
+          $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
       else
           echo "Skipping experiment (output file exists and complete)"
       fi
       else
-        for threads in $THREADS; do
-          echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$threads"
-          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${bs}-t-${threads}.raw"
+        for bs in $BLOCK_SIZES; do
+          echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$THREADS"
+          OUTPUT_FILE="getrf-${var}-${size}x${size}x${size}-${bs}-t-${THREADS}.raw"
           if [ "$var" = "omp-t" ]; then
-          OUTPUT_FILE="gemm-omp_t-${size}x${size}x${size}-${bs}-t-${threads}.raw"
+          OUTPUT_FILE="getrf-omp_t-${size}x${size}x${size}-${bs}-t-${THREADS}.raw"
           fi
           
           if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-            OMP_NUM_THREADS=$threads SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
+            OMP_NUM_THREADS=$THREADS SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -b $bs > "$FILE/$OUTPUT_FILE"
           else
             echo "Skipping experiment (output file exists and complete)"
           fi
@@ -77,7 +77,7 @@ echo "All experiments complete. Exiting GUIX for Visualisation"
 cd "$FILE"
 for file in *.raw; do
   echo "Processing text file: $file"
-  python3 ../formatter.py -i "$file" -al -o "gemm_omp_square.out"
+  python3 ../formatter.py -i "$file" -al -o "getrf_omp-t_blocks.out"
 done
 for file in *.out; do
   echo "Processing text file: $file"

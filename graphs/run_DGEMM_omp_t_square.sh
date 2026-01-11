@@ -1,8 +1,8 @@
 #!/bin/bash
 
 TEST_PATH="../build/debug/testings/perf_dgemm"
-BLOCK_SIZES="32 64 128"
-VARIANTS="goto omp"
+BLOCK_SIZES=128
+VARIANTS="goto omp-t"
 SIDE_SIZES="256 512 1024 2048 4096"
 THREADS=" 4 8 12 24"
 ITER=5
@@ -55,14 +55,14 @@ for size in $SIDE_SIZES; do
       fi
       else
         for threads in $THREADS; do
-          echo "Launching: BS=$bs, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$threads"
-          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${bs}-t-${threads}.raw"
+          echo "Launching: BS=$BLOCK_SIZES, Variant=$var, MxNxK=${size}x${size}x${size}, ITER=$ITER, THREADS=$threads"
+          OUTPUT_FILE="gemm-${var}-${size}x${size}x${size}-${BLOCK_SIZES}-t-${threads}.raw"
           if [ "$var" = "omp-t" ]; then
-          OUTPUT_FILE="gemm-omp_t-${size}x${size}x${size}-${bs}-t-${threads}.raw"
+          OUTPUT_FILE="gemm-omp_t-${size}x${size}x${size}-${BLOCK_SIZES}-t-${threads}.raw"
           fi
           
           if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-            OMP_NUM_THREADS=$threads SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size > "$FILE/$OUTPUT_FILE"
+            OMP_NUM_THREADS=$threads SEQ_VER=goto $TEST_PATH -v $var -i $ITER -M $size -N $size -K $size -b $BLOCK_SIZES > "$FILE/$OUTPUT_FILE"
           else
             echo "Skipping experiment (output file exists and complete)"
           fi
@@ -77,7 +77,7 @@ echo "All experiments complete. Exiting GUIX for Visualisation"
 cd "$FILE"
 for file in *.raw; do
   echo "Processing text file: $file"
-  python3 ../formatter.py -i "$file" -al -o "gemm_omp_square.out"
+  python3 ../formatter.py -i "$file" -al -o "gemm_omp-t_square.out"
 done
 for file in *.out; do
   echo "Processing text file: $file"
