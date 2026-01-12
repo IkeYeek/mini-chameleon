@@ -50,8 +50,17 @@
 }
 \setbeamercolor{footline}{fg=blue}
 \setbeamerfont{footline}{series=\bfseries}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{matrix, positioning, arrows.meta}
 
-
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
 
 \title[]{HPC Project}
 
@@ -67,9 +76,191 @@
 
 \frame{\titlepage}
 
+\begin{frame}{The Team}
+    \begin{columns}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{lucas.jpg}\\
+
+            L. Marques
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \rule{2cm}{2cm} \\ % Placeholder for photo
+            L. Paillé
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{mathilde.png}\\
+            M. Chollon
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{valentin.png}\\
+            V. Jonquière
+        \end{column}
+    \end{columns}
+\end{frame}
+
 \begin{frame}
 \frametitle{Table of Contents}
 \tableofcontents
+\end{frame}
+\include{part_dgemm_seq}
+\section{GETRF}
+\begin{frame}
+\frametitle{GETRF}
+\begin{itemize}
+    \item GEneral matrix TRiangular Factorization
+    \item Solve systems of linear equations of the form \textit{Ax=b}
+    \item Breaks a matrix A into 2 triagular matrices L and U
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{A=LU.png}
+    \caption{LU Factorization}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{GETRF blocked}
+\begin{columns}[T]
+
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{GETRF_BLOCKED.png}
+        \vfill
+        \small{Figure: Blocked version of GETRF}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+for k = 0 to small_dim step block_size:
+    # 1. Factorize the diagonal block
+    GETRF_SCALAR( A[k,k] )
+
+    # 2. Update the "Panel" Row
+    TRSM_LOWER( A[k,k], A[k, k+size] )
+
+    # 3. Update the "Panel" Column
+    TRSM_UPPER( A[k,k], A[k+size, k] )
+
+    # 4. Update the Remaining Matrix
+    GEMM( A[k+size, k], A[k, k+size]
+          -> A[k+size, k+size] )
+\end{lstlisting}
+\end{column}
+
+\end{columns}
+\end{frame}
+
+\section{OpenMP}
+\begin{frame}
+\frametitle{Concept}
+\begin{itemize}
+    \item Use several cores on a machine
+    \item Abstraction and simplification of the use of threads
+    \item Split the computation between threads to speed up computation
+\end{itemize}
+\end{frame}
+\subsection{Implemented versions}
+\begin{frame}
+\frametitle{DGEMM OpenMP}
+\begin{itemize}
+    \item Use the code from the sequential version
+    \item Parallelize the micro kernel
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{itemize}
+    \item Use the base code composed of 3 imbricated loops
+    \item Parallelize the 2 outer loops
+    \item \textit{\#pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{DGETRF OpenMP and DGETRF OpenMP tiled}
+\begin{columns}[T]
+
+    \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item Naive version
+        \item Most of the computation made in gemm -> use omp version
+        \item Parallelize bottleneck for efficient optimization
+    \end{itemize}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+for k = 0 to small_dim step block_size:
+    # 1. Factorize the diagonal block
+    GETRF_SCALAR( A[k,k] )
+
+    # 2. Update the "Panel" Row
+    TRSM_LOWER( A[k,k], A[k, k+size] )
+
+    # 3. Update the "Panel" Column
+    TRSM_UPPER( A[k,k], A[k+size, k] )
+
+    # 4. Update the Remaining Matrix
+    GEMM_OMP/GEMM_OMP_TILED
+    ( A[k+size, k], A[k, k+size]
+          -> A[k+size, k+size] )
+\end{lstlisting}
+\end{column}
+
+\end{columns}
+\end{frame}
+
+
+\subsection{Results}
+\begin{frame}
+\frametitle{DGEMM OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gemm_omp_square.out_simple.png}
+    \caption{dgemm\_seq vs dgem\_omp}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gemm_omp-t_square.out_simple.png}
+    \caption{dgemm\_seq vs dgemm\_omp\_tiled}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGETRF OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{getrf_omp_square.out_simple.png}
+    \caption{dgetrf\_seq vs dgetrf\_omp}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGETRF OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{getrf_omp-t_square.out_simple.png}
+    \caption{dgetrf\_seq vs dgetrf\_omp\_tiled}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGETRF OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{getrf_omp-t_blocks.out_simple.png}
+    \caption{Impact of the Block size in dgetrf\_omp\_tiled}
+\end{figure}
+
 \end{frame}
 
 \section{MPI GEMM}
@@ -170,6 +361,7 @@ As our algorithm uses shared memory, several (new) parameters needs to be optimi
 \begin{itemize}
     \item Add timers to determine ratio computation/communications
     \item Broadcast could possibly be non-blocking (maybe hard to implement)
+    \item Overlap computation/communications
     \item Use blocked GEMM 
 \end{itemize}
 \end{frame}
