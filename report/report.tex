@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
@@ -8,6 +8,8 @@
 \usepackage{float}
 \usepackage{graphicx}
 \graphicspath{ {./res/} }
+\usepackage[margin=1in]{geometry}
+\usepackage{todonotes}
 \usepackage{placeins}
 \usepackage{amsfonts}
 
@@ -165,7 +167,71 @@ On voit bien que très vite, OpenBLAS outreperforme notre implémentation, ce qu
     \caption{Comparaison entre notre implémentation GOTO et OpenBLAS sur différentes tailles de matrices}
     \label{fig:placeholder}
 \end{figure}
-Nous voyons que sur trois cas nous battons OpenBLAS pour des matrices hautes et fines, et globalement nous tournons autour des 50\% des performances d'OpenBLAS en séquentiel. La taille de la dimension $M$ semble jouer un rôle particulièrement important ce qui est cohérent avec le fait que si $M\leq MC$, alors on fait un dgemm scalaire.\section{Mémoire partagée - OpenMP}
+Nous voyons que sur trois cas nous battons OpenBLAS pour des matrices hautes et fines, et globalement nous tournons autour des 50\% des performances d'OpenBLAS en séquentiel. La taille de la dimension $M$ semble jouer un rôle particulièrement important ce qui est cohérent avec le fait que si $M\leq MC$, alors on fait un dgemm scalaire.
+
+\subsection{DGETRF}
+
+En plus de la multiplication de matrice, la factorisation LU (DGETRF Double GEneral TRiangular Factorization) devait être implémentée.
+Notre version ici est sans pivot.
+
+La version scalaire classique du DGETRF était donnée. Nous avons donc implémenté une version bloquée, vue en cours d'Algorithmique Numérique.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/GETRF_BLOCKED.png}
+    \caption{Algorithme bloqué de la factorisation LU}
+    \label{fig:lu}
+\end{figure}
+La Figure \ref{fig:lu} représente l'algorithme que nous avons implémenté. On effectue un GETRF scalaire sur la partie 
+certe. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve).
+Enfin, le reste de la matrice est ms à jour avec l'utilisation d'un GEMM.
+Ces opérations sont ensuite répétées sur la partie jaune, ainsi de suite jusqu'a ce que toute la matrice ait été factorisée.
+
+Nous avons décidé de nous focaliser particulièrement sur le DGEMM, les optimisations du DGETRF sont donc moins poussées. Étant donné que la principale opération du DGETRF bloqué est le DGEMM,
+ nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de cette opération.
+\section{Mémoire partagée - OpenMP}
+\subsection{DGEMM}
+\todo[inline]{Lucas}
+\subsection{DGEMM Tiled}
+Nous avons ensuite implémenté une version tuilée du DGEMM. Dans la version classique, les données sont stockées en mémoire en
+column-major sur toute la hauteur de la matrice. La version tuilée quant à elle est allouée
+en column-major tuile par tuile.
+Cela permet de faire des algorithmes plus efficaces, notamment lorsque l'on utilise le parallélisme ou la mémoire distribuée.
+
+L'algorithme tuilé étant donné, nous avons uniquement parallélisé les différentes parties (avec ou sans matrices transposées).
+Comme nous utilisons notre version séquentielle comme cœur de nos opérations, nous avons de très bonnes performances sur des matrices non transposées.
+En revanche, comme la version goto que nous avons implémenté ne supporte pas les matrices transposées, nous utilisons la version scalaire originale
+afin d'avoir toutes les versions implémentée. Les performances avec les matrices transposées sont donc relativement mauvaises, mais ayant décidé
+de nous concentrer sur la version sans transposées, ce n'est pas grave.
+
+Pour cette version, nous avons décidé de nous comparer à la version vendor. Pour cela, nous avons fait des expériences sur 24 threads et une taille de tuiles de 128.
+Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de melleuires performances.
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_simple.png}
+        \caption{Performance en GFlop/s du Dgemm om tiled contre le vendor}
+        \label{fig:dgemm_omp_vendor_graph}    
+    \end{minipage}
+     \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_bar.png}
+        \caption{Comparaison des performances de notre version OMP-tiled avec la version vendor (normalisé sur vendor)}
+        \label{fig:dgemm_omp_vendor_bar}    
+    \end{minipage}
+
+\end{figure}
+
+\subsection{DGETRF}
+
+Cette version est relativement difficile à optimiser, car nous possédons 3 critères pouvant influer sur les performances : la taille de blocs de la version séquentielle,
+la taille de blocs de la version parallèle ainsi que le nombre de threads.
+
+\subsection{DGETRF Tiled}
+
+Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
+critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
 \section{Mémoire distribuée - MPI}
 \section{GPU}
 
