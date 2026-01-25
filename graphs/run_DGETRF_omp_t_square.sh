@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TEST_PATH="../build/debug/testings/perf_dgemm"
+TEST_PATH="../build/debug/testings/perf_dgetrf"
 BLOCK_SIZES=128
 VARIANTS="seq omp-t"
 SIDE_SIZES="256 512 1024 2048 4096"
@@ -74,7 +74,7 @@ echo "All experiments complete. Exiting GUIX for Visualisation"
 cd "$FILE"
 for file in *.raw; do
   echo "Processing text file: $file"
-  python3 ../formatter.py -i "$file" -al -o "getrf_omp-t_square.out"
+  python3 ../formatter_dgetrf.py -i "$file" -al -o "getrf_omp-t_square.out"
 done
 for file in *.out; do
   echo "Processing text file: $file"
