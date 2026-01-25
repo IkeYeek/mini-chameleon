@@ -177,7 +177,7 @@ Notre version ici est sans pivot.
 La version scalaire classique du DGETRF était donnée. Nous avons donc implémenté une version bloquée, vue en cours d'Algorithmique Numérique.
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/GETRF_BLOCKED.png}
+    \includegraphics[width=0.6\textwidth]{assets/GETRF_BLOCKED.png}
     \caption{Algorithme bloqué de la factorisation LU}
     \label{fig:lu}
 \end{figure}
@@ -204,7 +204,10 @@ afin d'avoir toutes les versions implémentée. Les performances avec les matric
 de nous concentrer sur la version sans transposées, ce n'est pas grave.
 
 Pour cette version, nous avons décidé de nous comparer à la version vendor. Pour cela, nous avons fait des expériences sur 24 threads et une taille de tuiles de 128.
-Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de melleuires performances.
+Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de meilleures performances.
+La Figure \ref{fig:dgemm_omp_vendor_graph} permet de nos comparer nos deux versions. Nous pouvons voir que nous nous rapprochons de plus en plus de la version vendor
+jusqu'a 4096, puis nous commençons à nous en éloigner. Sur des petites matrices, nous sommes bien moins efficaces que le vendor, sans doute dû au fait que nous utilisons une seule taille de tuile pour toutes
+les configurations, or une tuille de 128 sur une matrice en 256x256 représente une part bien différente que sur des matrices en 4096x4096 ou plus.
 \begin{figure}[htbp]
     \centering
     \begin{minipage}{0.48\textwidth}
@@ -220,7 +223,8 @@ Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille
         \caption{Comparaison des performances de notre version OMP-tiled avec la version vendor (normalisé sur vendor)}
         \label{fig:dgemm_omp_vendor_bar}    
     \end{minipage}
-
+La Figure \ref{fig:dgemm_omp_vendor_bar} permet de comparer notre version à celle du vendor, normalisé sur le temps d'exécution le 
+plus long de la version vendor.
 \end{figure}
 
 \subsection{DGETRF}
