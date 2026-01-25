@@ -15,15 +15,15 @@
 #include "myblas.h"
 #include <assert.h>
 
-static int dgetrf_seq_block_size = 8;
+static int dgetrf_omp_block_size = 8;
 
 int
 dgetrf_omp( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )
 {
     int m, n, k;
     int small_dim = M<N ? M :N;
-    for (int k = 0; k < small_dim; k += dgetrf_seq_block_size) {
-        int size = (small_dim - k < dgetrf_seq_block_size) ? (small_dim - k) : dgetrf_seq_block_size;
+    for (int k = 0; k < small_dim; k += dgetrf_omp_block_size) {
+        int size = (small_dim - k < dgetrf_omp_block_size) ? (small_dim - k) : dgetrf_omp_block_size;
 
         dgetrf_seq(layout, size, size, &A[k + k * lda], lda);
 
@@ -80,4 +80,5 @@ dgetrf_omp_init( void )
     fct_dgetrf_omp.next   = NULL;
 
     register_fct( &fct_dgetrf_omp, ALGO_GETRF );
+    dgetrf_omp_block_size = myblas_getenv_value_int("BLOCKSIZE_OMP", 64);
 }
