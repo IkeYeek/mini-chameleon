@@ -79,7 +79,7 @@ Nous avons décidé de nous focaliser particulièrement sur le DGEMM, les optimi
  nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de cette opération.
 \section{Mémoire partagée - OpenMP}
 \subsection{DGEMM}
-\todo[inline]{Lucas}
+\input{dgemm_omp.tex}
 \subsection{DGEMM Tiled}
 Nous avons ensuite implémenté une version tuilée du DGEMM. Dans la version classique, les données sont stockées en mémoire en
 column-major sur toute la hauteur de la matrice. La version tuilée quant à elle est allouée
