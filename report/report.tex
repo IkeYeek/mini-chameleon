@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass[10pt, a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
@@ -122,7 +122,10 @@ la taille de blocs de la version parallèle ainsi que le nombre de threads.
 Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
 critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
 \section{Mémoire distribuée - MPI}
-\section{GPU}
+
+\section{Implémentation sur GPU}
+\input{dgemm_cuda.tex}
+
 \appendix
 \begin{figure}
     \centering
