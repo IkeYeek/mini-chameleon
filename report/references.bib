@@ -1,23 +1,69 @@
 @software{Thakkar_CUTLASS_2023,
-author = {Thakkar, Vijay and Ramani, Pradeep and Cecka, Cris and Shivam, Aniket and Lu, Honghao and Yan, Ethan and Kosaian, Jack and Hoemmen, Mark and Wu, Haicheng and Kerr, Andrew and Nicely, Matt and Merrill, Duane and Blasig, Dustyn and Atluri, Aditya and Qiao, Fengqi and Majcher, Piotr and Springer, Paul and Hohnerbach, Markus and Wang, Jin and Gupta, Manish},
-license = {BSD-3-Clause},
-month = jan,
-title = {{CUTLASS}},
-url = {https://github.com/NVIDIA/cutlass},
-version = {3.0.0},
-year = {2023}
+    author = {Thakkar, Vijay and Ramani, Pradeep and Cecka, Cris and Shivam, Aniket and Lu, Honghao and Yan, Ethan and Kosaian, Jack and Hoemmen, Mark and Wu, Haicheng and Kerr, Andrew and Nicely, Matt and Merrill, Duane and Blasig, Dustyn and Atluri, Aditya and Qiao, Fengqi and Majcher, Piotr and Springer, Paul and Hohnerbach, Markus and Wang, Jin and Gupta, Manish},
+    license = {BSD-3-Clause},
+    month = jan,
+    title = {{CUTLASS}},
+    url = {https://github.com/NVIDIA/cutlass},
+    version = {3.0.0},
+    year = {2023}
 }
 
 @article{SUMMA,
-author = {Van De Geijn, R. A. and Watts, J.},
-title = {SUMMA: scalable universal matrix multiplication algorithm},
-journal = {Concurrency: Practice and Experience},
-volume = {9},
-number = {4},
-pages = {255-274},
-doi = {https://doi.org/10.1002/(SICI)1096-9128(199704)9:4<255::AID-CPE250>3.0.CO;2-2},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/%28SICI%291096-9128%28199704%299%3A4%3C255%3A%3AAID-CPE250%3E3.0.CO%3B2-2},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/%28SICI%291096-9128%28199704%299%3A4%3C255%3A%3AAID-CPE250%3E3.0.CO%3B2-2},
-abstract = {Abstract In the paper we give a straightforward, highly efficient, scalable implementation of common matrix multiplication operations. The algorithms are much simpler than previously published methods, yield better performance, and require less work space. MPI implementations are given, as are performance results on the Intel Paragon system. © 1997 by John Wiley \& Sons, Ltd.},
-year = {1997}
+    author = {Van De Geijn, R. A. and Watts, J.},
+    title = {SUMMA: scalable universal matrix multiplication algorithm},
+    journal = {Concurrency: Practice and Experience},
+    volume = {9},
+    number = {4},
+    pages = {255-274},
+    doi = {https://doi.org/10.1002/(SICI)1096-9128(199704)9:4<255::AID-CPE250>3.0.CO;2-2},
+    url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/%28SICI%291096-9128%28199704%299%3A4%3C255%3A%3AAID-CPE250%3E3.0.CO%3B2-2},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/%28SICI%291096-9128%28199704%299%3A4%3C255%3A%3AAID-CPE250%3E3.0.CO%3B2-2},
+    abstract = {Abstract In the paper we give a straightforward, highly efficient, scalable implementation of common matrix multiplication operations. The algorithms are much simpler than previously published methods, yield better performance, and require less work space. MPI implementations are given, as are performance results on the Intel Paragon system. © 1997 by John Wiley \& Sons, Ltd.},
+    year = {1997}
+}
+
+@misc{cuda_toolkit,
+    author = {{NVIDIA Corporation}},
+    title = {CUDA Toolkit},
+    year = {2025},
+    version = {13.1},
+    url = {https://developer.nvidia.com/cuda-toolkit}
+}
+
+@techreport{nvidia2020ampere,
+    author      = {{NVIDIA Corporation}},
+    title       = {NVIDIA A100 Tensor Core GPU Architecture},
+    institution = {NVIDIA},
+    year        = {2020},
+    type        = {Whitepaper},
+    number      = {v1.0},
+    url         = {https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf}
+}
+
+@manual{cublas_library,
+    author = {{NVIDIA Corporation}},
+    title = {cuBLAS Library},
+    year = {2024},
+    url = {https://docs.nvidia.com/cuda/cublas/index.html},
+    note = {13.1}
+}
+
+@inproceedings{gtc2021s33322,
+    author       = {{NVIDIA Corporation}},
+    title        = {Dissecting the {Ampere GPU} Architecture through Microbenchmarking},
+    booktitle    = {NVIDIA GTC Spring 2021},
+    year         = {2021},
+    month        = {April},
+    note         = {Session S33322},
+    url          = {https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s33322/}
+}
+
+@misc{leikoe2021ampere,
+    author       = {Léo Paillé},
+    title        = {ampere-{L2}-partitions-microbenchmarks},
+    year         = {2021},
+    publisher    = {GitHub},
+    journal      = {GitHub repository},
+    howpublished = {\url{https://github.com/Leikoe/ampere-L2-partitions-microbenchmarks}},
+    note         = {Replication of the experiments showcased by Citadel at GTC 2021 about the A100's L2 partitions}
 }

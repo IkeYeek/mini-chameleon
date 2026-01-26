@@ -1,6 +1,3 @@
-% https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s33322/
-% https://github.com/Leikoe/ampere-L2-partitions-microbenchmarks
-
 \section{CUDA: copies vectorisées depuis la mémoire partagée}
 \label{appendix:smem_vectorized}
 
@@ -28,13 +25,13 @@ Sur la version correctment permutée de ce microkernel (Figure \ref{fig:m8n8k8_p
 
 \section{CUDA: utilisation optimale des deux partitions du L2}
 
-En 2021, des chercheurs de chez Citadel ont donné une présentation au GTC de NVIDIA où ils ont montré qu'il existait une très grande pénalité de performance lors des accès à la "mauvaise" partie du L2 de la carte graphique depuis un SM.
+En 2021, des chercheurs de chez Citadel ont donné une présentation au GTC de NVIDIA\cite{gtc2021s33322} où ils ont montré qu'il existait une très grande pénalité de performance lors des accès à la "mauvaise" partie du L2 de la carte graphique depuis un SM.
 Cette mauvaise partie est en fait la partition la plus loin du SM.
 Les SMs sont disposés autour des deux partitions du L2 et lorsqu'ils veulent accéder à celle dont ils ne sont pas collés, ils doivent passer par l'interconnect des deux partitions du L2.
 
 Ces chercheurs ont montré que la latence engendrée par un tel accès est 2x plus grande à la latence normale d'un accès au L2.
 
-Nous avons reproduit ces benchmarks dans le cadre du projet (voir Figures \ref{fig:l2sm0} et \ref{fig:l2sm2}) en espérant pouvoir intégrer une optimisation en tirant partie à notre GEMM CUDA.
+Nous avons reproduit\cite{leikoe2021ampere} ces benchmarks dans le cadre du projet (voir Figures \ref{fig:l2sm0} et \ref{fig:l2sm2}) en espérant pouvoir intégrer une optimisation en tirant partie à notre GEMM CUDA.
 \begin{figure}[H]
     \centering
     \begin{minipage}{0.48\textwidth}

@@ -1,8 +1,8 @@
 En 2025, pour sortir le plus de performances d'un GEMM, le matériel le plus utilisé est le GPU.
-Nous avons eu en cette derniere année de cours des enseignements de programmation GPU sur la plateforme CUDA (développée par NVIDIA, plus grand vendeur de cartes graphiques au monde).
+Nous avons eu en cette derniere année de cours des enseignements de programmation GPU sur la plateforme CUDA\cite{cuda_toolkit} (développée par NVIDIA, plus grand vendeur de cartes graphiques au monde).
 
 Nous avons choisi d'implémenter une version CUDA du DGEMM dans le cadre de ce projet.
-L'objectif initial était d'arriver à battre les performances de l'implémentation officielle de NVIDIA faisant partie de CuBLAS,
+L'objectif initial était d'arriver à battre les performances de l'implémentation officielle de NVIDIA faisant partie de CuBLAS\cite{cublas_library},
 sur une architecture utilisée pour ce type de problème : Ampere datacenter (A100, Compute Capability: \textbf{SM\_80}).
 Il n'y aurait pas vraiment d'intérêt à essayer de battre CuBLAS sur des cartes grand public pour lesquelles NVIDIA n'a fait aucun effort d'optimisation de la routine,
 et qui par ailleurs ne possèdent pas d'unités d'accélération matériel pour les GEMM en double précision (puisqu'on serait compute bound sans efforts).
@@ -15,12 +15,12 @@ Cette bibliothèque facilite les calculs d'arithmétique de pointeurs en proposa
 
 \subsection{Implémentation initiale ("naïve" pour \textbf{SM\_80})}
 Pour implémenter un GEMM sur GPU moderne, il est très connu dans le milieu (et facilement repérable sur les specifications de la carte, voir Figure \ref{fig:a100-specs})
-que les coeurs de tenseur (unités matérielles ne servant qu'à accélérer les GEMM) doivent être utilisés pour espérer atteindre les performances maximum annoncées.
+que les coeurs de tenseur (unités matérielles ne servant qu'à accélérer les GEMM) doivent être utilisés pour espérer atteindre les performances maximales annoncées.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/a100_specs.png}
-    \caption{Spécifications de la carte A100 de NVIDIA (Figure tirée du papier "NVIDIA A100 Tensor Core GPU Architecture"\cite{?})}
+    \caption{Spécifications de la carte A100 de NVIDIA (Figure tirée du papier "NVIDIA A100 Tensor Core GPU Architecture"\cite{nvidia2020ampere})}
     \label{fig:a100-specs}
 \end{figure}
 
