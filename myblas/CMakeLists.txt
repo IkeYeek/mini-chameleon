@@ -10,6 +10,7 @@
 ###
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=haswell")
+set(CMAKE_CUDA_ARCHITECTURES "native")
 # Define here the list of DDOT implementation
 # -------------------------------------------
 set( DDOT_srcs
@@ -83,7 +84,7 @@ endif()
 if ( ENABLE_CUDA )
   list( APPEND myblas_srcs
     dgemm_cublas.c
-    dgemm_cuda.c
+    dgemm_cuda.cu
     dgetrf_cuda.c
     )
 endif()
@@ -111,6 +112,7 @@ endif()
 if (ENABLE_CUDA)
     target_link_libraries( myblas PUBLIC CUDA::CUDA )
     target_link_libraries( myblas PUBLIC CUDA::CUBLAS )
+    target_link_libraries( myblas PRIVATE nvidia::cutlass )
 endif()
 
 if (ENABLE_OPENACC)
@@ -133,4 +135,3 @@ install(TARGETS myblas
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
-
