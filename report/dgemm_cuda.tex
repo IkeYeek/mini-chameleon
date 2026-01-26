@@ -9,7 +9,7 @@ et qui par ailleurs ne possèdent pas d'unités d'accélération matériel pour 
 
 Pour ce faire, nous avons dans un premier temps implémenté un DGEMM "naïf" pour A100, puis nous avons itérativement raffiné notre noyeau jusqu'à atteindre des performances comparables à CuBLAS.
 
-Pour toutes les implémentations CUDA du projet, nous avons utilisé la bibliothèque CuTe (faisant partie de CUTLASS\cite{?}) de NVIDIA.
+Pour toutes les implémentations CUDA du projet, nous avons utilisé la bibliothèque CuTe (faisant partie de CUTLASS\cite{Thakkar_CUTLASS_2023}) de NVIDIA.
 Cette bibliothèque facilite les calculs d'arithmétique de pointeurs en proposant une abstraction "/texttt{Layout}" qui représente la répartition des données en mémoire de chaque matrice (A, B et C).
 
 

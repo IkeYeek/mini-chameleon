@@ -13,6 +13,9 @@
 \usepackage{placeins}
 \usepackage{amsfonts}
 
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
+
 % style from https://www.overleaf.com/learn/latex/Code_listing
 \usepackage{xcolor}
 
@@ -22,21 +25,21 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
+    backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
     showstringspaces=false,
-    showtabs=false,                  
+    showtabs=false,
     tabsize=2
 }
 
@@ -129,19 +132,19 @@ plus grandes tuiles. Une plus petite taille de tuiles sur les petites matrices s
         \centering
         \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_simple.png}
         \caption{Performance en GFlop/s du Dgemm OpenMP tiled contre CBLAS}
-        \label{fig:dgemm_omp_t_vendor_graph}    
+        \label{fig:dgemm_omp_t_vendor_graph}
     \end{minipage}
      \hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_bar.png}
         \caption{Comparaison des performances de notre version OMP-tiled avec la version CBLAS (normalisé sur CBLAS)}
-        \label{fig:dgemm_omp_t_vendor_bar}    
+        \label{fig:dgemm_omp_t_vendor_bar}
     \end{minipage}
 \end{figure}
 
 La Figure \ref{fig:dgemm_omp_t_vendor_bar} permet de comparer notre version à celle de CBLAS, normalisé sur le temps d'exécution le
-plus long de la version CBLAS. Nous pouvons voir que nous obtenons des performances très différentes selon la taille de matrices. Sur les matrices de 4096 avec  les tailles de tuiles de 
+plus long de la version CBLAS. Nous pouvons voir que nous obtenons des performances très différentes selon la taille de matrices. Sur les matrices de 4096 avec  les tailles de tuiles de
 128 et 256, nous arrivons à plus de 80\% des performances de CBLAS.
 
 \subsection{DGETRF}
@@ -163,14 +166,14 @@ la taille des blocs sur la partie séquentielle et parallèle.
         \centering
         \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_graph.png}
         \caption{Performance en GFlop/s du DGETRF OpenMP  contre LAPACKE}
-        \label{fig:dgetrf_omp_vendor_graph}    
+        \label{fig:dgetrf_omp_vendor_graph}
     \end{minipage}
      \hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_bar.png}
         \caption{Comparaison des performances de notre version OpenMP avec la version LAPACKE (normalisé sur LAPACKE)}
-        \label{fig:dgetrf_omp_vendor_bar}    
+        \label{fig:dgetrf_omp_vendor_bar}
     \end{minipage}
 \end{figure}
 
@@ -184,7 +187,7 @@ critères vus lors de la section précédente, nous avons aussi la taille de tui
 
 La Figure \ref{fig:getrf_omp_tiled_tilesize} montre l'impact du choix de la taille de tuile sur les performances. Nous avons réalisé cette expérience
 avec la même taille de blocs séquentiels et parallèles (64 et 128) afin de ne pas influer sur les performances.
- 
+
 
 \begin{figure}
     \centering
@@ -206,7 +209,7 @@ Au cours de ce projet, nous nous sommes concentrés sur l'optimisation de la mul
 Nous obtenons de bons, voire très bons résultats selon les versions.
 Il reste toutefois des axes d'améliorations pour ce projet si nous souhaitons le mettre en application réelle.
 
-Nos versions du DGEMM étant déjà bien optimisées, il serait maintenant intéressant de se pencher en profondeur 
+Nos versions du DGEMM étant déjà bien optimisées, il serait maintenant intéressant de se pencher en profondeur
 sur la factorisation LU avec le DGETRF. Nous sommes restés sur des versions assez naïves, mais il existe des algorithmes
 plus puissants dans la littérature que l'on pourrait implémenter.
 
@@ -214,6 +217,10 @@ De plus, afin d'avoir de bonnes performances indépendamment de la taille du pro
 par défaut concernant la taille de blocs ou de tuiles selon la taille de la matrice.
 Comme nous l'avons vu dans nos résultats, c'est à l'utilisateur de choisir ces paramètres et un bon réglage pour une petite matrice peut être très mauvais
 pour des matrices plus imposantes. Cela nous permettrait sans doute d'avoir des résultats plus proches des versions vendor.
+
+BIBLIO
+
+\printbibliography
 
 \appendix
 \begin{figure}[H]
