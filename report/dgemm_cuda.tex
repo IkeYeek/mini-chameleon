@@ -1,13 +1,13 @@
-En 2025 (et probablement 2026 ?), pour sortir le plus de performances d'un GEMM, le matériel le plus utilisé est le GPU.
+En 2025, pour sortir le plus de performances d'un GEMM, le matériel le plus utilisé est le GPU.
 Nous avons eu en cette derniere année de cours des enseignements de programmation GPU sur la plateforme CUDA (développée par NVIDIA, plus grand vendeur de cartes graphiques au monde).
 
 Nous avons choisi d'implémenter une version CUDA du DGEMM dans le cadre de ce projet.
 L'objectif initial était d'arriver à battre les performances de l'implémentation officielle d'NVIDIA faisant partie de CuBLAS,
 sur une architecture utilisé pour ce type de problème : Ampere datacenter (A100, Compute Capability: \textbf{SM\_80}).
-Il n'y aurait pas vraiment d'intérêt à essayer de battre CuBLAS sur des cartes grand public pour lesquelles NVIDIA n'as fait aucun effort d'optimisation de la routine,
+Il n'y aurait pas vraiment d'intérêt à essayer de battre CuBLAS sur des cartes grand public pour lesquelles NVIDIA n'a fait aucun effort d'optimisation de la routine,
 et qui par ailleurs ne possèdent pas d'unités d'accélération matériel pour les GEMM en double précision (puisqu'on serait compute bound sans efforts).
 
-Pour ce faire, nous avons dans un premier temps implémenté un DGEMM "naïf" pour A100, puis nous avons itérativement rafiné notre noyeau jusqu'à atteindre des performances comparables à CuBLAS.
+Pour ce faire, nous avons dans un premier temps implémenté un DGEMM "naïf" pour A100, puis nous avons itérativement raffiné notre noyeau jusqu'à atteindre des performances comparables à CuBLAS.
 
 Pour toutes les implémentations CUDA du projet, nous avons utilisé la bibliothèque CuTe (faisant partie de CUTLASS\cite{?}) de NVIDIA.
 Cette bibliothèque facilite les calculs d'arithmétique de pointeurs en proposant une abstraction "/texttt{Layout}" qui représente la rapartition des données en mémoire de chaque matrice (A, B et C).
@@ -15,7 +15,7 @@ Cette bibliothèque facilite les calculs d'arithmétique de pointeurs en proposa
 
 \subsection{Implémentation initiale ("naïve" pour \textbf{SM\_80})}
 Pour implémenter un GEMM sur GPU moderne, il est très connu dans le milieu (et facilement repérable sur les specifications de la carte, voir figure \ref{fig:a100-specs})
-que les coeurs de tenseur (unitées matérielles ne servant qu'à accélérer les GEMM) doivent être utilisés pour espérer atteindre les performances maximum annoncées.
+que les coeurs de tenseur (unités matérielles ne servant qu'à accélérer les GEMM) doivent être utilisés pour espérer atteindre les performances maximum annoncées.
 
 \begin{figure}[H]
     \centering
@@ -40,7 +40,7 @@ L'algorithme utilisé dans cet implémentation est le suivant: on lance le kerne
 et une taille de bloc \textbf{(32)} (soit la taille d'un WARP, dans ce kernel, chaque bloc s'occupe de produire un bloc de taille 8x8 de la matrice de résultat C).
 Chaque bloc initialise un accumulateur C (taille 8x8, fragmenté en 2 registres par thread du WARP) à zéro, copie un bloc de A et de B en mémoire partagée puis en registres (fragmenté en 1 registre double par thread)
 et appelle le tensor core pour effectuer l'opération $C = A*B + C$.
-Les copies de mémoire globale vers mémoire partagée pour les blocs de A et B utilisent des copies asynchones de 64bits (1 double), celà permet juste de copie A et B en même temps mais aucun pipelining n'est réalisé.
+Les copies de mémoire globale vers mémoire partagée pour les blocs de A et B utilisent des copies asynchrones de 64bits (1 double), cela permet juste de copie A et B en même temps mais aucun pipelining n'est réalisé.
 
 Cette première implémentation obtient une performance très pauvre, autour de 10\% (voir figure \ref{fig:baseline}) de CuBLAS (1,7 sur 17,3 TFlops).
 \begin{figure}[H]
@@ -78,7 +78,7 @@ Cette première optimisation nous amène à 11,4\% (voir figure \ref{fig:baselin
 Sur notre implémentation de base "naïve", chaque thread copiait 1 double de la mémoire partagée vers un de ses registres.
 Sur les GPUs NVIDIA modernes, les copies peuvent faire jusqu'à 128 bits de large (copies vectorisées).
 Nous n'avions qu'un seul double à copie par thread et il nous était donc impossible d'utiliser ces copies plus larges mais maintenant,
-grâce à la premimière optimisation, nous avons 2 doubles par bloc A/B à copier par thread de SMEM vers RMEM.
+grâce à la première optimisation, nous avons 2 doubles par bloc A/B à copier par thread de SMEM vers RMEM.
 
 \begin{figure}[H]
     \centering
@@ -88,7 +88,7 @@ grâce à la premimière optimisation, nous avons 2 doubles par bloc A/B à copi
 \end{figure}
 
 Sur la figure \ref{fig:128bit_copy} on voit que les 2 élements que chaque thread copient sont contigus (pour un stockage row major).
-Celà nous autorise à faire des copies de taille 128bit pour copier les deux éléments en une seule instruction.
+Cela nous autorise à faire des copies de taille 128bit pour copier les deux éléments en une seule instruction.
 
 \begin{figure}[H]
     \centering
@@ -129,7 +129,7 @@ Cette nouvelle taille nous permet d'atteindre 32\% (voir figure \ref{fig:baselin
 \subsection{Warptiling}
 
 En observant le papier officiel sur la microarchitecture ampere ("NVIDIA A100 Tensor Core GPU Architecture"\cite{?}),
-on remarque qu'un SM (coeur) du GPU est composé de 4 quadrants chaqun pouvant executer 1 instruction par cycle.
+on remarque qu'un SM (coeur) du GPU est composé de 4 quadrants chacun pouvant exécuter 1 instruction par cycle.
 
 Pour maximiser notre utilisation du hardware, nous allons donc utiliser 4 WARPs par bloc et diviser notre microkernel en 4 (2 sur M et 2 sur N).
 
@@ -143,7 +143,7 @@ Pour maximiser notre utilisation du hardware, nous allons donc utiliser 4 WARPs 
 \textbf{Note:} CuBLAS utilise la même taille de bloc que nous \textbf{(64,64,32)}.
 
 
-Sur la figure \ref{fig:m64n64k32_4W} on remarque que l'on utilise maintenant 128 threads pour executer notre microkernel (faut vraiment beaucoup zoomer sur la figure ...).
+Sur la figure \ref{fig:m64n64k32_4W} on remarque que l'on utilise maintenant 128 threads pour executer notre microkernel.
 
 \begin{figure}[H]
     \centering
@@ -157,8 +157,8 @@ Utiliser 4 WARPs nous amène à 78\% (voir figure \ref{fig:baseline_m64n64k32_12
 
 \subsection{Derniere optimisation : bypass le cache L1}
 
-Depuis ampere, des options sont ajoutables aux instructions de copie mémoire depuis la mémoire globale vers la mémoire partagée (GMEM vers SMEM) qui permettent d'instruire le hardware de ne pas cache les données copiées dans le L1.
-Dans notre cas, cache bloc chargé en SMEM n'est jamais chargé une seconde fois depuis la mémoire globale par le même SM, utiliser le L1 est alors une perte de temps.
+Depuis ampere, des options sont ajoutables aux instructions de copie mémoire depuis la mémoire globale vers la mémoire partagée (GMEM vers SMEM) qui permettent d'instruire le hardware de ne pas "cacher" (de l'anglais to cache ..) les données copiées dans le L1.
+Dans notre cas, chaque bloc chargé en SMEM n'est jamais chargé une seconde fois depuis la mémoire globale par le même SM, utiliser le L1 est alors une perte de temps.
 
 On utilise donc la variante \texttt{cp.async.cg.shared.global} de l'instruction \texttt{cp.async} (\texttt{.cg} veut dire "cache global" soit "on ne cache que au global" donc L2 et pas L1.).
 
@@ -175,14 +175,14 @@ Avec cette optimisation finale on arrive à 93\% (voir figure \ref{fig:baseline_
 \subsection{Optimisations futures}
 
 Avec les optimisations appliquées jusqu'à présent, on arrive à atteindre une performance respectable.
-Cependant, les derniers pourcents sont les plus difficiles à avoir quand il sagit de rattraper CuBLAS.
+Cependant, les derniers pourcents sont les plus difficiles à avoir quand il s'agit de rattraper CuBLAS.
 
-Avec plus de temps (ou de compétances en CuTe), nous aurions très certainement pu battre CuBLAS sur le DGEMM sur A100.
+Avec plus de temps (ou de compétences en CuTe), nous aurions très certainement pu battre CuBLAS sur le DGEMM sur A100.
 Le problème majeur de notre implémentation actuelle étant les copies de SMEM vers RMEM non vectorisées.
 Nous n'avons pas réussi à forcer CuTe à permuter correctement les répétitions du microkernel pour avoir les 2 valeurs des paires de valeurs chargés par chaque thread contigues en mémoire (voir annexe \ref{appendix:smem_vectorized}).
 
 CuBLAS est lui aussi pas parfaitement optimisé. Nous ne faisons pas de pipelining des copies depuis la mémoire globale vers la mémoire partagée mais lui non plus.
 Les optimisations basées sur une découverte dynamique du L2 (fragmenté en 2 parties, voir annexe \ref{}) ne semblent pas non plus faites.
 
-Une explication peut être que la carte A100 SXM4 ne peut tout simplement pas produire plus d'opérations flottantes en réalité à cause de sa limite de puissance electrique (400W maximum).
+Une explication peut être que la carte A100 SXM4 ne peut tout simplement pas produire plus d'opérations flottantes en réalité à cause de sa limite de puissance électrique (400W maximum).
 Ce ne serait alors pas utile de plus optimiser le kernel puisque CuBLAS n'est ni memory bound ni compute bound mais bien power bound.

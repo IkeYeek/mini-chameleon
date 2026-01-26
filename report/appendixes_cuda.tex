@@ -29,8 +29,8 @@ Sur la version correctment permutée de ce microkernel (figure \ref{fig:m8n8k8_p
 \section{CUDA: utilisation optimale des deux partitions du L2}
 
 En 2021, des chercheurs de chez Citadel ont donné une presentation au GTC de NVIDIA où ils ont montré qu'il existait une très grande pénalité de performance lors des accès à la "mauvaise" partie du L2 de la carte graphique depuis un SM.
-Cette mauvaise partie est enfaite la partition la plus loin du SM.
-Les SMs sont disposés autour des deux partitons du L2 et lorsqu'ils veulent accéder à celle dont ils ne sont pas collés, ils doivent passer par l'interconnect des deux partitions du L2.
+Cette mauvaise partie est en fait la partition la plus loin du SM.
+Les SMs sont disposés autour des deux partitions du L2 et lorsqu'ils veulent accéder à celle dont ils ne sont pas collés, ils doivent passer par l'interconnect des deux partitions du L2.
 
 Ces chercheurs ont montré que la latence engendrée par un tel accès est 2x plus grande à la latence normale d'un accès au L2.
 
@@ -40,14 +40,14 @@ Nous avons reproduit ces benchmarks dans le cadre du projet (voir figures \ref{f
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/dgemm_cuda/l2_latency_vs_offset_smid0.png}
-        \caption{Graphique des latences engendrées par un accès en fonction de l'offset dans le L2.}
+        \caption{Graphique des latences engendrées par un accès en fonction de l'offset dans le L2 depuis le SM 0.}
         \label{fig:l2sm0}
     \end{minipage}
      \hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/dgemm_cuda/l2_latency_vs_offset_smid2.png}
-        \caption{Graphique des latences engendrées par un accès en fonction de l'offset dans le L2.}
+        \caption{Graphique des latences engendrées par un accès en fonction de l'offset dans le L2 depuis le SM 1.}
         \label{fig:l2sm2}
     \end{minipage}
 \end{figure}

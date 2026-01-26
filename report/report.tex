@@ -70,9 +70,9 @@ La version scalaire classique du DGETRF était donnée. Nous avons donc impléme
     \caption{Algorithme bloqué de la factorisation LU}
     \label{fig:lu}
 \end{figure}
-La Figure \ref{fig:lu} représente l'algorithme que nous avons implémenté. On effectue un GETRF scalaire sur la partie 
+La Figure \ref{fig:lu} représente l'algorithme que nous avons implémenté. On effectue un GETRF scalaire sur la partie
 certe. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve).
-Enfin, le reste de la matrice est ms à jour avec l'utilisation d'un GEMM.
+Enfin, le reste de la matrice est mis à jour avec l'utilisation d'un GEMM.
 Ces opérations sont ensuite répétées sur la partie jaune, ainsi de suite jusqu'a ce que toute la matrice ait été factorisée.
 
 Nous avons décidé de nous focaliser particulièrement sur le DGEMM, les optimisations du DGETRF sont donc moins poussées. Étant donné que la principale opération du DGETRF bloqué est le DGEMM,
