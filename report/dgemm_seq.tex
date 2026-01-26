@@ -14,7 +14,7 @@
 % On constate donc que, même avec un kernel optimisé, OpenBLAS n'est plus performant que notre implémentation uniquement sur de grands vecteurs ($N > 512$), et que le gain n'est pas significatif car nous restons bien loin du pic théorique. C'est attendu étant donné que; comme dit précédemment, chaque donnée est utilisée une et une seule fois. Cela implique un grand nombre d'aller-retour en mémoire pour une intensité arithmétique faible, un très mauvais cas de figure donc pour maximiser l'utilisation d'un processeur !
 
 % \subsection{Implémentation du produit matriciel}
-% Nous nous baserons, à minima pour les versions CPU du produit matriciel sur l'implémentation classique à trois boucles (en suivant l'ordre $n, k, m$) pour le cas où A et B ne sont pas transposées. Nous réaliserons l'opération $\alpha AB+\beta C$, en prenant donc en compte les valeurs de $\alpha$ et $\beta$. Nous reviendrons sur les performances de cette implémentation plus tard afin de ne pas surcharger le rapport de figures peu intéressantes. Il sera présenté sour le nom de kernel "scalaire". C'est le kernel fourni de base dans le code. Nous avons décidés de le garder car notre implémentation était très similaire, ne gérant simplement pas les cas impliquants une matrice transposée.
+% Nous nous baserons, à minima pour les versions CPU du produit matriciel sur l'implémentation classique à trois boucles (en suivant l'ordre $n, k, m$) pour le cas où A et B ne sont pas transposées. Nous réaliserons l'opération $\alpha AB+\beta C$, en prenant donc en compte les valeurs de $\alpha$ et $\beta$. Nous reviendrons sur les performances de cette implémentation plus tard afin de ne pas surcharger le rapport de figures peu intéressantes. Il sera présenté sour le nom de kernel "scalaire". C'est le kernel fourni de base dans le code. Nous avons décidé de le garder car notre implémentation était très similaire, ne gérant simplement pas les cas impliquants une matrice transposée.
 % \subsection{Implémentation de la factorisation LU}
 % <TODO>
 
@@ -65,10 +65,10 @@ Multiplication}
 \begin{figure}[h]
     \centering
     \begin{minipage}{0.35\textwidth}
-        Nous avons commencé par implémenter différentes versions séquentielles et AVX, 
-        bloquées ou non, avant de constater que les performances n'étaient pas au 
-        rendez-vous. Voici tout de même les performances observées pour les 
-        différentes versions, où l'on constate très clairement une très mauvaise 
+        Nous avons commencé par implémenter différentes versions séquentielles et AVX,
+        bloquées ou non, avant de constater que les performances n'étaient pas au
+        rendez-vous. Voici tout de même les performances observées pour les
+        différentes versions, où l'on constate très clairement une très mauvaise
         gestion des caches et un effondrement rapide des performances.
     \end{minipage}
     \hfill
@@ -92,9 +92,9 @@ Ensuite, nous appelons une opération GEPP (GEPanel x Panel). Dans cette opérat
 
 Finalement, DGEBP réorganise le panel de A en sous matrices de taille $MR\times NR$ avant  d'appeller un micro-kernel de taille $MR\times NR$ conçu pour tirer le meilleur parti de l'architecture du processeur.\\
 
-Nous avons joint en annexe un schéma expliquant l'algorithme avec une vue assez haut niveau <AJOUTER EN ANNEXE!!!>\\
+Nous avons joint en annexe un schéma expliquant \ref{fig:goto-schema} l'algorithme avec une vue assez haut niveau.\\
 
-L'intérêt de ce découpage est donc de faire en sorte de travailler avec des panels de $B$ et des blocks de $A$ ayant des tailles réduites et tenant dans les caches. De plus, la taille du micro-kernel dépend du nombre de registres disponibles par unité de calcul, où plutôt du nombre de registres adressables par unité de calcul. Dans les faits, nous allons optimiser les paramètres afin de maximiser l'utilisation des registres sans en dépasser le nombre pour éviter au maximum les déchargements de registres sur le tas (register spilling).\\
+L'intérêt de ce découpage est donc de faire en sorte de travailler avec des panels de $B$ et des blocks de $A$ ayant des tailles réduites et tenant dans les caches. De plus, la taille du micro-kernel dépend du nombre de registres disponibles par unité de calcul, ou plutôt du nombre de registres adressables par unité de calcul. Dans les faits, nous allons optimiser les paramètres afin de maximiser l'utilisation des registres sans en dépasser le nombre pour éviter au maximum les déchargements de registres sur le tas (register spilling).\\
 
 \subsection{Choix des paramètres}
 Nous avons la main sur un certain nombre de paramètres à savoir:
@@ -104,15 +104,15 @@ Nous avons la main sur un certain nombre de paramètres à savoir:
     \item dans les faits, nous avons également un paramètre implicit $KR$. Le micro-kernel déroule la boucle de la réduction sur l'axe $k$, en les traitant par groupe de 8.
 \end{itemize}
 
-Bien que les étapes de réorganisation des données soient communes à toutes les architectures, le micro-kernel est quand-à-lui spécialisé pour utiliser efficacement ce qu'offre  l'architecture du CPU. Dans les faits, nous visons des processeurs d'architecture Haswell (Xeon E5-2680 v3, 2.50GHz, pic théorique de 40Gflop/s en double), offrant à l'usage 16 registres vectoriels. Sachant cela, nous avons décidé de fixer $MR=4$ et $NR=8$. Cela nous permet d'utiliser 8 registres vectoriels pour stocker les 8 colonnes de C, 1 registre pour stocker une ligne de A et 1 registre pour stocker un broadcast d'une valeur de B, pour un total de 10 registres utilisés. Nous avons également testé une configuration avec $MR=4$ et $NR=12$ dans le but de maximiser le nombre de registres utilisés mais les performances se sont dégradées.. \\
+Bien que les étapes de réorganisation des données soient communes à toutes les architectures, le micro-kernel est quant à lui spécialisé pour utiliser efficacement ce qu'offre  l'architecture du CPU. Dans les faits, nous visons des processeurs d'architecture Haswell (Xeon E5-2680 v3, 2.50GHz, pic théorique de 40Gflop/s en double), offrant à l'usage 16 registres vectoriels. Sachant cela, nous avons décidé de fixer $MR=4$ et $NR=8$. Cela nous permet d'utiliser 8 registres vectoriels pour stocker les 8 colonnes de C, 1 registre pour stocker une ligne de A et 1 registre pour stocker un broadcast d'une valeur de B, pour un total de 10 registres utilisés. Nous avons également testé une configuration avec $MR=4$ et $NR=12$ dans le but de maximiser le nombre de registres utilisés mais les performances se sont dégradées.. \\
 
 Enfin, pour fixer KC et MC nous avons d'abord essayé de suivre les recommandations du papier, en fixant $KC=256$ et $MC=64$, puis avons expérimenté empiriquement en variant KC et MC pour finir avec $KC=256$, $MC=2048$. Ces valeurs devraient normalement sous-performer car $KC\ \times MC$ doubles dépasse largement les 256Ko du cache L2, mais nous supposons que c'est en parti du à un cache L3 assez large couplé au hardware prefetcher.
 
 \subsection{Micro-kernel}
 Nous nous focalisons sur le calcul Non Transposé x Non Transposé en Column Major.\\
 
-En observant la sortie assembleur sur Godbolt \footnote{\href{https://godbolt.org/z/PPx1q9PYz}{Assembleur généré pour le micro-kernel, même version de GCC que sur PlaFRIM}}, nous constatons effectivement que l'on commence par charger les 8 colonnes de $C$, puis GCC déroule nos boucle préfixées par un \#pragma GCC unroll 8, en gérant l'éventuel résidu avec une table de branchement, et utilise bien les 10 registres ymm0-ymm9 prévus sans 
-les décharger sur le stack. La suite n'est qu'une succession de mov/broadcast/fmadd jusqu'à avoir parcouru l'entièreté de $K$, après quoi on saute au label à la sauvegarde des valeurs calculées dans C.\\
+En observant la sortie assembleur sur Godbolt \footnote{\href{https://godbolt.org/z/PPx1q9PYz}{Assembleur généré pour le micro-kernel, même version de GCC que sur PlaFRIM}}, nous constatons effectivement que l'on commence par charger les 8 colonnes de $C$, puis GCC déroule nos boucle préfixées par un \#pragma GCC unroll 8, en gérant l'éventuel résidu avec une table de branchement, et utilise bien les 10 registres ymm0-ymm9 prévus sans
+les décharger sur le stack. La suite n'est qu'une succession de mov/broadcast/fmadd jusqu'à avoir parcouru l'entièreté de $K$, après quoi on saute au label de la sauvegarde des valeurs calculées dans C.\\
 
 \subsection{Résultats}
 Tout d'abord comparons cette version à OpenBLAS sur des matrices carrées, en lançant à chaque fois au moins 10 itérations par expérience:
