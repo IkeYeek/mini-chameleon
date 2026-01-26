@@ -179,7 +179,7 @@ Cependant, les derniers pourcents sont les plus difficiles à avoir quand il sag
 
 Avec plus de temps (ou de compétances en CuTe), nous aurions très certainement pu battre CuBLAS sur le DGEMM sur A100.
 Le problème majeur de notre implémentation actuelle étant les copies de SMEM vers RMEM non vectorisées.
-Nous n'avons pas réussi à forcer CuTe à permuter correctement les répétitions du microkernel pour avoir les 2 valeurs des paires de valeurs chargés par chaque thread contigues en mémoire (voir annexe \ref{?}).
+Nous n'avons pas réussi à forcer CuTe à permuter correctement les répétitions du microkernel pour avoir les 2 valeurs des paires de valeurs chargés par chaque thread contigues en mémoire (voir annexe \ref{appendix:smem_vectorized}).
 
 CuBLAS est lui aussi pas parfaitement optimisé. Nous ne faisons pas de pipelining des copies depuis la mémoire globale vers la mémoire partagée mais lui non plus.
 Les optimisations basées sur une découverte dynamique du L2 (fragmenté en 2 parties, voir annexe \ref{}) ne semblent pas non plus faites.
