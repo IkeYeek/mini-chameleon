@@ -82,7 +82,7 @@ Multiplication}
 
 \subsection{Idée générale}
 Nous constatons que nous sommes bien loin du pic théorique même en utilisant le jeu d'instructions AVX et FMA, et que même sans viser ce pic nous restons loin de l'implémentation d'OpenBLAS ce qui signifie qu'il reste beaucoup de place à l'amélioration.\\
-En cherchant des articles sur le sujet du GEMM séquentiel nous avons trouvé, entre autre, "Anatomy of High-Performance Matrix Multiplication" qui propose un découpage des matrices à plusieurs niveaux afin de maximiser l'utilisation des caches. Il a également recours à de la réorganisation de la donnée dans des tableaux de travail afin de maximiser la contiguïté de ces dernières, en les ordonnant dans l'ordre de lecture du noyau de GEMM.\\
+En cherchant des articles sur le sujet du GEMM séquentiel nous avons trouvé, entre autre, "Anatomy of High-Performance Matrix Multiplication"\cite{goto2008anatomy} qui propose un découpage des matrices à plusieurs niveaux afin de maximiser l'utilisation des caches. Il a également recours à de la réorganisation de la donnée dans des tableaux de travail afin de maximiser la contiguïté de ces dernières, en les ordonnant dans l'ordre de lecture du noyau de GEMM.\\
 
 L'idée est de découper l'opération GEMM en plusieurs sous-problèmes plus petits et tenant dans les caches, à la manière d'un blocage classique. Un certain nombre d'approches sont présentées dans l'article, mais une seule est vraiment développée; c'est celle que nous avons tenté de comprendre et d'implémenter.\\
 
