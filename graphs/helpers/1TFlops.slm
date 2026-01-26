@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH -C miriel
+#SBATCH -N 4
+#SBATCH -n 16
+#SBATCH --exclusive
+#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-core=1
+#SBATCH --output mpi.slurm.out
+#SBATCH --error mpi.slurm.err
+
+guix environment --pure mini-chameleon bash gcc-toolchain -- bash --norc
+
+
+
+OMP_NUM_THREADS=6 MPI_VER=summa mpirun --mca mtl psm2 --map-by numa /home/cisd-jonquir/mini-chameleon/build/debug/testings/perf_dgemm -v mpi -M 32768 -N 32768 -K 32768 -b 2048
