@@ -90,7 +90,7 @@ nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de
         \centering
         \includegraphics[width=\textwidth]{assets/getrf_seq_bar.png}
         \caption{Comparaison des performances de notre version séquentielle avec la version LAPACKE (normalisé sur LAPACKE)}
-        \label{fig:dgemm_seq_bar}    
+        \label{fig:dgetrf_seq_bar}
     \end{minipage}
 \end{figure}
 
@@ -111,8 +111,8 @@ Cela permet de faire des algorithmes plus efficaces, notamment lorsque l'on util
 L'algorithme tuilé étant donné, nous avons uniquement parallélisé les différentes parties (avec ou sans matrices transposées).
 Comme nous utilisons notre version séquentielle comme cœur de nos opérations, nous avons de très bonnes performances sur des matrices non transposées.
 En revanche, comme la version goto que nous avons implémenté ne supporte pas les matrices transposées, nous utilisons la version scalaire originale
-afin d'avoir toutes les versions implémentées. Les performances avec les matrices transposées sont donc relativement mauvaises, mais ayant décidé
-de nous concentrer sur la version sans transposées, ce n'est pas grave.
+afin d'avoir toutes les versions implémentées. Les performances des matrices transposées sont donc relativement mauvaises,
+mais ce point est sans importance puisque nous avons choisi de nous focaliser sur la version sans transposition.
 
 Pour cette version, nous avons décidé de nous comparer à la version vendor, soit CBLAS. Pour cela, nous avons fait des expériences sur 24 threads et deux taille de tuiles de 128 et 256.
 La Figure \ref{fig:dgemm_omp_t_vendor_graph} permet de comparer nos deux versions. Nous pouvons voir que nous nous rapprochons de plus en plus de la version CBLAS
