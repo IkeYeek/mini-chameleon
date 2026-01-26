@@ -66,21 +66,43 @@ Notre version ici est sans pivot.
 La version scalaire classique du DGETRF était donnée. Nous avons donc implémenté une version bloquée, vue en cours d'Algorithmique Numérique.
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/GETRF_BLOCKED.png}
+    \includegraphics[width=0.6\textwidth]{assets/GETRF_BLOCKED.png}
     \caption{Algorithme bloqué de la factorisation LU}
     \label{fig:lu}
 \end{figure}
 La Figure \ref{fig:lu} représente l'algorithme que nous avons implémenté. On effectue un GETRF scalaire sur la partie
-certe. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve).
+verte. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve). Nous utilisons le TRSM de CBLAS.
 Enfin, le reste de la matrice est mis à jour avec l'utilisation d'un GEMM.
 Ces opérations sont ensuite répétées sur la partie jaune, ainsi de suite jusqu'a ce que toute la matrice ait été factorisée.
 
 Nous avons décidé de nous focaliser particulièrement sur le DGEMM, les optimisations du DGETRF sont donc moins poussées. Étant donné que la principale opération du DGETRF bloqué est le DGEMM,
- nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de cette opération.
-\section{Mémoire partagée - OpenMP}\label{part:omp}
+nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de cette opération.
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_seq.png}
+        \caption{Comparaison entre les DGETRF LAPACKE, scalaire et bloqué}
+        \label{fig:getrf_seq}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_seq_bar.png}
+        \caption{Comparaison des performances de notre version séquentielle avec la version LAPACKE (normalisé sur LAPACKE)}
+        \label{fig:dgetrf_seq_bar}
+    \end{minipage}
+\end{figure}
+
+La Figure \ref{fig:getrf_seq} nous permet de comparer la version donnée dans le code source (seq\_bs\_1) avec notre version de l'algorithme bloqué et avec la version vendor de LAPACKE.
+La version scalaire obtient de très faibles performances, nous ne sommes pas allés jusqu'à une taille de 4096x4096 car le temps de calcul était trop long.
+L'utilisation de la version bloquée nous rapproche de la version vendor. Selon les tailles, nous sommes à 75\% de LAPACKE, comme le montre la figure\ref{fig:dgetrf_seq_bar}.
+La taille des blocs influant sur les résultats, nous pourrions peut-être nous en rapprocher un peu plus en changeant de taille de tuile.
+
+\section{Mémoire partagée - OpenMP}
 \subsection{DGEMM}
 \input{dgemm_omp.tex}
-\subsection{DGEMM Tiled}
+\subsection{DGEMM Tiled}\label{dgemm_omp_tiled}
 Nous avons ensuite implémenté une version tuilée du DGEMM. Dans la version classique, les données sont stockées en mémoire en
 column-major sur toute la hauteur de la matrice. La version tuilée quant à elle est allouée
 en column-major tuile par tuile.
@@ -89,44 +111,95 @@ Cela permet de faire des algorithmes plus efficaces, notamment lorsque l'on util
 L'algorithme tuilé étant donné, nous avons uniquement parallélisé les différentes parties (avec ou sans matrices transposées).
 Comme nous utilisons notre version séquentielle comme cœur de nos opérations, nous avons de très bonnes performances sur des matrices non transposées.
 En revanche, comme la version goto que nous avons implémenté ne supporte pas les matrices transposées, nous utilisons la version scalaire originale
-afin d'avoir toutes les versions implémentée. Les performances avec les matrices transposées sont donc relativement mauvaises, mais ayant décidé
-de nous concentrer sur la version sans transposées, ce n'est pas grave.
+afin d'avoir toutes les versions implémentées. Les performances des matrices transposées sont donc relativement mauvaises,
+mais ce point est sans importance puisque nous avons choisi de nous focaliser sur la version sans transposition.
 
-Pour cette version, nous avons décidé de nous comparer à la version vendor. Pour cela, nous avons fait des expériences sur 24 threads et une taille de tuiles de 128.
-Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de melleuires performances.
+Pour cette version, nous avons décidé de nous comparer à la version vendor, soit CBLAS. Pour cela, nous avons fait des expériences sur 24 threads et deux taille de tuiles de 128 et 256.
+La Figure \ref{fig:dgemm_omp_t_vendor_graph} permet de comparer nos deux versions. Nous pouvons voir que nous nous rapprochons de plus en plus de la version CBLAS
+jusqu'à 4096, puis nous commençons à nous en éloigner avec les tuiles de 128. Sur des petites matrices, nous sommes bien moins efficaces que CBLAS, sans doute dû au fait que nous utilisons une seule taille de tuile pour toutes
+les configurations, or une tuile de 128 sur une matrice en 256x256 représente une part bien différente que sur des matrices en 4096x4096 ou plus.
+
+Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de meilleures performances.
+En effet, avant 4096, les tuiles de 128 apportent de meilleures performances que les tuiles de 256. En revanche, après 4096, les performances de la version avec les plus petites tuiles diminuent contrairement aux
+plus grandes tuiles. Une plus petite taille de tuiles sur les petites matrices serait aussi plus intéressante.
+
 \begin{figure}[htbp]
     \centering
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_simple.png}
-        \caption{Performance en GFlop/s du Dgemm om tiled contre le vendor}
-        \label{fig:dgemm_omp_vendor_graph}    
+        \caption{Performance en GFlop/s du Dgemm om tiled contre CBLAS}
+        \label{fig:dgemm_omp_t_vendor_graph}    
     \end{minipage}
      \hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_bar.png}
-        \caption{Comparaison des performances de notre version OMP-tiled avec la version vendor (normalisé sur vendor)}
-        \label{fig:dgemm_omp_vendor_bar}    
+        \caption{Comparaison des performances de notre version OMP-tiled avec la version CBLAS (normalisé sur CBLAS)}
+        \label{fig:dgemm_omp_t_vendor_bar}    
     \end{minipage}
-
 \end{figure}
 
+La Figure \ref{fig:dgemm_omp_t_vendor_bar} permet de comparer notre version à celle de CBLAS, normalisé sur le temps d'exécution le
+plus long de la version CBLAS. Nous pouvons voir que nous obtenons des performances très différentes selon la taille de matrices. Sur les matrices de 4096 avec  les tailles de tuiles de 
+128 et 256, nous arrivons à plus de 80\% des performances de CBLAS.
+
 \subsection{DGETRF}
+
+Pour paralléliser le DGETRF, nous avons utilisé une méthode assez naïve qui consiste à reprendre la version bloquée séquentielle et utiliser le DGEMM OpenMP à la place du séquentiel.
+Le DGEMM étant l'opération la plus chronophage de cet algorithme, utiliser une version parallèle suffit à améliorer les performances.
 
 Cette version est relativement difficile à optimiser, car nous possédons 3 critères pouvant influer sur les performances : la taille de blocs de la version séquentielle,
 la taille de blocs de la version parallèle ainsi que le nombre de threads.
 
+Nous avons aussi voulu nous comparer avec la version vendor (LAPACKE ici), comme le montrent les figures \ref{fig:dgetrf_omp_vendor_graph} et \ref{fig:dgetrf_omp_vendor_bar}.
+Nous pouvons remarquer un écart plus important avec la version Vendor. Pour plus nous en approcher, il faudrait faire une étude comparative des performances en fonction de
+la taille des blocs sur la partie séquentielle et parallèle.
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_graph.png}
+        \caption{Performance en GFlop/s du DGETRF OpenMP  contre LAPACKE}
+        \label{fig:dgetrf_omp_vendor_graph}    
+    \end{minipage}
+     \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_bar.png}
+        \caption{Comparaison des performances de notre version OpenMP avec la version LAPACKE (normalisé sur LAPACKE)}
+        \label{fig:dgetrf_omp_vendor_bar}    
+    \end{minipage}
+\end{figure}
+
 \subsection{DGETRF Tiled}
+
+Comme pour le DGEMM, nous avons implémentée une version tuilée. La version séquentielle étant déjà implémentée, nous avons simplement remplacé les appels à la
+multiplication de matrice séquentielle par la version OpenMP présentée dans la section \ref{dgemm_omp_tiled}
 
 Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
 critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
-
-\input{dgemm_mpi.tex}
-
+\section{Mémoire distribuée - MPI}
 
 \section{Implémentation sur GPU}
 \input{dgemm_cuda.tex}
+
+\section{Conclusion}
+
+Au cours de ce projet, nous nous sommes concentrés sur l'optimisation de la multiplication de matrices avec le DGEMM.
+Nous obtenons de bons, voire très bons résultats selon les versions.
+Il reste toutefois des axes d'améliorations pour ce projet si nous souhaitons le mettre en application réelle.
+
+Nos versions du DGEMM étant déjà bien optimisées, il serait maintenant intéressant de se pencher en profondeur 
+sur la factorisation LU avec le DGETRF. Nous sommes restés sur des versions assez naïves, mais il existe des algorithmes
+plus puissants dans la littérature que l'on pourrait implémenter.
+
+De plus, afin d'avoir de bonnes performances indépendamment de la taille du problème, il serait judicieux d'implémenter des réglages
+par défaut concernant la taille de blocs ou de tuiles selon la taille de la matrice.
+Comme nous l'avons vu dans nos résultats, c'est à l'utilisateur de choisir ces paramètres et un bon réglage pour une petite matrice peut être très mauvais
+pour des matrices plus imposantes. Cela nous permettrait sans doute d'avoir des résultats plus proches des versions vendor.
 
 \appendix
 \begin{figure}[H]
