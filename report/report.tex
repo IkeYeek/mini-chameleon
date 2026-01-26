@@ -139,7 +139,7 @@ L'article nous donne quelques indications sur comment les fixer.
 Pour les choix de $MR$ et $NR$, l'objectif est de maximiser l'utilisation des registres AVX2 (les fameux registres ymm). L'architecture Haswell nous permet de travailler avec 16 registres. Un contiendra une partie de $A$, 6 serviront aux $NR$ valeurs du panel de $B$ que l'on broadcast, et 6 autres serviront aux $NR$ valeurs de $C_{aux}$. Cela nous fait un total de 13 registres utilisés, sans prendre en compte une quelconque optimisation du compileur.\\
 Pour s'en assurer, nous avons isolés le code du kernel puis l'avons compilés sur godblot afin d'avoir une sortie assembleur lisible.\\
 Nous constatons bel et bien l'utilisation des registres ymm0-ymm12
-\begin{lstlisting}[language=x86asm]
+\begin{lstlisting}%[language=x86asm]\todo{RETIRER (juste ca compile pas sans)}
 (...)
     vfmadd231pd     ymm1, ymm6, ymm7
     vfmadd231pd     ymm0, ymm6, ymm8
@@ -233,6 +233,30 @@ la taille de blocs de la version parallèle ainsi que le nombre de threads.
 Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
 critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
 \section{Mémoire distribuée - MPI}
+Pour l'implémentation en mémoire distribuée, nous nous sommes concentrés sur le GEMM. Afin d'avoir une implémentation performante nous avons choisi 
+d'implémenter le papier \textit{SUMMA: Scalable Universal Matrix Multipli cation Algorithm}. Nous avons donc réalisé une première version naïve de l'algorithme nous permettant
+d'utiliser des communications collectives plutôt que des communications points à points. En effet, la base de notre code repose sur le partage des blocs à tous les processus
+le nécessitant au travers d'une seule communication. Pour se faire on utilise un communicateur pour chaque ligne et chaque colonne de la matrice. Nous avons également décidé
+de garder la distribution de la matrice donnée dans le projet. \todo{Plus expliquer SUMMA ?}
+
+Nous avons ensuite commencé par effectuer des tests sur une machine pour comparer avec les versions shared-memory vues précédemment. Nous avons choisi de placer un processus
+par banc NUMA afin de pouvoir limiter les accès aux mémoires plus éloignée en utilisant des communications MPI lorsque cela est nécessaire. On remarque sur la Figure \ref{}, que cette 
+version MPI semble obtenir les mêmes résultats que la version OpenMP naïve. Cependant les performances de cette version étant deux fois inférieures à celle utilisant le tuilage,
+nous avons adapté notre version mpi pour qu'elle puisse utiliser la version tuilée OpenMP. Pour ce faire, il faut passer par un re-packing des matrices A,B et C, ce qui à un impact 
+sur le nombre d'opérations supplémentaire à réaliser. Nous avons donc ensuite pu comparer cette version avec celle vue précédemment sur une seule machine.
+
+\todo[inline]{AJOUTER PLOT + EXPLICATIONS}
+
+On observe sur la Figure \ref{} que la version utilisant la version OpenMP tuilée obtient de meilleurs résultats que celle utilisant la version naïve. 
+
+L'objectif principal de cette version étant de réaliser une multiplication de matrices sur plusieurs nœuds, nous avons donc ensuite cherché quelle serait la taille optimale pour 
+chaque tuile de nos matrices. Pour ce faire, nous avons utilsé les données vu dans la partie \ref{} \todo{modif avec partie OMP}. Puisque la taille de matrice pour laquelle nous nous
+rapprochons le plus des performances de \textit{Cublas} est 4096x4096, nous avons choisi cette taille pour nos tuiles. De plus, si l'on regarde les performances avec un seul processus
+sur la Figure \ref{}, on voit que c'est également pour cette taille que l'on semble avoir atteint un palier avant de stagner puis de décroitre. Après avoir fixé la taille des tuiles,
+nous avons étudié la scalabilité forte de nos deux versions. Nous sommes restés sur des matrices de taille maximale 65536x65536 afin de pouvoir réaliser un maximum de tests, que ce soit
+pour pouvoir explorer le plus de paramètres possibles, mais également pour partager les ressources disponibles sur le cluster (notamment lorsque l'on utilise 8 machines).
+
+
 \section{GPU}
 
 
