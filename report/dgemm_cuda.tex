@@ -24,7 +24,7 @@ que les coeurs de tenseur (unités matérielles ne servant qu'à accélérer les
     \label{fig:a100-specs}
 \end{figure}
 
-Nous avons donc choisi d'implémenter le DGEMM le plus minimal possible utilisant les tensor core double de l'architecture AMPERE (instruction /texttt{mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64}).
+Nous avons donc choisi d'implémenter le DGEMM le plus minimal possible utilisant les tensor core double de l'architecture AMPERE (instruction \texttt{mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64}).
 Cette instruction (qui est une sortie de collective, signalé par \texttt{aligned}) requiert un bloc de 8x4 \textbf{row major} éléments de A fragmenté entre les 32 threads du WARP (groupe de 32 threads),
 B pareil mais \textbf{col major} et produit en sortie un bloc de C, de taille 8x8 fragmenté entre les 32 threads du WARP,
 ce schéma est détaillé Figure \ref{fig:m8n8k4}.
