@@ -92,43 +92,90 @@ En revanche, comme la version goto que nous avons implémenté ne supporte pas l
 afin d'avoir toutes les versions implémentée. Les performances avec les matrices transposées sont donc relativement mauvaises, mais ayant décidé
 de nous concentrer sur la version sans transposées, ce n'est pas grave.
 
-Pour cette version, nous avons décidé de nous comparer à la version vendor. Pour cela, nous avons fait des expériences sur 24 threads et une taille de tuiles de 128.
+Pour cette version, nous avons décidé de nous comparer à la version vendor, soit CBLAS. Pour cela, nous avons fait des expériences sur 24 threads et deux taille de tuiles de 128 et 256.
+La Figure \ref{fig:dgemm_omp_t_vendor_graph} permet de comparer nos deux versions. Nous pouvons voir que nous nous rapprochons de plus en plus de la version CBLAS
+jusqu'à 4096, puis nous commençons à nous en éloigner avec les tuiles de 128. Sur des petites matrices, nous sommes bien moins efficaces que CBLAS, sans doute dû au fait que nous utilisons une seule taille de tuile pour toutes
+les configurations, or une tuile de 128 sur une matrice en 256x256 représente une part bien différente que sur des matrices en 4096x4096 ou plus.
+
 Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de meilleures performances.
-La Figure \ref{fig:dgemm_omp_vendor_graph} permet de nos comparer nos deux versions. Nous pouvons voir que nous nous rapprochons de plus en plus de la version vendor
-jusqu'a 4096, puis nous commençons à nous en éloigner. Sur des petites matrices, nous sommes bien moins efficaces que le vendor, sans doute dû au fait que nous utilisons une seule taille de tuile pour toutes
-les configurations, or une tuille de 128 sur une matrice en 256x256 représente une part bien différente que sur des matrices en 4096x4096 ou plus.
+En effet, avant 4096, les tuiles de 128 apportent de meilleures performances que les tuiles de 256. En revanche, après 4096, les performances de la version avec les plus petites tuiles diminuent contrairement aux
+plus grandes tuiles. Une plus petite taille de tuiles sur les petites matrices serait aussi plus intéressante.
+
 \begin{figure}[htbp]
     \centering
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_simple.png}
-        \caption{Performance en GFlop/s du Dgemm om tiled contre le vendor}
-        \label{fig:dgemm_omp_vendor_graph}    
+        \caption{Performance en GFlop/s du Dgemm om tiled contre CBLAS}
+        \label{fig:dgemm_omp_t_vendor_graph}    
     \end{minipage}
      \hfill
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_bar.png}
-        \caption{Comparaison des performances de notre version OMP-tiled avec la version vendor (normalisé sur vendor)}
-        \label{fig:dgemm_omp_vendor_bar}    
+        \caption{Comparaison des performances de notre version OMP-tiled avec la version CBLAS (normalisé sur CBLAS)}
+        \label{fig:dgemm_omp_t_vendor_bar}    
     \end{minipage}
-La Figure \ref{fig:dgemm_omp_vendor_bar} permet de comparer notre version à celle du vendor, normalisé sur le temps d'exécution le 
-plus long de la version vendor.
 \end{figure}
 
+La Figure \ref{fig:dgemm_omp_t_vendor_bar} permet de comparer notre version à celle de CBLAS, normalisé sur le temps d'exécution le
+plus long de la version CBLAS. Nous pouvons voir que nous obtenons des performances très différentes selon la taille de matrices. Sur les matrices de 4096 avec  les tailles de tuiles de 
+128 et 256, nous arrivons à plus de 80\% de CBLAS.
 \subsection{DGETRF}
 
 Cette version est relativement difficile à optimiser, car nous possédons 3 critères pouvant influer sur les performances : la taille de blocs de la version séquentielle,
 la taille de blocs de la version parallèle ainsi que le nombre de threads.
 
+Nous avons aussi voulu nous comparer avec la version vendor(LAPACKE ici), comme le montrent les figures \ref{fig:dgetrf_omp_vendor_graph} et \ref{fig:dgetrf_omp_vendor_bar}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_graph.png}
+        \caption{Performance en GFlop/s du DGETRF OpenMP  contre LAPACKE}
+        \label{fig:dgetrf_omp_vendor_graph}    
+    \end{minipage}
+     \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_bar.png}
+        \caption{Comparaison des performances de notre version OpenMP avec la version LAPACKE (normalisé sur LAPACKE)}
+        \label{fig:dgetrf_omp_vendor_bar}    
+    \end{minipage}
+\end{figure}
+
 \subsection{DGETRF Tiled}
 
 Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
 critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{assets/getrf_comparison_tilesize.png}
+    \caption{DGETRF avec taille de blocs séquentiel de 64 et OpenMP de 128 et taille de tuile variable}
+    \label{fig:getrf_omp_tiled_tilesize}
+\end{figure}
+
 \section{Mémoire distribuée - MPI}
 
 \section{Implémentation sur GPU}
 \input{dgemm_cuda.tex}
+
+\section{Conclusion}
+
+Au cours de ce projet, nous nous sommes concentrés sur l'optimisation de la multiplication de matrices avec le DGEMM.
+Nous obtenons de bons, voire très bons résultats selon les versions.
+Il reste toutefois des axes d'améliorations pour ce projet si nous souhaitons le mettre en application réelle.
+
+Nos versions du DGEMM étant déjà bien optimisées, il serait maintenant intéressant de se pencher en profondeur 
+sur la factorisation LU avec le DGETRF. Nous sommes restés sur des versions assez naïves, mais il existe des algorithmes
+plus puissants dans la littérature que l'on pourrait implémenter.
+
+De plus, afin d'avoir de bonnes performances indépendamment de la taille du problème, il serait judicieux d'implémenter des réglages
+par défaut concernant la taille de blocs ou de tuiles selon la taille de la matrice.
+Comme nous l'avons vu dans nos résultats, c'est à l'utilisateur de choisir ces paramètres et un bon réglage pour une petite matrice peut être très mauvais
+pour des matrices plus imposantes. Cela nous permettrait sans doute d'avoir des résultats plus proches des versions vendor.
 
 \appendix
 \begin{figure}[H]
