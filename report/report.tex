@@ -1,4 +1,4 @@
-\documentclass[10pt, a4paper]{article}
+\documentclass[10pt, a4paper]{IEEEtran}
 
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
@@ -55,7 +55,7 @@
 
 \pagebreak
 
-\tableofcontents
+%\tableofcontents
 
 \pagebreak
 
@@ -69,7 +69,7 @@ Notre version ici est sans pivot.
 La version scalaire classique du DGETRF était donnée. Nous avons donc implémenté une version bloquée, vue en cours d'Algorithmique Numérique.
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{assets/GETRF_BLOCKED.png}
+    \includegraphics[width=\columnwidth]{assets/GETRF_BLOCKED.png}
     \caption{Algorithme bloqué de la factorisation LU}
     \label{fig:lu}
 \end{figure}
@@ -191,7 +191,7 @@ avec la même taille de blocs séquentiels et parallèles (64 et 128) afin de ne
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{assets/getrf_comparison_tilesize.png}
+    \includegraphics[width=\columnwidth]{assets/getrf_comparison_tilesize.png}
     \caption{DGETRF avec taille de blocs séquentiel de 64 et OpenMP de 128 et taille de tuile variable}
     \label{fig:getrf_omp_tiled_tilesize}
 \end{figure}
@@ -220,13 +220,14 @@ pour des matrices plus imposantes. Cela nous permettrait sans doute d'avoir des 
 
 
 \printbibliography
-
+\newpage
+\onecolumn
 \appendix
 
 \section{Implémentation de l'article Anatomy of High-Performance Matrix Multiplication}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{assets/goto-schema.png}
+    \includegraphics[width=.75\textwidth]{assets/goto-schema.png}
     \caption{Vue haut niveau de l'algorithme de GOTO, avec découpage et repacking}
     \label{fig:goto-schema}
 \end{figure}

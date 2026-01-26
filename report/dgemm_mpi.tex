@@ -10,7 +10,7 @@ sur la même colonne. Puis la diffusion de A se fait à tous les processus sur l
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/dgemm_mpi/MPI_vs_OMP.png}
+    \includegraphics[width=\columnwidth]{assets/dgemm_mpi/MPI_vs_OMP.png}
     \caption{Comparaison des versions mémoire partagée et distribuée sur un nœud}
     \label{fig:mpi_omp}
 \end{figure}
@@ -24,7 +24,7 @@ sur le nombre d'opérations supplémentaires à réaliser.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/dgemm_mpi/strong_one_node.png}
+    \includegraphics[width=\columnwidth]{assets/dgemm_mpi/strong_one_node.png}
     \caption{Test de scalabilité forte sur une seule machine (différents nombres de processus)}
     \label{fig:strong_one_node}
 \end{figure}
@@ -68,7 +68,7 @@ Il faut ici attendre des matrices 65536x65536 pour que la différence de perform
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/dgemm_mpi/block_size.png}
+    \includegraphics[width=\columnwidth]{assets/dgemm_mpi/block_size.png}
     \caption{Comparaison des performances en fonction de la taille des tuiles}
     \label{fig:block_size_mpi}
 \end{figure}
@@ -82,7 +82,7 @@ des tuiles à transmettre augmente aussi rapidement, on se retrouvera fortement 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\textwidth]{assets/dgemm_mpi/strong_vendor.png}
+    \includegraphics[width=\columnwidth]{assets/dgemm_mpi/strong_vendor.png}
     \caption{Test de scalabilité forte entre notre implémentation OpenMP (8 machines) et l'implémentation de \textit{CBLAS} (4 machines)}
     \label{fig:strong_vendor}
 \end{figure}

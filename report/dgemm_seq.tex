@@ -62,22 +62,18 @@
 \section{Implémentation de l'article Anatomy of High-Performance Matrix
 Multiplication}
 \subsection{Avant Propos}
-\begin{figure}[h]
+
+Nous avons commencé par implémenter différentes versions séquentielles et AVX,
+bloquées ou non, avant de constater que les performances n'étaient pas au
+rendez-vous. Voici tout de même les performances observées pour les
+différentes versions, où l'on constate très clairement une très mauvaise
+gestion des caches et un effondrement rapide des performances.
+
+\begin{figure}
     \centering
-    \begin{minipage}{0.35\textwidth}
-        Nous avons commencé par implémenter différentes versions séquentielles et AVX,
-        bloquées ou non, avant de constater que les performances n'étaient pas au
-        rendez-vous. Voici tout de même les performances observées pour les
-        différentes versions, où l'on constate très clairement une très mauvaise
-        gestion des caches et un effondrement rapide des performances.
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.55\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{assets/all_naive.png}
-        \caption{Comparaison des performances de nos premières implémentations, et de OpenBLAS (vendor)}
-        \label{fig:perf_comparison}
-    \end{minipage}
+    \includegraphics[width=\columnwidth]{assets/all_naive.png}
+    \caption{Comparaison des performances de nos premières implémentations, et de OpenBLAS (vendor)}
+    \label{fig:perf_comparison}
 \end{figure}
 
 \subsection{Idée générale}
@@ -118,7 +114,7 @@ les décharger sur le stack. La suite n'est qu'une succession de mov/broadcast/f
 Tout d'abord comparons cette version à OpenBLAS sur des matrices carrées, en lançant à chaque fois au moins 10 itérations par expérience:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.75\linewidth]{assets/vendor_vs_goto_square.png}
+    \includegraphics[width=\linewidth]{assets/vendor_vs_goto_square.png}
     \caption{Notre implémentation basée sur GOTO vs OpenBLAS}
     \label{fig:vendor-vs-seq-square}
 \end{figure}
@@ -128,7 +124,7 @@ On voit bien qu'assez vite, OpenBLAS outreperforme notre implémentation, ce qui
 Nous avons également décidé de faire la comparaison sur des combinaisons de tailles différentes pour les matrices en faisant varier indépendamment $M, N$ et $K$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.75\linewidth]{assets/vendor_vs_goto_diffsize.png}
+    \includegraphics[width=\linewidth]{assets/vendor_vs_goto_diffsize.png}
     \caption{Comparaison entre notre implémentation GOTO et OpenBLAS sur différentes tailles de matrices}
     \label{fig:vendor-vs-goto-diffsize}
 \end{figure}
