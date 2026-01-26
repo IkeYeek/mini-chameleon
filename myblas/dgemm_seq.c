@@ -38,6 +38,68 @@ static int dgemm_seq_block_size = -1;
 #define KC (256)
 #define MC (2048)
 
+int dgemm_scalaire(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
+                   CBLAS_TRANSPOSE transB, const int M, const int N,
+                   const int K, const double alpha, const double *A,
+                   const int lda, const double *B, const int ldb,
+                   const double beta, double *C, const int ldc) {
+  int m, n, k;
+
+  if (transA == CblasNoTrans) {
+    if (transB == CblasNoTrans) {
+      for (n = 0; n < N; n++) {
+        if (beta != 1.) {
+          for (m = 0; m < M; m++) {
+            C[ldc * n + m] = beta * C[ldc * n + m];
+          }
+        }
+        for (k = 0; k < K; k++) {
+          for (m = 0; m < M; m++) {
+            C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
+          }
+        }
+      }
+    } else {
+      for (m = 0; m < M; m++) {
+        for (n = 0; n < N; n++) {
+          if (beta != 1.) {
+            C[ldc * n + m] = beta * C[ldc * n + m];
+          }
+          for (k = 0; k < K; k++) {
+            C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * k + n];
+          }
+        }
+      }
+    }
+  } else {
+    if (transB == CblasNoTrans) {
+      for (m = 0; m < M; m++) {
+        for (n = 0; n < N; n++) {
+          if (beta != 1.) {
+            C[ldc * n + m] = beta * C[ldc * n + m];
+          }
+          for (k = 0; k < K; k++) {
+            C[ldc * n + m] += alpha * A[lda * m + k] * B[ldb * n + k];
+          }
+        }
+      }
+    } else {
+      for (m = 0; m < M; m++) {
+        for (n = 0; n < N; n++) {
+          if (beta != 1.) {
+            C[ldc * n + m] = beta * C[ldc * n + m];
+          }
+          for (k = 0; k < K; k++) {
+            C[ldc * n + m] += alpha * A[lda * m + k] * B[ldb * k + n];
+          }
+        }
+      }
+    }
+  }
+
+  return ALGONUM_SUCCESS;
+}
+
 #if STATIC_INLINE
 static inline
 #else
@@ -124,7 +186,7 @@ __attribute__((noinline))
   // sure we can use aligned load/stores as it seems to
   // have an impact on haswell
   if (transA != CblasNoTrans || transB != CblasNoTrans) {
-    return ALGONUM_NOT_IMPLEMENTED;
+    return dgemm_scalaire(layout,transA,transB,M,N,K,alpha,A,lda,B,ldb,beta,C,ldc);
   }
   int ldbp = N + ((NR - (N % NR)) % NR);
   double *B_packed = aligned_alloc(32, sizeof(double) * ldbp * KC);
@@ -353,67 +415,7 @@ __attribute__((noinline))
   }
 }
 
-int dgemm_scalaire(CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA,
-                   CBLAS_TRANSPOSE transB, const int M, const int N,
-                   const int K, const double alpha, const double *A,
-                   const int lda, const double *B, const int ldb,
-                   const double beta, double *C, const int ldc) {
-  int m, n, k;
 
-  if (transA == CblasNoTrans) {
-    if (transB == CblasNoTrans) {
-      for (n = 0; n < N; n++) {
-        if (beta != 1.) {
-          for (m = 0; m < M; m++) {
-            C[ldc * n + m] = beta * C[ldc * n + m];
-          }
-        }
-        for (k = 0; k < K; k++) {
-          for (m = 0; m < M; m++) {
-            C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * n + k];
-          }
-        }
-      }
-    } else {
-      for (m = 0; m < M; m++) {
-        for (n = 0; n < N; n++) {
-          if (beta != 1.) {
-            C[ldc * n + m] = beta * C[ldc * n + m];
-          }
-          for (k = 0; k < K; k++) {
-            C[ldc * n + m] += alpha * A[lda * k + m] * B[ldb * k + n];
-          }
-        }
-      }
-    }
-  } else {
-    if (transB == CblasNoTrans) {
-      for (m = 0; m < M; m++) {
-        for (n = 0; n < N; n++) {
-          if (beta != 1.) {
-            C[ldc * n + m] = beta * C[ldc * n + m];
-          }
-          for (k = 0; k < K; k++) {
-            C[ldc * n + m] += alpha * A[lda * m + k] * B[ldb * n + k];
-          }
-        }
-      }
-    } else {
-      for (m = 0; m < M; m++) {
-        for (n = 0; n < N; n++) {
-          if (beta != 1.) {
-            C[ldc * n + m] = beta * C[ldc * n + m];
-          }
-          for (k = 0; k < K; k++) {
-            C[ldc * n + m] += alpha * A[lda * m + k] * B[ldb * k + n];
-          }
-        }
-      }
-    }
-  }
-
-  return ALGONUM_SUCCESS;
-}
 #if STATIC_INLINE
 static inline
 #else

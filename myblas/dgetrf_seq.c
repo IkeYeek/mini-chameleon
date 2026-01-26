@@ -15,7 +15,7 @@
 #include "myblas.h"
 #include <assert.h>
 
-static int dgetrf_seq_block_size = 1;
+static int dgetrf_seq_block_size = -1;
 
 int
 dgetrf_scalaire( CBLAS_LAYOUT layout, int M, int N, double *A, int lda )
@@ -108,4 +108,5 @@ dgetrf_seq_init( void )
     fct_dgetrf_seq.next   = NULL;
 
     register_fct( &fct_dgetrf_seq, ALGO_GETRF );
+    dgetrf_seq_block_size = myblas_getenv_value_int("BLOCKSIZE", 32);
 }
