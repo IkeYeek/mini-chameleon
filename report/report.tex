@@ -71,16 +71,38 @@ La version scalaire classique du DGETRF était donnée. Nous avons donc impléme
     \label{fig:lu}
 \end{figure}
 La Figure \ref{fig:lu} représente l'algorithme que nous avons implémenté. On effectue un GETRF scalaire sur la partie
-certe. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve).
+verte. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve). Nous utilisons le TRSM de CBLAS.
 Enfin, le reste de la matrice est mis à jour avec l'utilisation d'un GEMM.
 Ces opérations sont ensuite répétées sur la partie jaune, ainsi de suite jusqu'a ce que toute la matrice ait été factorisée.
 
 Nous avons décidé de nous focaliser particulièrement sur le DGEMM, les optimisations du DGETRF sont donc moins poussées. Étant donné que la principale opération du DGETRF bloqué est le DGEMM,
- nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de cette opération.
+nous avons décidés d'optimiser seulement cette partie qui est le bottleneck de cette opération.
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_seq.png}
+        \caption{Comparaison entre les DGETRF LAPACKE, scalaire et bloqué}
+        \label{fig:getrf_seq}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_seq_bar.png}
+        \caption{Comparaison des performances de notre version séquentielle avec la version LAPACKE (normalisé sur LAPACKE)}
+        \label{fig:dgemm_seq_bar}    
+    \end{minipage}
+\end{figure}
+
+La Figure \ref{fig:getrf_seq} nous permet de comparer la version donnée dans le code source (seq\_bs\_1) avec notre version de l'algorithme bloqué et avec la version vendor de LAPACKE.
+La version scalaire obtient de très faibles performances, nous ne sommes pas allés jusqu'à une taille de 4096x4096 car le temps de calcul était trop long.
+L'utilisation de la version bloquée nous rapproche de la version vendor. Selon les tailles, nous sommes à 75\% de LAPACKE, comme le montre la figure\ref{fig:dgetrf_seq_bar}.
+La taille des blocs influant sur les résultats, nous pourrions peut-être nous en rapprocher un peu plus en changeant de taille de tuile.
+
 \section{Mémoire partagée - OpenMP}
 \subsection{DGEMM}
 \input{dgemm_omp.tex}
-\subsection{DGEMM Tiled}
+\subsection{DGEMM Tiled}\label{dgemm_omp_tiled}
 Nous avons ensuite implémenté une version tuilée du DGEMM. Dans la version classique, les données sont stockées en mémoire en
 column-major sur toute la hauteur de la matrice. La version tuilée quant à elle est allouée
 en column-major tuile par tuile.
@@ -89,7 +111,7 @@ Cela permet de faire des algorithmes plus efficaces, notamment lorsque l'on util
 L'algorithme tuilé étant donné, nous avons uniquement parallélisé les différentes parties (avec ou sans matrices transposées).
 Comme nous utilisons notre version séquentielle comme cœur de nos opérations, nous avons de très bonnes performances sur des matrices non transposées.
 En revanche, comme la version goto que nous avons implémenté ne supporte pas les matrices transposées, nous utilisons la version scalaire originale
-afin d'avoir toutes les versions implémentée. Les performances avec les matrices transposées sont donc relativement mauvaises, mais ayant décidé
+afin d'avoir toutes les versions implémentées. Les performances avec les matrices transposées sont donc relativement mauvaises, mais ayant décidé
 de nous concentrer sur la version sans transposées, ce n'est pas grave.
 
 Pour cette version, nous avons décidé de nous comparer à la version vendor, soit CBLAS. Pour cela, nous avons fait des expériences sur 24 threads et deux taille de tuiles de 128 et 256.
@@ -120,13 +142,20 @@ plus grandes tuiles. Une plus petite taille de tuiles sur les petites matrices s
 
 La Figure \ref{fig:dgemm_omp_t_vendor_bar} permet de comparer notre version à celle de CBLAS, normalisé sur le temps d'exécution le
 plus long de la version CBLAS. Nous pouvons voir que nous obtenons des performances très différentes selon la taille de matrices. Sur les matrices de 4096 avec  les tailles de tuiles de 
-128 et 256, nous arrivons à plus de 80\% de CBLAS.
+128 et 256, nous arrivons à plus de 80\% des performances de CBLAS.
+
 \subsection{DGETRF}
+
+Pour paralléliser le DGETRF, nous avons utilisé une méthode assez naïve qui consiste à reprendre la version bloquée séquentielle et utiliser le DGEMM OpenMP à la place du séquentiel.
+Le DGEMM étant l'opération la plus chronophage de cet algorithme, utiliser une version parallèle suffit à améliorer les performances.
 
 Cette version est relativement difficile à optimiser, car nous possédons 3 critères pouvant influer sur les performances : la taille de blocs de la version séquentielle,
 la taille de blocs de la version parallèle ainsi que le nombre de threads.
 
-Nous avons aussi voulu nous comparer avec la version vendor(LAPACKE ici), comme le montrent les figures \ref{fig:dgetrf_omp_vendor_graph} et \ref{fig:dgetrf_omp_vendor_bar}
+Nous avons aussi voulu nous comparer avec la version vendor (LAPACKE ici), comme le montrent les figures \ref{fig:dgetrf_omp_vendor_graph} et \ref{fig:dgetrf_omp_vendor_bar}.
+Nous pouvons remarquer un écart plus important avec la version Vendor. Pour plus nous en approcher, il faudrait faire une étude comparative des performances en fonction de
+la taille des blocs sur la partie séquentielle et parallèle.
+
 
 \begin{figure}[htbp]
     \centering
@@ -147,8 +176,15 @@ Nous avons aussi voulu nous comparer avec la version vendor(LAPACKE ici), comme 
 
 \subsection{DGETRF Tiled}
 
+Comme pour le DGEMM, nous avons implémentée une version tuilée. La version séquentielle étant déjà implémentée, nous avons simplement remplacé les appels à la
+multiplication de matrice séquentielle par la version OpenMP présentée dans la section \ref{dgemm_omp_tiled}
+
 Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
 critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
+
+La Figure \ref{fig:getrf_omp_tiled_tilesize} montre l'impact du choix de la taille de tuile sur les performances. Nous avons réalisé cette expérience
+avec la même taille de blocs séquentiels et parallèles (64 et 128) afin de ne pas influer sur les performances.
+ 
 
 \begin{figure}
     \centering
