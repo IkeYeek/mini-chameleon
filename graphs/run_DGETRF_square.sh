@@ -2,7 +2,7 @@
 
 TEST_PATH="../build/debug/testings/perf_dgetrf"
 BLOCK_SIZES="1 64 128 256"
-VARIANTS="seq vendor"
+VARIANTS="vendor"
 SIDE_SIZES="256 512 1024 2048 4096"
 ITER=3
 FILE=$(date '+%Y-%m-%d-%H:%M:%S')
@@ -47,7 +47,7 @@ for size in $SIDE_SIZES; do
         OUTPUT_FILE="getrf-${var}-${size}x${size}.raw"
 
         if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
-          $TEST_PATH -v vendor -i $ITER -M $size -N $size > "$FILE/$OUTPUT_FILE"
+          OMP_NUM_THREADS=1 $TEST_PATH -v vendor -i $ITER -M $size -N $size > "$FILE/$OUTPUT_FILE"
         else
           echo "Skipping experiment (output file exists and complete)"
         fi
