@@ -88,9 +88,9 @@ L'idée est de découper l'opération GEMM en plusieurs sous-problèmes plus pet
 
 D'abord, nous découpons $A$ et $B$ en panels le long de la dimension de réduction $k$, panels de taille $KC$. Nous nous retrouvons désormais avec des panels de la forme $P_{A_i}\in\mathcal{M}_{M,KC}$ pour les panels de $A$, et $P_{B_i}\in\mathcal{M}_{KC,N}$ pour les panels de $B$ toujours dans le but de construire $C\in\mathcal{M}_{M,N}$.\\
 
-Ensuite, nous appelons une opération GEPP (GEPanel x Panel). Dans cette opération, nous découpons le panel courant de $A$ en blocs la forme $B_{P_{A_i}}\in\mathcal{M}_{MC, KC}$, puis nous appellons une opération DGEBP (DGEBloc x Panel) avec le bloc courant de $A$ et le panel courant de $B$ qui a été préalablement réorganisé afin d'être contiguë sur la dimension $n$.\\
+Ensuite, nous appelons une opération GEPP (GEPanel x Panel). Dans cette opération, nous découpons le panel courant de $A$ en blocs la forme $B_{P_{A_i}}\in\mathcal{M}_{MC, KC}$, puis nous appelons une opération DGEBP (DGEBloc x Panel) avec le bloc courant de $A$ et le panel courant de $B$ qui a été préalablement réorganisé afin d'être contigu sur la dimension $n$.\\
 
-Finalement, DGEBP réorganise le panel de A en sous matrices de taille $MR\times NR$ avant  d'appeller un micro-kernel de taille $MR\times NR$ conçu pour tirer le meilleur parti de l'architecture du processeur.\\
+Finalement, DGEBP réorganise le panel de A en sous matrices de taille $MR\times NR$ avant  d'appeler un micro-kernel de taille $MR\times NR$ conçu pour tirer le meilleur parti de l'architecture du processeur.\\
 
 Nous avons joint en annexe un schéma expliquant \ref{fig:goto-schema} l'algorithme avec une vue assez haut niveau.\\
 

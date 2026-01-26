@@ -24,6 +24,7 @@ Sur la Figure \ref{fig:m8n8k8_base}, les valeurs 0 et 1 du thread 0 (T0V0 et T0V
 Sur la version correctment permutée de ce microkernel (Figure \ref{fig:m8n8k8_permuted}), on voit que les valeurs 0 et 1 du thread 0 sont contigues en mémoire partagée (row-major), ils peuvent donc être chargés dans les 2 registres du thread 0 en une seule instruction de copie.
 
 \section{CUDA: utilisation optimale des deux partitions du L2}
+\label{appendix:l2split}
 
 En 2021, des chercheurs de chez Citadel ont donné une présentation au GTC de NVIDIA\cite{gtc2021s33322} où ils ont montré qu'il existait une très grande pénalité de performance lors des accès à la "mauvaise" partie du L2 de la carte graphique depuis un SM.
 Cette mauvaise partie est en fait la partition la plus loin du SM.
