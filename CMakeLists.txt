@@ -12,18 +12,23 @@
 #
 ###
 cmake_minimum_required (VERSION 3.12)
-project(myblas)
+project(myblas LANGUAGES C CXX CUDA)
+
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## # Disable in source directory build
 ## set( CMAKE_DISABLE_IN_SOURCE_BUILD ON )
-## 
+##
 ## # use, i.e. don't skip the full RPATH for the build tree
 ## set( CMAKE_SKIP_BUILD_RPATH FALSE )
-## 
+##
 ## # when building, don't use the install RPATH already
 ## # (but later on when installing)
 ## set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-## 
+##
 ## option(BUILD_SHARED_LIBS
 ##   "Build shared libraries" ON)
 
@@ -107,6 +112,9 @@ option( ENABLE_OPENACC "Define if OpenACC support is enabled or not" OFF )
 # Option to enable/disable the MIPP package
 option( ENABLE_MIPP "Define if MIPP support is enabled or not" OFF )
 
+# Option to enable/disable CUTLASS support
+option( ENABLE_CUTLASS "Define if CUTLASS support is enabled or not" OFF )
+
 # Generate the config file that holds the define of the lib
 # ---------------------------------------------------------
 configure_file (
@@ -173,6 +181,23 @@ if (ENABLE_CUDA)
                 "\n   libcuda with your distribution of CUDA.")
             endif()
         endif (CUDA_FOUND)
+endif()
+
+if (ENABLE_CUTLASS)
+    set(CUTLASS_DIR "${CMAKE_SOURCE_DIR}/external/cutlass" CACHE PATH "Path to CUTLASS")
+
+    if (EXISTS "${CUTLASS_DIR}/include")
+        # Create the imported target
+        add_library(nvidia::cutlass INTERFACE IMPORTED)
+
+        # We use the explicit PROPERTIES keyword and quote the paths
+        set_target_properties(nvidia::cutlass PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${CUTLASS_DIR}/include;${CUTLASS_DIR}/tools/util/include"
+        )
+        message(STATUS "Found CUTLASS: ${CUTLASS_DIR}")
+    else()
+        message(FATAL_ERROR "CUTLASS not found at ${CUTLASS_DIR}. Check your submodule path.")
+    endif()
 endif()
 
 # Search for OpenACC
