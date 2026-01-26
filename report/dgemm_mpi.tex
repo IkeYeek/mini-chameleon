@@ -1,6 +1,6 @@
 \section{Mémoire distribuée - MPI}
 Pour l'implémentation en mémoire distribuée, nous nous sommes concentrés sur le GEMM. Afin d'avoir une implémentation performante nous avons choisi 
-d'implémenter le papier \textit{SUMMA: Scalable Universal Matrix Multipli cation Algorithm}. Nous avons donc réalisé une première version naïve de l'algorithme nous permettant
+d'implémenter le papier \textit{SUMMA: Scalable Universal Matrix Multipli cation Algorithm}\cite{SUMMA}. Nous avons donc réalisé une première version naïve de l'algorithme nous permettant
 d'utiliser des communications collectives plutôt que des communications points à points. En effet, la base de notre code repose sur le partage des blocs à tous les processus
 le nécessitant au travers d'une seule communication. Pour se faire on utilise un communicateur pour chaque ligne et chaque colonne de la matrice. Nous avons également décidé
 de garder la distribution de la matrice donnée dans le projet. Les processus vont travailler localement sur la/les tuiles de la matrice C qu'ils possèdent. Ils vont réaliser
