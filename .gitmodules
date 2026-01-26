@@ -2,5 +2,5 @@
 	path = cmake_modules
 	url = https://gitlab.inria.fr/solverstack/morse_cmake.git
 [submodule "cutlass"]
-	path = cutlass
+	path = external/cutlass
 	url = https://github.com/NVIDIA/cutlass.git
