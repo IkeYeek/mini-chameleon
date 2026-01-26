@@ -134,30 +134,6 @@ critères vus lors de la section précédente, nous avons aussi la taille de tui
     \label{fig:goto-schema}
 \end{figure}
 
-\section{CUDA: copies vectorisées depuis la mémoire partagée}
-\label{appendix:smem_vectorized}
-
-Sur les GPUs NVIDIA, une seule copie peut faire jusqu'à 128bits de large.
-Celà permet dans notre cas (implémentation d'un DGEMM) de copier deux doubles en une seule instruction.
-Cependant, il faut que les deux doubles de la source soient contigus en mémoire partagée et qu'ils aillent tous deux dans des registres du même thread.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{assets/dgemm_cuda/m8n8k8.jpg}
-    \caption{Schéma du partitionnement de A, B et C pour l'opération de tensor core double de ampere.}
-    \label{fig:m8n8k8_base}
-\end{figure}
-
-Sur la figure \ref{fig:m8n8k8_base}, les valeurs 0 et 1 du thread 0 (T0V0 et T0V1) ne sont pas contigues en mémoire partagée.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{assets/dgemm_cuda/m8n8k8_permuted.jpg}
-    \caption{Schéma du partitionnement de A, B et C pour l'opération de tensor core double de ampere (avec permutation du microkernel).}
-    \label{fig:m8n8k8_permuted}
-\end{figure}
-
-Sur la version correctment permutée de ce microkernel (figure \ref{fig:m8n8k8_permuted}), on voit que les valeurs 0 et 1 du thread 0 sont contigues en mémoire partagée (row-major), ils peuvent donc être chargés dans les 2 registres du thread 0 en une seule instruction de copie.
-
+\input{appendixes_cuda.tex}
 
 \end{document}
