@@ -19,7 +19,7 @@ que les coeurs de tenseur (unités matérielles ne servant qu'à accélérer les
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/a100_specs.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/a100_specs.png}
     \caption{Spécifications de la carte A100 de NVIDIA (Figure tirée du papier "NVIDIA A100 Tensor Core GPU Architecture"\cite{nvidia2020ampere})}
     \label{fig:a100-specs}
 \end{figure}
@@ -31,7 +31,7 @@ ce schéma est détaillé Figure \ref{fig:m8n8k4}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/m8n8k4.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/m8n8k4.png}
     \caption{Schéma de l'atome CuTe \texttt{SM80\_8x8x4\_F64F64F64F64\_TN}}
     \label{fig:m8n8k4}
 \end{figure}
@@ -45,7 +45,7 @@ Les copies de mémoire globale vers mémoire partagée pour les blocs de A et B 
 Cette première implémentation obtient une performance très pauvre, autour de 10\% (voir Figure \ref{fig:baseline}) de CuBLAS (1,7 sur 17,3 TFlops).
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/cuda_baseline.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/cuda_baseline.png}
     \caption{Résultats de notre implémentation naïve (baseline) contre CuBLAS et la performance maximum théorique sur A100 SXM4.}
     \label{fig:baseline}
 \end{figure}
@@ -57,7 +57,7 @@ Pour augmenter notre intensité arithmétique, nous avons "agrandi" notre micron
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/m8n8k8.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/m8n8k8.png}
     \caption{Schéma du TiledMMA(SM80\_8x8x4\_F64F64F64F64\_TN, Tile(8,8,8))}
     \label{fig:m8n8k8}
 \end{figure}
@@ -66,7 +66,7 @@ Sur la Figure \ref{fig:m8n8k8}, on voit que nos blocs A et B sont maintenant de 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/cuda_baseline_m8n8k8.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/cuda_baseline_m8n8k8.png}
     \caption{Résultats de l'optimisation 1 (baseline\_m8n8k8) contre CuBLAS et la performance maximum théorique sur A100 SXM4.}
     \label{fig:baseline_m8n8k8}
 \end{figure}
@@ -82,7 +82,7 @@ grâce à la première optimisation, nous avons 2 doubles par bloc A/B à copier
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/128b_cpy.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/128b_cpy.png}
     \caption{Schéma du partionnement d'une copie d'un block de 8x8 de la mémoire globale (GMEM) vers la mémoire partagée (SMEM) par un WARP.}
     \label{fig:128bit_copy}
 \end{figure}
@@ -92,7 +92,7 @@ Cela nous autorise à faire des copies de taille 128bit pour copier les deux él
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/cuda_baseline_m8n8k8_128b.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/cuda_baseline_m8n8k8_128b.png}
     \caption{Résultats de l'optimisation 2 (baseline\_m8n8k8\_128b) contre CuBLAS et la performance maximum théorique sur A100 SXM4.}
     \label{fig:baseline_m8n8k8_128b}
 \end{figure}
@@ -107,18 +107,11 @@ On doit maintenant essayer de faire plus de calculs avec ce qu'on arrive à char
 Pour se faire, on peut dupliquer notre microkernel 8 fois sur \texttt{M} et \texttt{N} et 8 fois sur \texttt{K} \footnote{CuBLAS utilise la même taille de bloc que nous \textbf{(64,64,32)}.}.
 (pour trouver ces nombres nous avons fait des expériences avec une multitude de tailles différentes.)
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/m64n64k32.jpg}
-    \caption{Schéma du TiledMMA(SM80\_8x8x4\_F64F64F64F64\_TN, Tile(64,64,32))}
-    \label{fig:m64n64k32}
-\end{figure}
-
-On peut voir sur la Figure \ref{fig:m64n64k32} la taille des blocs A et B ainsi que du résultat C calculé par chaque WARP (et bloc pour l'instant puisqu'un bloc = 1 WARP).
+On peut voir sur la Figure \ref{fig:m64n64k32} en annexe la taille des blocs A et B ainsi que du résultat C calculé par chaque WARP (et bloc pour l'instant puisqu'un bloc = 1 WARP).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/cuda_baseline_m64n64k32_128b.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/cuda_baseline_m64n64k32_128b.png}
     \caption{Résultats de l'optimisation 3 (baseline\_m8n8k8\_128b) contre CuBLAS et la performance maximum théorique sur A100 SXM4.}
     \label{fig:baseline_m64n64k32_128b}
 \end{figure}
@@ -133,19 +126,11 @@ on remarque qu'un SM (coeur) du GPU est composé de 4 quadrants chacun pouvant e
 
 Pour maximiser notre utilisation du hardware, nous allons donc utiliser 4 WARPs par bloc et diviser notre microkernel en 4 (2 sur M et 2 sur N).
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/m64n64k32_4W.jpg}
-    \caption{Schéma du TiledMMA(SM80\_8x8x4\_F64F64F64F64\_TN, Layout(Shape(2, 2, 1)), Tile(64,64,32))}
-    \label{fig:m64n64k32_4W}
-\end{figure}
-
-
-Sur la Figure \ref{fig:m64n64k32_4W} on remarque que l'on utilise maintenant 128 threads pour exécuter notre microkernel.
+Sur la Figure \ref{fig:m64n64k32_4W} en annexe, on remarque que l'on utilise maintenant 128 threads pour exécuter notre microkernel.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/cuda_baseline_m64n64k32_128b_4W.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/cuda_baseline_m64n64k32_128b_4W.png}
     \caption{Résultats de l'optimisation 4 (baseline\_m8n8k8\_128b\_4W) contre CuBLAS et la performance maximum théorique sur A100 SXM4.}
     \label{fig:baseline_m64n64k32_128b_4W}
 \end{figure}
@@ -162,7 +147,7 @@ On utilise donc la variante \texttt{cp.async.cg.shared.global} de l'instruction 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{assets/dgemm_cuda/cuda_baseline_m64n64k32_128b_4W_CG.png}
+    \includegraphics[width=0.48\textwidth]{assets/dgemm_cuda/cuda_baseline_m64n64k32_128b_4W_CG.png}
     \caption{Résultats de l'optimisation 5 (baseline\_m8n8k8\_128b\_4W\_CG) contre CuBLAS et la performance maximum théorique sur A100 SXM4.}
     \label{fig:baseline_m64n64k32_128b_4W_CG}
 \end{figure}

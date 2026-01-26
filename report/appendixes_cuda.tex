@@ -1,3 +1,20 @@
+\section{CUDA: Large TiledMMAs}
+\label{appendix:large_tiledmmas}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{assets/dgemm_cuda/m64n64k32.jpg}
+    \caption{Schéma du TiledMMA(SM80\_8x8x4\_F64F64F64F64\_TN, Tile(64,64,32))}
+    \label{fig:m64n64k32}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{assets/dgemm_cuda/m64n64k32_4W.jpg}
+    \caption{Schéma du TiledMMA(SM80\_8x8x4\_F64F64F64F64\_TN, Layout(Shape(2, 2, 1)), Tile(64,64,32))}
+    \label{fig:m64n64k32_4W}
+\end{figure}
+
 \section{CUDA: copies vectorisées depuis la mémoire partagée}
 \label{appendix:smem_vectorized}
 
