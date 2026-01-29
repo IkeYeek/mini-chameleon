@@ -384,19 +384,18 @@ As our algorithm uses distributed memory, several (new) parameters needs to be o
 \include{dgemm_cuda}
 
 \begin{frame}
-    \centering
-    \vspace{2cm} % Adjust vertical spacing as needed
-    
-    {\Huge \textbf{Thank You!}}
-    
-    \vspace{1cm}
-    
-    {\Large Questions?}
-    
-    \vfill % Pushes the remaining content to the bottom
-    
-    \footnotesize
-    \today
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Happy with our results in general
+        \item Still room for improvement
+        \begin{itemize}
+            \item Implement more recent articles
+            \item Go further with NUMA effects
+            \item Focus on DGETRF
+            \item Have default blocksizes depending on matrix size
+        \end{itemize}
+
+    \end{itemize}
 \end{frame}
 
 \end{document}
