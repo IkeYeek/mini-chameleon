@@ -89,9 +89,9 @@
     \begin{block}{Sequential DGEMM}
         \begin{itemize}
             \item  DGEMM is used in numerous linear algebra kernels such as DTRSM, and DGETRF for example.
-            \item Even parallel DGEMM require a sequential kernel at some point.
+            \item Even parallel DGEMM require a sequential kernel.
         \end{itemize}
-    So in order not to get bottleneck by our sequential DGEMM, we need it to be as efficient as possible.
+    In order to avoid getting bottleneck by our sequential DGEMM, it needs to be as efficient as possible.
     \end{block}
 \end{frame}
 \begin{frame}{Research on efficient DGEMM}
@@ -148,14 +148,16 @@
     \only<7>{
         \begin{block}{Microkernel Implementation}
             \vspace*{1pt}
-            \includegraphics[width=1\textwidth, keepaspectratio]{assets/goto_microkernel.png}
-        \end{block}
-        \begin{itemize}
-            \item Uses 10 out of the 16 available vectorial registers.
-            \item Heavy loop unrolling to avoid conditional jumps.
+\begin{itemize}
+            \item 10 out of the 16 available vectorial registers.
+            \item Oblivious to the true matrix size.
+            \item Loop unrolling to avoid conditional jumps.
+            \item Aligned load/store thanks to repacking.
             \item MR = 4, NR = 8.
         \end{itemize}
-    }
+
+        \end{block}
+            }
     \only<8-9>{
         \begin{block}{Results for square matrices ($M = N = K$)}<only@8>
             \includegraphics[width=1\textwidth, keepaspectratio]{assets/goto_vs_vendor.png}
@@ -165,10 +167,10 @@
         \end{block}
     }
     \only<10>{
-        \begin{block}{Conclusion}
+        \begin{block}{Sequential DGEMM implementation}
         \begin{itemize}
-            \item We managed to get from 16GFlop/s peeks to up to 25GFlop/s, reaching up to 75\% of OpenBLAS speed.
-            \item We are now bounded by L1 cache accesses. While that's better, that means there are still pace for ameliorations, probably with even better cache management and handwritten assembly.
+            \item We managed to get from less than 10 GFlop/s peeks up to 25GFlop/s, reaching up to 75\% of OpenBLAS speed.
+            \item We are now bounded by L1 cache accesses. There are still place for ameliorations, probably  better cache management and handwritten assembly.
             \item We have a solid sequential CPU DGEMM to work with.
         \end{itemize}
         \end{block}
