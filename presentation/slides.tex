@@ -293,7 +293,6 @@ for k = 0 to small_dim step block_size:
     \frametitle{Base code}
     \textit{Code from dgemm\_tiled\_mpi.c}
     \begin{lstlisting}[language=C]
-       double wsA[b * b], wsB[b * b];
        ...
         if (global_options.mpirank == ownerA)
         {
@@ -317,7 +316,8 @@ for k = 0 to small_dim step block_size:
 \frametitle{SUMMA}
 \begin{itemize}
     \item Scalable Universal Matrix Multiplication Algorithm
-    \item Solves multiple issues (uses collective communications, workspaces dynamicaly allocated)
+    \item Solves multiple issues (uses collective communications, \ldots)
+    \item 2 versions implemented
 \end{itemize}
 \end{frame}
 
@@ -330,6 +330,18 @@ for k = 0 to small_dim step block_size:
 \end{figure}
 \end{frame}
 
+\begin{frame}
+\frametitle{Results on one node}
+\begin{itemize}
+    \item $\approx$3.6x acceleration (between 1 and 4 processes)
+    \item Wanted to archieve same results as shared memory
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[width=.9\textwidth]{strong_one_node.png}
+    \caption{GEMM performances using different processes number on one node}
+\end{figure}
+\end{frame}
 
 \begin{frame}
 \frametitle{Comparison with OpenMP}
@@ -355,7 +367,7 @@ As our algorithm uses distributed memory, several (new) parameters needs to be o
 \frametitle{Block size}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{MPI_block_size.png}
+    \includegraphics[width=\textwidth]{block_size.png}
     \caption{Performance depending on set block size}
 \end{figure}
 
@@ -363,21 +375,40 @@ As our algorithm uses distributed memory, several (new) parameters needs to be o
 
 \begin{frame}
 \frametitle{Number of nodes}
+\begin{itemize}
+    \item $\approx$3.3x acceleration (between 2 and 8 nodes)
+    \item 4 processes by node, 6 threads by processes
+    \item Pure performance is highly limited due to the no-tiled local GEMM 
+\end{itemize}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{MPI_nodes.png}
+    \includegraphics[width=.9\textwidth]{strong_summa.png}
     \caption{Performance depending on number of nodes}
 \end{figure}
 
 \end{frame}
 
 \begin{frame}
+\frametitle{Vendor implementation}
+\begin{itemize}
+    \item $\approx$65\% of theorical peak
+    \item Better performances with 2 times less nodes
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[width=.9\textwidth]{strong_vendor.png}
+    \caption{Performance depending on version used for local GEMMs}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}
 \frametitle{Enhancements}
 \begin{itemize}
     \item Add timers to determine ratio computation/communications
     \item Broadcast could possibly be non-blocking (maybe hard to implement)
-    \item Overlap computation/communications
-    \item Use blocked GEMM 
+    \item Overlap computation/communications 
 \end{itemize}
 \end{frame}
 
