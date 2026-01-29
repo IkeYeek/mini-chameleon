@@ -2,11 +2,11 @@
 
 \begin{frame}{Targeting High-Performance DGEMM}
     \begin{itemize}
-        \item \textbf{The Goal:} Implement a high-performance Double Precision GEMM (DGEMM).
-        \item \textbf{Hardware Acceleration:} Modern NVIDIA GPUs use \textbf{Tensor Cores} for peak performance.
+        \item \textbf{The Goal:} Implement a high-performance Double Precision GEMM (DGEMM)
+        \item \textbf{Hardware Acceleration:} Modern NVIDIA GPUs use \textbf{Tensor Cores} for peak performance
         \item \textbf{The Catch:} FP64 Tensor Core acceleration is only on Data Center chips:
         \begin{itemize}
-            \item \textbf{GA100} (A100), \textbf{GH100} (H100), \textbf{GB100} (Blackwell).
+            \item \textbf{GA100} (A100), \textbf{GH100} (H100), \textbf{GB100} (Blackwell)
         \end{itemize}
     \end{itemize}
 \end{frame}
@@ -15,10 +15,10 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{Standard FP64:} 9.7 TFLOPS.
-                \item \textbf{Tensor Core FP64:} 19.5 TFLOPS.
-                \item \textbf{The Gap:} $2\times$ performance increase just by using the right hardware instructions.
-                \item Without Tensor Cores, memory bandwidth dominates and optimization headroom is minimal.
+                \item \textbf{Standard FP64:} 9.7 TFLOPS
+                \item \textbf{Tensor Core FP64:} 19.5 TFLOPS
+                \item \textbf{The Gap:} $2\times$ performance increase just by using the right hardware instructions
+                \item Without Tensor Cores, memory bandwidth dominates and optimization headroom is minimal
             \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
@@ -34,13 +34,13 @@
     \begin{columns}
         \begin{column}{0.6\textwidth}
             \begin{itemize}
-                \item \textbf{The Operation:} $D = A \times B + C$.
+                \item \textbf{The Operation:} $D = A \times B + C$
                 \item \textbf{Block-Level Computing:}
                 \begin{itemize}
-                    \item Unlike CUDA cores (scalar/vector), Tensor Cores operate on \textbf{entire matrices} (blocks).
-                    \item Ampere is the first generation with native \textbf{$8 \times 8 \times 4$ FP64} support.
+                    \item Unlike CUDA cores (scalar/vector), Tensor Cores operate on \textbf{entire matrices} (blocks)
+                    \item Ampere is the first generation with native \textbf{$8 \times 8 \times 4$ FP64} support
                 \end{itemize}
-                \item \textbf{Efficiency:} Dramatically reduces instruction overhead and maximizes throughput.
+                \item \textbf{Efficiency:} Dramatically reduces instruction overhead and maximizes throughput
             \end{itemize}
         \end{column}
         \begin{column}{0.4\textwidth}
@@ -54,15 +54,15 @@
 
 \begin{frame}{Abstractions with NVIDIA CuTe}
     \begin{itemize}
-        \item \textbf{The Problem:} Manual indexing for tiled matrix multiplication is error-prone and rigid.
-        \item \textbf{The Solution:} \textbf{CuTe} (part of CUTLASS 3.0+).
+        \item \textbf{The Problem:} Manual indexing for tiled matrix multiplication is error-prone and rigid
+        \item \textbf{The Solution:} \textbf{CuTe} (part of CUTLASS 3.0+)
         \item \textbf{Key Concepts:}
         \begin{itemize}
-            \item \textbf{Layouts:} Decouple data coordinates from physical memory offsets.
-            \item \textbf{Tensors:} Multi-dimensional views of data using layouts.
-            \item \textbf{Tiled Operations:} High-level abstractions for \textbf{Copy} and \textbf{MMA} (Matrix-Multiply-Accumulate).
+            \item \textbf{Layouts:} Decouple data coordinates from physical memory offsets
+            \item \textbf{Tensors:} Multi-dimensional views of data using layouts
+            \item \textbf{Tiled Operations:} High-level abstractions for \textbf{Copy} and \textbf{MMA} (Matrix-Multiply-Accumulate)
         \end{itemize}
-        \item \textbf{Benefit:} Allows us to focus on the algorithmic tiling strategy rather than pointer arithmetic.
+        \item \textbf{Benefit:} Allows us to focus on the algorithmic tiling strategy rather than pointer arithmetic
     \end{itemize}
 \end{frame}
 
@@ -70,13 +70,13 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{Goal:} Get Tensor Cores working with minimal complexity using CuTe.
-                \item \textbf{Target:} NVIDIA A100 (GA100).
+                \item \textbf{Goal:} Get Tensor Cores working with minimal complexity using CuTe
+                \item \textbf{Target:} NVIDIA A100 (GA100)
                 \item \textbf{Key Components:}
                 \begin{itemize}
-                    \item \textbf{Hardware:} FP64 Tensor Cores.
-                    \item \textbf{Tile Size:} Matches the atom size ($8 \times 8 \times 4$).
-                    \item \textbf{Data Movement:} Used \texttt{cp.async}.
+                    \item \textbf{Hardware:} FP64 Tensor Cores
+                    \item \textbf{Tile Size:} Matches the atom size ($8 \times 8 \times 4$)
+                    \item \textbf{Data Movement:} Used \texttt{cp.async}
                 \end{itemize}
             \end{itemize}
         \end{column}
@@ -100,8 +100,8 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{Goal:} Increate arithmetic intensity.
-                \item \textbf{Solution:} Use a larger tensor core atom. We can duplicate the current atom accross K dimension.
+                \item \textbf{Goal:} Increate arithmetic intensity
+                \item \textbf{Solution:} Use a larger tensor core atom. We can duplicate the current atom accross K dimension
             \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
@@ -122,8 +122,8 @@
 
 \begin{frame}{Optimization: vectorized copies}
     \begin{itemize}
-        \item \textbf{Problem:} We are still memory bound.
-        \item \textbf{Solution:} Copy larger blocks of data with a single copy instruction.
+        \item \textbf{Problem:} We are still memory bound
+        \item \textbf{Solution:} Copy larger blocks of data with a single copy instruction
     \end{itemize}
 
     \begin{center}
@@ -142,8 +142,8 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{Problem:} We are using our memory subsystem as much as we can, we need to increase the arithmetic intensity for more flops.
-                \item \textbf{Solution:} Use a larger tiled MMA again.
+                \item \textbf{Problem:} We are using our memory subsystem as much as we can, we need to increase the arithmetic intensity for more flops
+                \item \textbf{Solution:} Use a larger tiled MMA again
             \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
@@ -165,7 +165,7 @@
     \begin{columns}
         \begin{column}{0.6\textwidth}
             \begin{itemize}
-                \item \textbf{Problem:} We are only using 1/4th of the physical GPU core (SM).
+                \item \textbf{Problem:} We are only using 1/4th of the physical GPU core (SM)
                 \item \textbf{Solution:} Run the TiledMMA on each quadrant of the core. (block tiling)
             \end{itemize}
         \end{column}
@@ -186,8 +186,8 @@
 
 \begin{frame}{Optimization: caching policy}
     \begin{itemize}
-        \item \textbf{Problem:} When looking at the data loading scheme, we notice that each block is loaded from global memory once. We are misusing our L1 cache.
-        \item \textbf{Solution:} Instruct the hardware to skip L1 when loading data from global memory.
+        \item \textbf{Problem:} When looking at the data loading scheme, we notice that each block is loaded from global memory once. We are misusing our L1 cache
+        \item \textbf{Solution:} Instruct the hardware to skip L1 when loading data from global memory
     \end{itemize}
 \end{frame}
 \begin{frame}{Caching policy optimization: results}
