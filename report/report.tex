@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[10pt, a4paper]{IEEEtran}
 
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
@@ -8,8 +8,13 @@
 \usepackage{float}
 \usepackage{graphicx}
 \graphicspath{ {./res/} }
+\usepackage[margin=1in]{geometry}
+\usepackage{todonotes}
 \usepackage{placeins}
 \usepackage{amsfonts}
+
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
 
 % style from https://www.overleaf.com/learn/latex/Code_listing
 \usepackage{xcolor}
@@ -20,21 +25,21 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
+    backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
     showstringspaces=false,
-    showtabs=false,                  
+    showtabs=false,
     tabsize=2
 }
 
@@ -50,124 +55,183 @@
 
 \pagebreak
 
-\tableofcontents
+%\tableofcontents
 
 \pagebreak
 
-\section{Versions séquentielles}
-\subsection{Considérations}
-Le code est exécuté sur un coeur d'un Intel Xeon E5-2680 v3 @ 2.50GHz d'un noeud miriel de Plafrim.\\
-C'est une architecture Haswell, capable de réaliser 16 opérations flottantes par cycle par coeur, avec une vitesse d'horloge maximale de 2.5Ghz, donnant un maximum théorique de 40 GFlop/s sur un seul coeur.
-\subsection{Implémentation du produit scalaire}
-Nous avons implémentés une version naïve du produit scalaire, parcourant deux vecteurs pour calculer $<a,b>=\sum_{i=1}^n{a_ib_i}$ pour $a$ et $b$ dans $\mathbb{K}^n$. Comme nous ne l'utiliserons pas dans notre DGEMM, nous n'allons pas perdre de temps à essayer de l'optimiser. De plus, chaque valeur n'étant utilisée qu'une et une seule fois nous ne voyons pas de stratégies d'optimisation évidente.\\
-Voici une comparaisons sur des vecteurs de tailles croissante entre notre implémentation et celle d'OpenBLAS:
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.925\linewidth]{assets/ddot_seq_vs_vendor.png}
-    \caption{Comparaison entre l'implémentation du produit scalaire d'OpenBLAS et la notre.}
-    \label{fig:placeholder}
-\end{figure}
-On constate donc que, même avec un kernel optimisé, OpenBLAS n'est plus performant que notre implémentation uniquement sur de grands vecteurs ($N > 512$), et que le gain n'est pas significatif car nous restons bien loin du pic théorique. C'est attendu étant donné que; comme dit précédemment, chaque donnée est utilisée une et une seule fois. Cela implique un grand nombre d'aller-retour en mémoire pour une intensité arithmétique faible, un très mauvais cas de figure donc pour maximiser l'utilisation d'un processeur !
+\input{dgemm_seq.tex}
 
-\subsection{Implémentation du produit matriciel}
-Nous nous baserons, à minima pour les versions CPU du produit matriciel sur l'implémentation classique à trois boucles (en suivant l'ordre $n, k, m$) pour le cas où A et B ne sont pas transposées. Nous réaliserons l'opération $\alpha AB+\beta C$, en prenant donc en compte les valeurs de $\alpha$ et $\beta$. Nous reviendrons sur les performances de cette implémentation plus tard afin de ne pas surcharger le rapport de figures peu intéressantes. Il sera présenté sour le nom de kernel "scalaire". C'est le kernel fourni de base dans le code. Nous avons décidés de le garder car notre implémentation était très similaire, ne gérant simplement pas les cas impliquants une matrice transposée.
-\subsection{Implémentation de la factorisation LU}
-<TODO>
+\subsection{DGETRF}
 
-\section{Blocage et vectorisation}
-\subsection{Implémentatin d'une version en blocs}
-Nous avons implémentés une version en blocs se reposant sur le kernel de DGEMM "scalaire". Cette dernière est assez simple, nous avons reprit le code du kernel "scalaire", et avons ajoutés un pas égal à `dgemm\_seq\_bloc\_size`. Pour tous les blocs nous allons d'abord appeler scale\_bloc\` pour multiplier les valeurs de $C$ par $\beta$, puis nous appelons le kernel scalaire sur le bloc courant. L'implémentation est peu performante, mais nous n'avons pas cherchés à l'optimiser outre mesure car nous avons basés notre DGEMM séquentiel final sur une approche bloquée assez différente de celle-ci. Nous reviendrons également sur les performances de ce kernel plus tard dans le rapport !
+En plus de la multiplication de matrices, la factorisation LU (DGETRF: Double GEneral TRiangular Factorization) devait être implémentée.
+Notre version ici est sans pivot.
 
-\subsection{Implémentation d'une version vectorisée}
-Comme vu précédemment, nous travaillons sur des processeurs Xeon E5-2680 v3 basés sur l'architecture Haswell. Il supporte donc entre autre les extensions SIMD AVX2 et FMA. Concrètement, nous pouvons manipuler des vecteurs de 256 bits. Un double étant un mot de 64 bits, nous pouvons donc manipuler des vecteurs de 4 doubles.\\
-Une implémentation naïve de l'opération DGEMM peut donc être faite en itérant dans la boucle interne avec un pas de 4 au lieu de 1, et en vectorisant les opérations de la boucle itérant le plus rapidement. Comme dit précédemment, nous itérons dans l'ordre $n, k, m$. Nous traiterons donc les éléments de 4 lignes consécutives à la fois pour chaque itération.\\
-Le procédé reste donc le même:\\
-Pour chaque vecteur d'une colonne $n$ de $C$, nous multiplions d'abord les $m$ éléments de ce vecteur par $\beta$, en procédant 4 lignes à la fois. Nous passons ensuite à la réduction sur la dimension $k$. Nous chargeons la valeur de $B$ correspondant au couple $n, k$ courant puis la broadcastons dans un vecteur. Ensuite, nous chargeons 4 lignes du vecteur courant de $A$ et de $C$ et ajoutons aux lignes de $C$ les valeurs des lignes de $A$ multipliées par la valeur broadcastée de $B$, en prenant en compte la multiplication par $\alpha$.\\
-Finalement, un retour en séquentiel permet de traiter les éléments finaux si $m$ n'est pas divisible par 4.\\
-\subsubsection{Impact de l'utilisation de FMA}
-L'implémentation naïve AVX2 utilise ces instruction: "C\_mn\_subvec = \_mm256\_add\_pd(C\_mn\_subvec, \_mm256\_mul\_pd(A\_mk\_subvec, B\_nk\_vec));", qui peuvent être remplacées par "C\_mn\_subvec = \_mm256\_fmadd\_pd(A\_mk\_subvec, B\_nk\_vec, C\_mn\_subvec);". En effet, le jeu d'instruction AVX2+FMA offre la possibilité de réaliser deux opérations Fuse-Multiply-Add par cycle. Cette opération permet de réaliser dans notre cas l'opération $C += A*B$. Voici comment FMA impact la rapidité du kernel:
-Nous aurions pu nous attendre à ce que le compileur optimise l'enchaînement de la multiplication et l'addition par un FMA, à minima à un niveau d'optimisation -O3, mais après une rapide lecture du code assembleur généré (en passant par Godbolt), nous constatons que ce n'est pas le cas:
-\begin{lstlisting}
-dgemm_kernel_avx2_fma:
-    (...)
-    vfmadd213pd     ymm7, ymm6, ymmword ptr [r10 + 8*rax]
-    (...)
-dgemm_kernel_avx2_nofma:
-    (...)
-    vmulpd  ymm7, ymm6, ymm7
-    vaddpd  ymm7, ymm7, ymmword ptr [r10 + 8*rax]
-    (...)
-\end{lstlisting}
-Et pourtant aucun speedup significatif n'est observé, les résultats sont les même sauf pour de très petites matrices mais ce n'est pas significatif.
-\subsubsection{Blocage + vectorisation}
-Finalement, nous pouvons remplacer l'appel à dgemm\_scalaire par un appel à dgemm\_avx2 dans la fonction dgemm\_bloc, ce qui nous donne ces résultats:
-\begin{figure}[H]
+La version scalaire classique du DGETRF était donnée. Nous avons donc implémenté une version bloquée, vue en cours d'Algorithmique Numérique.
+\begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{assets/avx_bloc.png}
-    \caption{AVX2 + Blocage, différentes tailles de blocs}
-    \label{fig:placeholder}
+    \includegraphics[width=\columnwidth]{assets/GETRF_BLOCKED.png}
+    \caption{Algorithme bloqué de la factorisation LU}
+    \label{fig:lu}
 \end{figure}
-\subsection{Résultats}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{assets/all_naive.png}
-    \caption{Comparaisons des performances des différentes versions séquentielles implémentées ainsi que de l'implémentation de référence (OpenBLAS)}
-    \label{fig:placeholder}
-\end{figure}
-\subsection{Implémentation de l'article Anatomy of High-Performance Matrix
-Multiplication}
-Nous constatons que nous sommes bien loin du pic theorique annoncé même en utilisant les instruction vectorielles, et que même sans viser ce pic nous restons loin de l'implémentation vendor ce qui signifie qu'il reste beaucoup de place à l'amélioration.\\
-En cherchant des articles sur le sujet du DGEMM séquentiel nous avons découvert "Anatomy of High-Performance Matrix Multiplication" qui se basais sur un découpage des matrices en plusieurs niveaux afin de maximiser l'utilisation des caches. Il recourait également à de la réorganisation de la donnée sur des tableaux de travail afin de maximiser la contiguité de ces dernières.\\
-De plus, il nous semblait assez simple à distribuer quand nous nous travaillerons sur des versions de cet acabit.
-L'idée est de découper l'opération DGEMM en plusieurs sous-blocs, mais n'est pas directement comparable à une version en blocs de taille fixe. Un certain nombre d'approches sont présentées dans l'article, mais une seule est vraiment développée; c'est celle que nous avons tentés de comprendre et d'implémenter.\\
-D'abord, nous découpons $A$ et $B$ en panels le long de la dimension de réduction $k$, panels de taille $KC$. Nous nous retrouvons désormais avec des panels de la forme $P_{A_i}\in\mathcal{M}_{M,KC}$ pour les panels de $A$, $P_{B_i}\in\mathcal{M}_{KB,N}$ pour les panels de $B$ toujours dans le but de construire $C\in\mathcal{M}_{M,N}$.\\
-Ensuite, nous appellons une opération DGEPP (DGEPanel x Panel). Dans cette opération, nous découpons le panel courant de $A$ en blocs la forme $B_{P_{A_i}}\in\mathcal{M}_{MC, KC}$, puis nous appellons une opération DGEBP (DGEBloc x Panel) avec le bloc courant de $A$ et le panel courant de $B$.\\
-Finalement, DGEPP appelle un micro-kernel de taille $MR\times NR$ conçu pour tirer le meilleur parti de l'architecture du processeur.\\
-L'intérêt de ce découpage est donc de faire en sorte de travailler avec des panels de $B$ et des blocks de $A$ ayant des tailles réduites et tenant dans les caches. De plus, la taille du micro-kernel dépend du nombre de registres disponibles par unité de calcul, où plutôt du nombre de registres adressables. Dans les faits, nous allons optimiser les paramètres afin de maximiser l'utilisation des registres sans en dépasser le nombre pour éviter au maximum les déchargements inutils (register spilling).\\
-De plus, un prétraitement est appliqué aux panels de $B$ et de $A$ afin de favoriser des accès contigues en mémoire en réordonnant $B$ pour qu'il soit dans un ordre row-major et $A$ pour qu'il contienne les matrices de taille $MR\times NR$ utilisées par le micro-kernel dans un ordre contigüe. Ces réordonnement sont également détaillés en commentaire dans le code.\\
-TODO:SCHEMA EXPLICATIF
-\subsubsection{Choix des paramètres}
-Nous avons la main sur un certain nombre de paramètres à savoir:
-\begin{itemize}
-    \item $MR$ et $NR$ la taille des blocs du micro-kernel.
-    \item $KC$ et $MC$ la taille des dimensions $k$ et $m$ des blocs/panels.
-    \item dans les faits, nous avons également un paramètre $KR$. Le micro-kernel déroule la boucle de la réduction sur l'axe $k$, en les traitant 8 par 8.
-\end{itemize}
-L'article nous donne quelques indications sur comment les fixer.
-Pour les choix de $MR$ et $NR$, l'objectif est de maximiser l'utilisation des registres AVX2 (les fameux registres ymm). L'architecture Haswell nous permet de travailler avec 16 registres. Un contiendra une partie de $A$, 6 serviront aux $NR$ valeurs du panel de $B$ que l'on broadcast, et 6 autres serviront aux $NR$ valeurs de $C_{aux}$. Cela nous fait un total de 13 registres utilisés, sans prendre en compte une quelconque optimisation du compileur.\\
-Pour s'en assurer, nous avons isolés le code du kernel puis l'avons compilés sur godblot afin d'avoir une sortie assembleur lisible.\\
-Nous constatons bel et bien l'utilisation des registres ymm0-ymm12
-\begin{lstlisting}[language=x86asm]
-(...)
-    vfmadd231pd     ymm1, ymm6, ymm7
-    vfmadd231pd     ymm0, ymm6, ymm8
-    vfmadd231pd     ymm2, ymm6, ymm9
-    vfmadd231pd     ymm5, ymm6, ymm10
-    vfmadd231pd     ymm4, ymm6, ymm11
-    vfmadd231pd     ymm3, ymm6, ymm12
-(...)
-\end{lstlisting}
-De plus, je constate également que mes boucles sont bien unroll par pack de 8, avec une neuvième section correspondant à la boucle à pas de 1 appelée lorsque l'on doit faire moins de 8 appels de kernel.\\
-Pour $KC$ et $MC$, l'objectif est de maximiser l'utilisation des caches L1 et L2 pour le stockage de A et B après leur réordonnement. Nous les fixons à 320 pour $KC$ et 32 pour $MC$. Ces choix sont légèrement plus détaillés dans le code.\\
-Enfin, le paramètre $KR$, bien que pas mentionné directement dans l'article, permet de choisir le nombre d'itérations sur la dimension $k$ dans le micro-kernel dans le déroulage de boucle. $KR=8$ signifie que l'on applique 8 fois le micro-kernel par boucle, minimisant le nombre de branchements. Evidemment on gère le cas où l'on doit faire moins de $KR$ appels au kernel!
-\subsubsection{Résultats}
-Tout d'abord comparons cette version à OpenBLAS sur des matrices carrées:
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{assets/vendor_vs_goto_square.png}
-    \caption{Notre implémentation basée sur GOTO vs OpenBLAS}
-    \label{fig:placeholder}
-\end{figure}
-On voit bien que très vite, OpenBLAS outreperforme notre implémentation, ce qui était attendu. Cependant nous atteignons quand même en moyenne la moitié des GFLOP/s. Nous avons décidés de faire la comparaison sur des combinaisons de tailles différentes pour les matrices en faisant varier indépendamment $M, N$ et $K$.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{assets/vendor_vs_goto_diffsize.png}
-    \caption{Comparaison entre notre implémentation GOTO et OpenBLAS sur différentes tailles de matrices}
-    \label{fig:placeholder}
-\end{figure}
-Nous voyons que sur trois cas nous battons OpenBLAS pour des matrices hautes et fines, et globalement nous tournons autour des 50\% des performances d'OpenBLAS en séquentiel. La taille de la dimension $M$ semble jouer un rôle particulièrement important ce qui est cohérent avec le fait que si $M\leq MC$, alors on fait un dgemm scalaire.\section{Mémoire partagée - OpenMP}
-\section{Mémoire distribuée - MPI}
-\section{GPU}
+La Figure \ref{fig:lu} représente l'algorithme que nous avons implémenté. On effectue un GETRF scalaire sur la partie
+verte. Ensuite nous mettons à jour les parties bleues et rouges avec deux TRSM (Triangular Matrix-Matrix Solve). Nous utilisons le TRSM de CBLAS.
+Enfin, le reste de la matrice est mis à jour avec l'utilisation d'un GEMM.
+Ces opérations sont ensuite répétées sur la partie jaune, ainsi de suite jusqu'à ce que toute la matrice ait été factorisée.
 
+Nous avons décidé de nous focaliser particulièrement sur le DGEMM, les optimisations du DGETRF sont donc moins poussées. Étant donné que la principale opération du DGETRF bloqué est le DGEMM,
+nous avons décidé d'optimiser seulement cette partie qui est le bottleneck de cette opération.
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_seq.png}
+        \caption{Comparaison entre les DGETRF LAPACKE, scalaire et bloqué}
+        \label{fig:getrf_seq}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_seq_bar.png}
+        \caption{Comparaison des performances de notre version séquentielle avec la version LAPACKE (normalisé sur LAPACKE)}
+        \label{fig:dgetrf_seq_bar}
+    \end{minipage}
+\end{figure}
+
+La Figure \ref{fig:getrf_seq} nous permet de comparer la version donnée dans le code source (seq\_bs\_1) avec notre version de l'algorithme bloqué et avec la version vendor de LAPACKE.
+La version scalaire obtient de très faibles performances, nous ne sommes pas allés jusqu'à une taille de 4096x4096 car le temps de calcul était trop long.
+L'utilisation de la version bloquée nous rapproche de la version vendor. Selon les tailles, nous sommes à 75\% de LAPACKE, comme le montre la Figure \ref{fig:dgetrf_seq_bar}.
+La taille des blocs influant sur les résultats, nous pourrions peut-être nous en rapprocher un peu plus en changeant de taille de tuiles.
+
+\section{Mémoire partagée - OpenMP}
+\subsection{DGEMM}\label{part:omp}
+\input{dgemm_omp.tex}
+\subsection{DGEMM Tiled}\label{dgemm_omp_tiled}
+Nous avons ensuite implémenté une version tuilée du DGEMM. Dans la version classique, les données sont stockées en mémoire en
+column-major sur toute la hauteur de la matrice. La version tuilée quant à elle est allouée
+en column-major tuile par tuile.
+Cela permet de faire des algorithmes plus efficaces, notamment lorsque l'on utilise le parallélisme ou la mémoire distribuée.
+
+L'algorithme tuilé étant donné, nous avons uniquement parallélisé les différentes parties (avec ou sans matrices transposées).
+Comme nous utilisons notre version séquentielle comme cœur de nos opérations, nous avons de très bonnes performances sur des matrices non transposées.
+En revanche, comme la version goto que nous avons implémenté ne supporte pas les matrices transposées, nous utilisons la version scalaire originale
+afin d'avoir la parallélisation des multiplications de matrices transposées. Les performances des matrices transposées sont donc relativement mauvaises,
+mais ce point est sans importance puisque nous avons choisi de nous focaliser sur la version sans transposition.
+
+Pour cette version, nous avons décidé de nous comparer à la version vendor, soit CBLAS. Pour cela, nous avons fait des expériences sur 24 threads et deux taille de tuiles de 128 et 256.
+La Figure \ref{fig:dgemm_omp_t_vendor_graph} permet de comparer nos deux versions. Nous pouvons voir que nous nous rapprochons de plus en plus de la version CBLAS
+jusqu'à 4096, puis nous commençons à nous en éloigner avec les tuiles de 128. Sur des petites matrices, nous sommes bien moins efficaces que CBLAS, sans doute dû au fait que nous utilisons une seule taille de tuile pour toutes
+les configurations, or une tuile de 128 sur une matrice en 256x256 représente une part bien différente que sur des matrices en 4096x4096 ou plus.
+
+Il est évident qu'avoir une taille de tuile adaptative par rapport à la taille du problème permettrait d'avoir de meilleures performances.
+En effet, avant 4096, les tuiles de 128 apportent de meilleures performances que les tuiles de 256. En revanche, après 4096, les performances de la version avec les plus petites tuiles diminuent contrairement aux
+plus grandes tuiles. Une plus petite taille de tuiles sur les petites matrices serait aussi plus intéressante.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_simple.png}
+        \caption{Performance en GFlop/s du Dgemm OpenMP tiled contre CBLAS}
+        \label{fig:dgemm_omp_t_vendor_graph}
+    \end{minipage}
+     \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/gemm_omp-t_vendor_bar.png}
+        \caption{Comparaison des performances de notre version OMP-tiled avec la version CBLAS (normalisé sur CBLAS)}
+        \label{fig:dgemm_omp_t_vendor_bar}
+    \end{minipage}
+\end{figure}
+
+La Figure \ref{fig:dgemm_omp_t_vendor_bar} permet de comparer notre version à celle de CBLAS, normalisé sur le temps d'exécution le
+plus long de la version CBLAS. Nous pouvons voir que nous obtenons des performances très différentes selon la taille de matrices. Sur les matrices de 4096 avec  les tailles de tuiles de
+128 et 256, nous arrivons à plus de 80\% des performances de CBLAS.
+
+\subsection{DGETRF}
+
+Pour paralléliser le DGETRF, nous avons utilisé une méthode assez naïve qui consiste à reprendre la version bloquée séquentielle et utiliser le DGEMM OpenMP à la place du séquentiel.
+Le DGEMM étant l'opération la plus chronophage de cet algorithme, utiliser une version parallèle suffit à améliorer les performances.
+
+Cette version est relativement difficile à optimiser, car nous possédons 3 critères pouvant influer sur les performances : la taille de blocs de la version séquentielle,
+la taille de blocs de la version parallèle ainsi que le nombre de threads.
+
+Nous avons aussi voulu nous comparer avec la version vendor (LAPACKE ici), comme le montrent les Figures \ref{fig:dgetrf_omp_vendor_graph} et \ref{fig:dgetrf_omp_vendor_bar}.
+Nous pouvons remarquer un écart plus important avec la version Vendor. Pour plus nous en approcher, il faudrait faire une étude comparative des performances en fonction de
+la taille des blocs sur la partie séquentielle et parallèle.
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_graph.png}
+        \caption{Performance en GFlop/s du DGETRF OpenMP  contre LAPACKE}
+        \label{fig:dgetrf_omp_vendor_graph}
+    \end{minipage}
+     \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/getrf_omp_vendor_bar.png}
+        \caption{Comparaison des performances de notre version OpenMP avec la version LAPACKE (normalisé sur LAPACKE)}
+        \label{fig:dgetrf_omp_vendor_bar}
+    \end{minipage}
+\end{figure}
+
+\subsection{DGETRF Tiled}
+
+Comme pour le DGEMM, nous avons implémentée une version tuilée. La version séquentielle étant déjà implémentée, nous avons simplement remplacé les appels à la
+multiplication de matrice séquentielle par la version OpenMP présentée dans la section \ref{dgemm_omp_tiled}
+
+Pour cette version, il est encore plus complexe de trouver les paramètres optimaux pour une matrice donnée. En effet, en plus des 3
+critères vus lors de la section précédente, nous avons aussi la taille de tuiles qui peut jouer sur les performances.
+
+La Figure \ref{fig:getrf_omp_tiled_tilesize} montre l'impact du choix de la taille de tuile sur les performances. Nous avons réalisé cette expérience
+avec la même taille de blocs séquentiels et parallèles (64 et 128) afin de ne pas influer sur les performances.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{assets/getrf_comparison_tilesize.png}
+    \caption{DGETRF avec taille de blocs séquentiel de 64 et OpenMP de 128 et taille de tuile variable}
+    \label{fig:getrf_omp_tiled_tilesize}
+\end{figure}
+
+
+\input{dgemm_mpi.tex}
+
+
+\section{Implémentation sur GPU}
+\input{dgemm_cuda.tex}
+
+\section{Conclusion}
+
+Au cours de ce projet, nous nous sommes concentrés sur l'optimisation de la multiplication de matrices avec le DGEMM.
+Nous obtenons de bons, voire très bons résultats selon les versions.
+Il reste toutefois des axes d'améliorations pour ce projet si nous souhaitons le mettre en application réelle.
+
+Nos versions du DGEMM étant déjà bien optimisées, il serait maintenant intéressant de se pencher en profondeur
+sur la factorisation LU avec le DGETRF. Nous sommes restés sur des versions assez naïves, mais il existe des algorithmes
+plus puissants dans la littérature que l'on pourrait implémenter.
+
+De plus, afin d'avoir de bonnes performances indépendamment de la taille du problème, il serait judicieux d'implémenter des réglages
+par défaut concernant la taille de blocs ou de tuiles selon la taille de la matrice.
+Comme nous l'avons vu dans nos résultats, c'est à l'utilisateur de choisir ces paramètres et un bon réglage pour une petite matrice peut être très mauvais
+pour des matrices plus imposantes. Cela nous permettrait sans doute d'avoir des résultats plus proches des versions vendor.
+
+
+\printbibliography
+\newpage
+\onecolumn
+\appendices
+
+\section{Implémentation de l'article Anatomy of High-Performance Matrix Multiplication}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.75\textwidth]{assets/goto-schema.png}
+    \caption{Vue haut niveau de l'algorithme de GOTO, avec découpage et repacking}
+    \label{fig:goto-schema}
+\end{figure}
+
+\input{appendixes_cuda.tex}
 
 \end{document}
