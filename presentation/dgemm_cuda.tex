@@ -1,34 +1,97 @@
 \section{CUDA Implementation}
 
-\begin{frame}{Targeting High-Performance DGEMM}
-    \begin{itemize}
-        \item \textbf{The Goal:} Implement a high-performance Double Precision GEMM (DGEMM)
-        \item \textbf{Hardware Acceleration:} Modern NVIDIA GPUs use \textbf{Tensor Cores} for peak performance
-        \item \textbf{The Catch:} FP64 Tensor Core acceleration is only on Data Center chips:
-        \begin{itemize}
-            \item \textbf{GA100} (A100), \textbf{GH100} (H100), \textbf{GB100} (Blackwell)
-        \end{itemize}
-    \end{itemize}
+\begin{frame}{GPU implementation - Introduction}
+    \only<1>{
+        \centering
+        \Huge We've seen haswell .. \\
+        \Huge \textbf{now back to the future !}
+    }
+
+    \only<2>{
+        % Let's pretend we're in 2020
+        % NVIDIA just released the A100, fastest GPU in the world
+        \centering
+        \textbf{The year is 2020 and NVIDIA just released their brand new GPU: The A100.}
+        \begin{columns}
+
+            \begin{column}{0.5\textwidth}
+                \begin{figure}
+                    \includegraphics[width=\textwidth]{assets/A100_SXM4.png}
+                    \captionof{figure}{NVIDIA A100 GPU}
+                \end{figure}
+            \end{column}
+
+            \begin{column}{0.5\textwidth}
+                \begin{figure}
+                    \includegraphics[width=\textwidth]{assets/jensen_oven.png}
+                    \captionof{figure}{Jensen Huang cooking up a good card}
+                \end{figure}
+            \end{column}
+        \end{columns}
+    }
+
+    % \only<3>{
+    %     \begin{figure}
+    %         \centering
+    %         \includegraphics[width=\textwidth]{assets/A100_cluster.jpg}
+    %         \captionof{figure}{NVIDIA A100 cluster (Tesla's)}
+    %     \end{figure}
+    % }
 \end{frame}
 
-\begin{frame}{Why Hardware Acceleration is Essential}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{itemize}
-                \item \textbf{Standard FP64:} 9.7 TFLOPS
-                \item \textbf{Tensor Core FP64:} 19.5 TFLOPS
-                \item \textbf{The Gap:} $2\times$ performance increase just by using the right hardware instructions
-                \item Without Tensor Cores, memory bandwidth dominates and optimization headroom is minimal
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \begin{center}
-                \includegraphics[width=\textwidth]{assets/a100_specs.png}
-                \captionof{figure}{NVIDIA A100 Performance Specifications}
-            \end{center}
-        \end{column}
-    \end{columns}
+\begin{frame}[t]{GPU implementation - Introduction}
+    \textbf{What are we working with ?}
+
+    \only<1>{
+    \begin{itemize}
+        \item \textbf{Tensor cores:} First GPU with FP64 GEMM hardware acceleration
+        \item \textbf{Asynchronous copies:} allows explicit pipelining
+        \item \textbf{More power!} 108 SMs and 1.5TB/s of bandwidth, 19.5 TFlops in fp64!
+        \item \textbf{NVLink 3.0:} very fast D2D transfers !
+    \end{itemize}
+    }
+
+    \only<2>{
+    \begin{itemize}
+        \item \textbf{Tensor cores:} First GPU with FP64 GEMM hardware acceleration
+        \item \textbf{Asynchronous copies:} allows explicit pipelining
+        \item \textbf{More power!} 108 SMs and 1.5TB/s of bandwidth, \textbf{19.5 TFlops} in fp64!
+        \item \sout{\textbf{NVLink 3.0:} very fast D2D transfers !}
+    \end{itemize}
+
+    \textbf{Lots of useful features for us !}
+    }
 \end{frame}
+
+% \begin{frame}{Targeting High-Performance DGEMM}
+%     \begin{itemize}
+%         \item \textbf{The Goal:} Implement a high-performance Double Precision GEMM (DGEMM)
+%         \item \textbf{Hardware Acceleration:} Modern NVIDIA GPUs use \textbf{Tensor Cores} for peak performance
+%         \item \textbf{The Catch:} FP64 Tensor Core acceleration is only on Data Center chips:
+%         \begin{itemize}
+%             \item \textbf{GA100} (A100), \textbf{GH100} (H100), \textbf{GB100} (Blackwell)
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame}
+%
+% \begin{frame}{Why Hardware Acceleration is Essential}
+%     \begin{columns}
+%         \begin{column}{0.5\textwidth}
+%             \begin{itemize}
+%                 \item \textbf{Standard FP64:} 9.7 TFLOPS
+%                 \item \textbf{Tensor Core FP64:} 19.5 TFLOPS
+%                 \item \textbf{The Gap:} $2\times$ performance increase just by using the right hardware instructions
+%                 \item Without Tensor Cores, memory bandwidth dominates and optimization headroom is minimal
+%             \end{itemize}
+%         \end{column}
+%         \begin{column}{0.5\textwidth}
+%             \begin{center}
+%                 \includegraphics[width=\textwidth]{assets/a100_specs.png}
+%                 \captionof{figure}{NVIDIA A100 Performance Specifications}
+%             \end{center}
+%         \end{column}
+%     \end{columns}
+% \end{frame}
 
 \begin{frame}{Hardware Feature: NVIDIA Tensor Cores}
     \begin{columns}
