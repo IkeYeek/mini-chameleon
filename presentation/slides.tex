@@ -154,6 +154,15 @@ for k = 0 to small_dim step block_size:
 \end{columns}
 \end{frame}
 
+\begin{frame}
+\frametitle{Results}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{getrf_seq_bar.png}
+    \caption{Comparison between different DGETRF versions}
+\end{figure}
+\end{frame}
+
 \section{OpenMP}
 \begin{frame}
 \frametitle{Concept}
@@ -163,7 +172,7 @@ for k = 0 to small_dim step block_size:
     \item Split the computation between threads to speed up computation
 \end{itemize}
 \end{frame}
-\subsection{Implemented versions}
+
 \begin{frame}
 \frametitle{DGEMM OpenMP}
 \begin{itemize}
@@ -173,12 +182,39 @@ for k = 0 to small_dim step block_size:
 \end{frame}
 
 \begin{frame}
+\frametitle{DGEMM OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gemm_omp_square.out_simple.png}
+    \caption{dgemm\_seq vs dgem\_omp}
+\end{figure}
+\end{frame}
+
+\begin{frame}
 \frametitle{DGEMM OpenMP tiled}
 \begin{itemize}
     \item Use the base code composed of 3 imbricated loops
     \item Parallelize the 2 outer loops
     \item \textit{\#pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)}
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gemm_omp-t_square.out_simple.png}
+    \caption{dgemm\_seq vs dgemm\_omp\_tiled}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gemm_omp-t_vendor_bar.png}
+    \caption{dgemm\_vendor vs dgemm\_omp\_tiled}
+\end{figure}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -214,24 +250,12 @@ for k = 0 to small_dim step block_size:
 
 \end{columns}
 \end{frame}
-
-
-\subsection{Results}
 \begin{frame}
-\frametitle{DGEMM OpenMP}
+\frametitle{DGETRF OpenMP}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gemm_omp_square.out_simple.png}
-    \caption{dgemm\_seq vs dgem\_omp}
-\end{figure}
-\end{frame}
-
-\begin{frame}
-\frametitle{DGEMM OpenMP tiled}
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{gemm_omp-t_square.out_simple.png}
-    \caption{dgemm\_seq vs dgemm\_omp\_tiled}
+    \includegraphics[width=\textwidth]{getrf_omp_vendor_graph.png}
+    \caption{dgetrf\_seq vs dgetrf\_omp\_tiled}
 \end{figure}
 \end{frame}
 
@@ -239,7 +263,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGETRF OpenMP}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{getrf_omp_square.out_simple.png}
+    \includegraphics[width=\textwidth]{getrf_omp_vendor_bar.png}
     \caption{dgetrf\_seq vs dgetrf\_omp}
 \end{figure}
 \end{frame}
@@ -248,16 +272,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGETRF OpenMP tiled}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{getrf_omp-t_square.out_simple.png}
-    \caption{dgetrf\_seq vs dgetrf\_omp\_tiled}
-\end{figure}
-\end{frame}
-
-\begin{frame}
-\frametitle{DGETRF OpenMP tiled}
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{getrf_omp-t_blocks.out_simple.png}
+    \includegraphics[width=\textwidth]{getrf_comparison_tilesize.png}
     \caption{Impact of the Block size in dgetrf\_omp\_tiled}
 \end{figure}
 
