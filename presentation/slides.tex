@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage{listings}
 \usepackage[normalem]{ulem}
@@ -160,7 +160,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{Results}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{getrf_seq_bar.png}
+    \includegraphics[height=.8\textheight]{getrf_seq_bar.png}
     \caption{Comparison between different DGETRF versions}
 \end{figure}
 \end{frame}
@@ -187,7 +187,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGEMM OpenMP}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gemm_omp_square.out_simple.png}
+    \includegraphics[height=.8\textheight]{gemm_omp_square.out_simple.png}
     \caption{dgemm\_seq vs dgem\_omp}
 \end{figure}
 \end{frame}
@@ -205,7 +205,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGEMM OpenMP tiled}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gemm_omp-t_square.out_simple.png}
+    \includegraphics[height=.8\textheight]{gemm_omp-t_square.out_simple.png}
     \caption{dgemm\_seq vs dgemm\_omp\_tiled}
 \end{figure}
 \end{frame}
@@ -214,7 +214,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGEMM OpenMP tiled}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gemm_omp-t_vendor_bar.png}
+    \includegraphics[height=.8\textheight]{gemm_omp-t_vendor_bar.png}
     \caption{dgemm\_vendor vs dgemm\_omp\_tiled}
 \end{figure}
 \end{frame}
@@ -256,7 +256,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGETRF OpenMP}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{getrf_omp_vendor_graph.png}
+    \includegraphics[height=.8\textheight]{getrf_omp_vendor_graph.png}
     \caption{dgetrf\_seq vs dgetrf\_omp\_tiled}
 \end{figure}
 \end{frame}
@@ -265,7 +265,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGETRF OpenMP}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{getrf_omp_vendor_bar.png}
+    \includegraphics[height=.8\textheight]{getrf_omp_vendor_bar.png}
     \caption{dgetrf\_seq vs dgetrf\_omp}
 \end{figure}
 \end{frame}
@@ -274,7 +274,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{DGETRF OpenMP tiled}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{getrf_comparison_tilesize.png}
+    \includegraphics[height=.8\textheight]{getrf_comparison_tilesize.png}
     \caption{Impact of the Block size in dgetrf\_omp\_tiled}
 \end{figure}
 
@@ -340,7 +340,7 @@ for k = 0 to small_dim step block_size:
 \end{itemize}
 \begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{strong_one_node.png}
+    \includegraphics[height=.6\textheight]{strong_one_node.png}
     \caption{GEMM performances using different processes number on one node}
 \end{figure}
 \end{frame}
@@ -349,7 +349,7 @@ for k = 0 to small_dim step block_size:
 \frametitle{Comparison with OpenMP}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{MPI_vs_OMP.png}
+    \includegraphics[height=.8\textheight]{MPI_vs_OMP.png}
     \caption{Performance depending on number of threads/processes}
 \end{figure}
 
@@ -369,7 +369,7 @@ As our algorithm uses distributed memory, several (new) parameters needs to be o
 \frametitle{Block size}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{block_size.png}
+    \includegraphics[height=.8\textheight]{block_size.png}
     \caption{Performance depending on set block size}
 \end{figure}
 
@@ -384,7 +384,7 @@ As our algorithm uses distributed memory, several (new) parameters needs to be o
 \end{itemize}
 \begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{strong_summa.png}
+    \includegraphics[height=.6\textheight]{strong_summa.png}
     \caption{Performance depending on number of nodes}
 \end{figure}
 
@@ -398,7 +398,7 @@ As our algorithm uses distributed memory, several (new) parameters needs to be o
 \end{itemize}
 \begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{strong_vendor.png}
+    \includegraphics[height=.6\textheight]{strong_vendor.png}
     \caption{Performance depending on version used for local GEMMs}
 \end{figure}
 
