@@ -16,14 +16,14 @@
 
             \begin{column}{0.5\textwidth}
                 \begin{figure}
-                    \includegraphics[width=\textwidth]{assets/A100_SXM4.png}
+                    \includegraphics[width=.8\textwidth]{assets/A100_SXM4.png}
                     \captionof{figure}{NVIDIA A100 GPU}
                 \end{figure}
             \end{column}
 
             \begin{column}{0.5\textwidth}
                 \begin{figure}
-                    \includegraphics[width=\textwidth]{assets/jensen_oven.png}
+                    \includegraphics[width=.8\textwidth]{assets/jensen_oven.png}
                     \captionof{figure}{Jensen Huang cooking up a good card}
                 \end{figure}
             \end{column}
@@ -106,7 +106,7 @@
         \end{column}
         \begin{column}{0.4\textwidth}
             \begin{center}
-                \includegraphics[width=\textwidth]{assets/tensor_core_illustration.png}
+                \includegraphics[width=.9\textwidth]{assets/tensor_core_illustration.png}
                 \captionof{figure}{NVIDIA's illustration of a tensor core}
             \end{center}
         \end{column}
@@ -143,7 +143,7 @@
         \end{column}
         \begin{column}{0.5\textwidth}
             \begin{center}
-                \includegraphics[width=\textwidth]{assets/m8n8k4.png}
+                \includegraphics[width=.9\textwidth]{assets/m8n8k4.png}
                 \captionof{figure}{\texttt{SM80\_8x8x4\_F64F64F64F64\_TN} MMA Atom}
             \end{center}
         \end{column}
@@ -152,7 +152,7 @@
 
 \begin{frame}[t]{Baseline: Results}
     \begin{center}
-        \includegraphics[width=0.80\textwidth]{res/cuda_baseline.png}
+        \includegraphics[height=.9\textheight]{res/cuda_baseline.png}
         %\captionof{figure}{Baseline benchmark}
     \end{center}
 \end{frame}
@@ -176,7 +176,7 @@
 
 \begin{frame}[t]{Larger TiledMMA optimization: Results}
     \begin{center}
-        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m8n8k8.png}
+        \includegraphics[height=.9\textheight]{res/cuda_baseline_m8n8k8.png}
         %\captionof{figure}{cuda\_baseline\_m8n8k8 benchmark}
     \end{center}
 \end{frame}
@@ -194,7 +194,7 @@
 \end{frame}
 \begin{frame}[t]{Vectorized copies optimization: Results}
     \begin{center}
-        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m8n8k8_128b.png}
+        \includegraphics[height=.9\textheight]{res/cuda_baseline_m8n8k8_128b.png}
         %\captionof{figure}{cuda\_baseline\_m8n8k8\_128b benchmark}
     \end{center}
 \end{frame}
@@ -217,7 +217,7 @@
 \end{frame}
 \begin{frame}[t]{Larger tiled MMA optimization: Results}
     \begin{center}
-        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m64n64k32_128b.png}
+        \includegraphics[height=.9\textheight]{res/cuda_baseline_m64n64k32_128b.png}
         %\captionof{figure}{cuda\_baseline\_m64n64k32\_128b benchmark}
     \end{center}
 \end{frame}
@@ -232,7 +232,7 @@
         \end{column}
         \begin{column}{0.4\textwidth}
             \begin{center}
-                \includegraphics[width=\textwidth]{assets/A100_SM.png}
+                \includegraphics[width=.8\textwidth]{assets/A100_SM.png}
                 \captionof{figure}{NVIDIA A100 core diagram (SM)}
             \end{center}
         \end{column}
@@ -240,7 +240,7 @@
 \end{frame}
 \begin{frame}[t]{Block tiling optimization: Results}
     \begin{center}
-        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m64n64k32_128b_4W.png}
+        \includegraphics[height=.9\textheight]{res/cuda_baseline_m64n64k32_128b_4W.png}
         %\captionof{figure}{cuda\_baseline\_m64n64k32\_128b\_4W benchmark}
     \end{center}
 \end{frame}
@@ -253,7 +253,7 @@
 \end{frame}
 \begin{frame}[t]{Caching policy optimization: Results}
     \begin{center}
-        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m64n64k32_128b_4W_CG.png}
+        \includegraphics[height=.9\textheight]{res/cuda_baseline_m64n64k32_128b_4W_CG.png}
         %\captionof{figure}{cuda\_baseline\_m64n64k32\_128b\_4W\_CG benchmark}
     \end{center}
 \end{frame}

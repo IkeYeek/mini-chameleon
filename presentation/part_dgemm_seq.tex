@@ -122,17 +122,20 @@
     }
     \only<2>{
         \begin{block}{GEMM}
-            \includegraphics[width=.7\textwidth, keepaspectratio]{assets/goto_1.png}
+            \centering
+            \includegraphics[height=.8\textheight, keepaspectratio]{assets/goto_1.png}
         \end{block}
     }
     \only<3>{
         \begin{block}{GEPP}
-            \includegraphics[width=.8\textwidth, keepaspectratio]{assets/goto_2.png}
+            \centering
+            \includegraphics[height=.8\textheight, keepaspectratio]{assets/goto_2.png}
         \end{block}
     }
     \only<4>{
         \begin{block}{GEBP}
-            \includegraphics[width=.9\textwidth, keepaspectratio]{assets/goto_3.png}
+            \centering
+            \includegraphics[height=.8\textheight, keepaspectratio]{assets/goto_3.png}
         \end{block}
     }
     \only<5>{
@@ -142,7 +145,7 @@
     }
     \only<6>{
         \begin{block}{Microkernel}
-            \includegraphics[width=1\textwidth, keepaspectratio]{assets/goto_5.png}
+            \includegraphics[height=.8\textheight, keepaspectratio]{assets/goto_5.png}
         \end{block}
     }
     \only<7>{
@@ -157,13 +160,20 @@
         \end{itemize}
 
         \end{block}
+        \begin{block}{Testbed}
+            \begin{itemize}
+                \item Intel Xeon CPU E5-2680 v3, limited at 2.50GHz
+                \item 24 threads, AVX2 + two FMA units, getting up to 40Gflop/s in double precision
+                \item 32Kb L1 cache, 256Kb L2 cache, ~15Mb L3 cache
+            \end{itemize}
+        \end{block}
             }
     \only<8-9>{
         \begin{block}{Results for square matrices ($M = N = K$)}<only@8>
-            \includegraphics[width=1\textwidth, keepaspectratio]{assets/goto_vs_vendor.png}
+            \includegraphics[height=.8\textheight, keepaspectratio]{assets/goto_vs_vendor.png}
         \end{block}
         \begin{block}{Impact of Goto on memory accesses}<only@9>
-            \includegraphics[width=1\textwidth, keepaspectratio]{assets/goto_vtune_mem.png}
+            \includegraphics[height=.8\textheight, keepaspectratio]{assets/goto_vtune_mem.png}
         \end{block}
     }
     \only<10>{
