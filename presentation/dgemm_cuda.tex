@@ -11,7 +11,7 @@
         % Let's pretend we're in 2020
         % NVIDIA just released the A100, fastest GPU in the world
         \centering
-        \textbf{The year is 2020 and NVIDIA just released their brand new GPU: The A100.}
+        \textbf{The year is 2020 and NVIDIA just released their lastest GPU: The A100.}
         \begin{columns}
 
             \begin{column}{0.5\textwidth}
@@ -45,18 +45,18 @@
     \only<1>{
     \begin{itemize}
         \item \textbf{Tensor cores:} First GPU with FP64 GEMM hardware acceleration
-        \item \textbf{Asynchronous copies:} allows explicit pipelining
-        \item \textbf{More power!} 108 SMs and 1.5TB/s of bandwidth, 19.5 TFlops in fp64!
-        \item \textbf{NVLink 3.0:} very fast D2D transfers !
+        \item \textbf{Asynchronous copies:} Allows explicit pipelining
+        \item \textbf{More power!} 108 SMs and 1.5TB/s of bandwidth, 19.5 TFlops in FP64!
+        \item \textbf{NVLink 3.0:} Very fast D2D transfers !
     \end{itemize}
     }
 
     \only<2>{
     \begin{itemize}
         \item \textbf{Tensor cores:} First GPU with FP64 GEMM hardware acceleration
-        \item \textbf{Asynchronous copies:} allows explicit pipelining
-        \item \textbf{More power!} 108 SMs and 1.5TB/s of bandwidth, \textbf{19.5 TFlops} in fp64!
-        \item \sout{\textbf{NVLink 3.0:} very fast D2D transfers !}
+        \item \textbf{Asynchronous copies:} Allows explicit pipelining
+        \item \textbf{More power!} 108 SMs and 1.5TB/s of bandwidth, \textbf{19.5 TFlops} in FP64!
+        \item \sout{\textbf{NVLink 3.0:} Very fast D2D transfers !}
     \end{itemize}
 
     \textbf{Lots of useful features for us !}
@@ -65,8 +65,8 @@
 
 % \begin{frame}{Targeting High-Performance DGEMM}
 %     \begin{itemize}
-%         \item \textbf{The Goal:} Implement a high-performance Double Precision GEMM (DGEMM)
-%         \item \textbf{Hardware Acceleration:} Modern NVIDIA GPUs use \textbf{Tensor Cores} for peak performance
+%         \item \textbf{The Goal:} implement a high-performance Double Precision GEMM (DGEMM)
+%         \item \textbf{Hardware Acceleration:} modern NVIDIA GPUs use \textbf{Tensor Cores} for peak performance
 %         \item \textbf{The Catch:} FP64 Tensor Core acceleration is only on Data Center chips:
 %         \begin{itemize}
 %             \item \textbf{GA100} (A100), \textbf{GH100} (H100), \textbf{GB100} (Blackwell)
@@ -93,23 +93,21 @@
 %     \end{columns}
 % \end{frame}
 
-\begin{frame}{Hardware Feature: NVIDIA Tensor Cores}
+\begin{frame}{Hardware Acceleration: Tensor Cores}
+
     \begin{columns}
         \begin{column}{0.6\textwidth}
+            \textbf{But what is a tensor core ?}
             \begin{itemize}
-                \item \textbf{The Operation:} $D = A \times B + C$
-                \item \textbf{Block-Level Computing:}
-                \begin{itemize}
-                    \item Unlike CUDA cores (scalar/vector), Tensor Cores operate on \textbf{entire matrices} (blocks)
-                    \item Ampere is the first generation with native \textbf{$8 \times 8 \times 4$ FP64} support
-                \end{itemize}
-                \item \textbf{Efficiency:} Dramatically reduces instruction overhead and maximizes throughput
+                \item small hardware unit which performs fixed size GEMMs
+                \item \textbf{Operation:} $D = A \times B + C$
+                \item 4 tensor cores per SM (not as many as threads)
             \end{itemize}
         \end{column}
         \begin{column}{0.4\textwidth}
             \begin{center}
                 \includegraphics[width=\textwidth]{assets/tensor_core_illustration.png}
-                \captionof{figure}{Hardware-native Block MMA}
+                \captionof{figure}{NVIDIA's illustration of a tensor core}
             \end{center}
         \end{column}
     \end{columns}
@@ -117,13 +115,13 @@
 
 \begin{frame}{Abstractions with NVIDIA CuTe}
     \begin{itemize}
-        \item \textbf{The Problem:} Manual indexing for tiled matrix multiplication is error-prone and rigid
+        \item \textbf{The Problem:} Manual indexing is error-prone (even more with TCs)
         \item \textbf{The Solution:} \textbf{CuTe} (part of CUTLASS 3.0+)
-        \item \textbf{Key Concepts:}
+        \item \textbf{Three main helpers:}
         \begin{itemize}
-            \item \textbf{Layouts:} Decouple data coordinates from physical memory offsets
-            \item \textbf{Tensors:} Multi-dimensional views of data using layouts
-            \item \textbf{Tiled Operations:} High-level abstractions for \textbf{Copy} and \textbf{MMA} (Matrix-Multiply-Accumulate)
+            \item \textbf{Layouts:} Mapping \textbf{logical coords} $\rightarrow$ \textbf{offset}
+            \item \textbf{Tensors:} Composition of a Layout with some data (i.e: a pointer)
+            \item \textbf{Tiled Operations:} Abstractions for tiling \textbf{Copies} and \textbf{MMAs}
         \end{itemize}
         \item \textbf{Benefit:} Allows us to focus on the algorithmic tiling strategy rather than pointer arithmetic
     \end{itemize}
@@ -133,11 +131,11 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item \textbf{Goal:} Get Tensor Cores working with minimal complexity using CuTe
+                \item \textbf{Goal:} write a minimal GEMM kernel using FP64 TCs
                 \item \textbf{Target:} NVIDIA A100 (GA100)
                 \item \textbf{Key Components:}
                 \begin{itemize}
-                    \item \textbf{Hardware:} FP64 Tensor Cores
+                    \item \textbf{ALU:} FP64 Tensor Cores
                     \item \textbf{Tile Size:} Matches the atom size ($8 \times 8 \times 4$)
                     \item \textbf{Data Movement:} Used \texttt{cp.async}
                 \end{itemize}
@@ -152,14 +150,14 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Baseline: Results}
+\begin{frame}[t]{Baseline: Results}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{res/cuda_baseline.png}
-        \captionof{figure}{Baseline benchmark}
+        \includegraphics[width=0.80\textwidth]{res/cuda_baseline.png}
+        %\captionof{figure}{Baseline benchmark}
     \end{center}
 \end{frame}
 
-\begin{frame}{Optimization: larger TiledMMA}
+\begin{frame}{Optimization: Larger TiledMMA}
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
@@ -176,14 +174,14 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Larger TiledMMA optimization: results}
+\begin{frame}[t]{Larger TiledMMA optimization: Results}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{res/cuda_baseline_m8n8k8.png}
-        \captionof{figure}{cuda\_baseline\_m8n8k8 benchmark}
+        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m8n8k8.png}
+        %\captionof{figure}{cuda\_baseline\_m8n8k8 benchmark}
     \end{center}
 \end{frame}
 
-\begin{frame}{Optimization: vectorized copies}
+\begin{frame}{Optimization: Vectorized copies}
     \begin{itemize}
         \item \textbf{Problem:} We are still memory bound
         \item \textbf{Solution:} Copy larger blocks of data with a single copy instruction
@@ -194,10 +192,10 @@
         \captionof{figure}{vectorized 128bit copy TiledCopy}
     \end{center}
 \end{frame}
-\begin{frame}{Vectorized copies optimization: results}
+\begin{frame}[t]{Vectorized copies optimization: Results}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{res/cuda_baseline_m8n8k8_128b.png}
-        \captionof{figure}{cuda\_baseline\_m8n8k8\_128b benchmark}
+        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m8n8k8_128b.png}
+        %\captionof{figure}{cuda\_baseline\_m8n8k8\_128b benchmark}
     \end{center}
 \end{frame}
 
@@ -217,14 +215,14 @@
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{Larger tiled MMA optimization: results}
+\begin{frame}[t]{Larger tiled MMA optimization: Results}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{res/cuda_baseline_m64n64k32_128b.png}
-        \captionof{figure}{cuda\_baseline\_m64n64k32\_128b benchmark}
+        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m64n64k32_128b.png}
+        %\captionof{figure}{cuda\_baseline\_m64n64k32\_128b benchmark}
     \end{center}
 \end{frame}
 
-\begin{frame}{Optimization: use the whole physical GPU core}
+\begin{frame}{Optimization: Use the whole physical GPU core}
     \begin{columns}
         \begin{column}{0.6\textwidth}
             \begin{itemize}
@@ -240,22 +238,22 @@
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{Block tiling optimization: results}
+\begin{frame}[t]{Block tiling optimization: Results}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{res/cuda_baseline_m64n64k32_128b_4W.png}
-        \captionof{figure}{cuda\_baseline\_m64n64k32\_128b\_4W benchmark}
+        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m64n64k32_128b_4W.png}
+        %\captionof{figure}{cuda\_baseline\_m64n64k32\_128b\_4W benchmark}
     \end{center}
 \end{frame}
 
-\begin{frame}{Optimization: caching policy}
+\begin{frame}{Optimization: Caching policy}
     \begin{itemize}
         \item \textbf{Problem:} When looking at the data loading scheme, we notice that each block is loaded from global memory once. We are misusing our L1 cache
         \item \textbf{Solution:} Instruct the hardware to skip L1 when loading data from global memory
     \end{itemize}
 \end{frame}
-\begin{frame}{Caching policy optimization: results}
+\begin{frame}[t]{Caching policy optimization: Results}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{res/cuda_baseline_m64n64k32_128b_4W_CG.png}
-        \captionof{figure}{cuda\_baseline\_m64n64k32\_128b\_4W\_CG benchmark}
+        \includegraphics[width=0.80\textwidth]{res/cuda_baseline_m64n64k32_128b_4W_CG.png}
+        %\captionof{figure}{cuda\_baseline\_m64n64k32\_128b\_4W\_CG benchmark}
     \end{center}
 \end{frame}
