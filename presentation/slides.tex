@@ -1,0 +1,435 @@
+\documentclass[aspectratio=169]{beamer}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{listings}
+\usepackage[normalem]{ulem}
+\usepackage{graphicx}
+
+\graphicspath{{./res/}}
+
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    language=C,
+    morekeywords={MPI_Send, MPI_Recv, MPI_COMM_WORLD, MPI_DOUBLE, MPI_Init, MPI_Finalize, MPI_Comm_rank, MPI_Comm_size},
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\setbeamercolor{footline}{fg=blue}
+\setbeamerfont{footline}{series=\bfseries}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{matrix, positioning, arrows.meta}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\title[]{HPC Project}
+
+\subtitle{CISD}
+
+\author[Marques, Paillé, Chollon, Jonquière]
+{L. Marques \and L. Paillé \and M. Chollon \and V. Jonquière}
+
+\date[]
+{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{The Team}
+    \begin{columns}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{lucas.jpg}\\
+
+            L. Marques
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{leo.png}\\
+            L. Paillé
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{mathilde.png}\\
+            M. Chollon
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \centering
+            \includegraphics[width=2cm]{valentin.png}\\
+            V. Jonquière
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents
+\end{frame}
+\include{part_dgemm_seq}
+\section{GETRF}
+\begin{frame}
+\frametitle{GETRF}
+\begin{itemize}
+    \item GEneral matrix TRiangular Factorization
+    \item Solve systems of linear equations of the form \textit{Ax=b}
+    \item Breaks a matrix A into 2 triagular matrices L and U
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{A=LU.png}
+    \caption{LU Factorization}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{GETRF blocked}
+\begin{columns}[T]
+
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{GETRF_BLOCKED.png}
+        \vfill
+        \small{Figure: Blocked version of GETRF}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+for k = 0 to small_dim step block_size:
+    # 1. Factorize the diagonal block
+    GETRF_SCALAR( A[k,k] )
+
+    # 2. Update the "Panel" Row
+    TRSM_LOWER( A[k,k], A[k, k+size] )
+
+    # 3. Update the "Panel" Column
+    TRSM_UPPER( A[k,k], A[k+size, k] )
+
+    # 4. Update the Remaining Matrix
+    GEMM( A[k+size, k], A[k, k+size]
+          -> A[k+size, k+size] )
+\end{lstlisting}
+\end{column}
+
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Results}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{getrf_seq_bar.png}
+    \caption{Comparison between different DGETRF versions}
+\end{figure}
+\end{frame}
+
+\section{OpenMP}
+\begin{frame}
+\frametitle{Concept}
+\begin{itemize}
+    \item Use several cores on a machine
+    \item Abstraction and simplification of the use of threads
+    \item Split the computation between threads to speed up computation
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP}
+\begin{itemize}
+    \item Use the code from the sequential version
+    \item Parallelize along the M dimension
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{gemm_omp_square.out_simple.png}
+    \caption{dgemm\_seq vs dgem\_omp}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{itemize}
+    \item Use the base code composed of 3 imbricated loops
+    \item Parallelize the 2 outer loops
+    \item \textit{\#pragma omp parallel for collapse(2) firstprivate(mm,nn,kk,lbeta,k)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{gemm_omp-t_square.out_simple.png}
+    \caption{dgemm\_seq vs dgemm\_omp\_tiled}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGEMM OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{gemm_omp-t_vendor_bar.png}
+    \caption{dgemm\_vendor vs dgemm\_omp\_tiled}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{DGETRF OpenMP and DGETRF OpenMP tiled}
+\begin{columns}[T]
+
+    \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item Naive version
+        \item Most of the computation made in gemm: use omp version
+        \item Parallelize bottleneck for efficient optimization
+    \end{itemize}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+for k = 0 to small_dim step block_size:
+    # 1. Factorize the diagonal block
+    GETRF_SCALAR( A[k,k] )
+
+    # 2. Update the "Panel" Row
+    TRSM_LOWER( A[k,k], A[k, k+size] )
+
+    # 3. Update the "Panel" Column
+    TRSM_UPPER( A[k,k], A[k+size, k] )
+
+    # 4. Update the Remaining Matrix
+    GEMM_OMP/GEMM_OMP_TILED
+    ( A[k+size, k], A[k, k+size]
+          -> A[k+size, k+size] )
+\end{lstlisting}
+\end{column}
+
+\end{columns}
+\end{frame}
+\begin{frame}
+\frametitle{DGETRF OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{getrf_omp_vendor_graph.png}
+    \caption{dgetrf\_seq vs dgetrf\_omp\_tiled}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGETRF OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{getrf_omp_vendor_bar.png}
+    \caption{dgetrf\_seq vs dgetrf\_omp}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{DGETRF OpenMP tiled}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{getrf_comparison_tilesize.png}
+    \caption{Impact of the Block size in dgetrf\_omp\_tiled}
+\end{figure}
+
+\end{frame}
+
+\section{MPI GEMM}
+
+\subsection{Implementation}
+\begin{frame}
+\frametitle{Main ideas}
+\begin{itemize}
+    \item Code will run on multiple nodes
+    \item Matrices will not be fully loaded on each nodes
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Base code}
+    \textit{Code from dgemm\_tiled\_mpi.c}
+    \begin{lstlisting}[language=C]
+       ...
+        if (global_options.mpirank == ownerA)
+        {
+            MPI_Send(A[MT * k + m], b * kk,
+                    MPI_DOUBLE, ownerC, MT * k + m,
+                    MPI_COMM_WORLD);
+        }
+        ...
+        dgemm_seq(CblasColMajor, transA, transB,
+                    mm, nn, kk,
+                    alpha, Aptr, b, Bptr, b,
+                    lbeta, C[MT * n + m], b);
+
+       
+    \end{lstlisting}
+\end{frame}
+
+
+\subsection{Results}
+\begin{frame}
+\frametitle{SUMMA}
+\begin{itemize}
+    \item Scalable Universal Matrix Multiplication Algorithm
+    \item Solves multiple issues (uses collective communications, \ldots)
+    \item 2 versions implemented
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{SUMMA}
+\begin{figure}
+    \centering
+    \includegraphics[width=7cm]{SUMMA.png}
+    \caption{SUMMA algorithm schema}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Results on one node}
+\begin{itemize}
+    \item $\approx$3.6x acceleration (between 1 and 4 processes)
+    \item Wanted to archieve same results as shared memory
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[height=.6\textheight]{strong_one_node.png}
+    \caption{GEMM performances using different processes number on one node}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison with OpenMP}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{MPI_vs_OMP.png}
+    \caption{Performance depending on number of threads/processes}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Find the best parameters}
+As our algorithm uses distributed memory, several (new) parameters needs to be optimized:
+\begin{itemize}
+    \item Number of nodes
+    \item Number of threads/processes per nodes
+    \item Block size
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Block size}
+\begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{block_size.png}
+    \caption{Performance depending on set block size}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Number of nodes}
+\begin{itemize}
+    \item $\approx$3.3x acceleration (between 2 and 8 nodes)
+    \item 4 processes by node, 6 threads by processes
+    \item Pure performance is highly limited due to the no-tiled local GEMM 
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[height=.6\textheight]{strong_summa.png}
+    \caption{Performance depending on number of nodes}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Vendor implementation}
+\begin{itemize}
+    \item $\approx$65\% of theorical peak
+    \item Better performances with 2 times less nodes
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[height=.6\textheight]{strong_vendor.png}
+    \caption{Performance depending on version used for local GEMMs}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Enhancements}
+\begin{itemize}
+    \item Add timers to determine ratio computation/communications
+    \item Broadcast could possibly be non-blocking (maybe hard to implement)
+    \item Overlap computation/communications 
+\end{itemize}
+\end{frame}
+
+\include{dgemm_cuda}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Happy with our results in general
+        \item Still room for improvement
+        \begin{itemize}
+            \item Implement more recent articles
+            \item Go further with NUMA effects
+            \item Focus on DGETRF
+            \item Have default blocksizes depending on matrix size
+        \end{itemize}
+
+    \end{itemize}
+\end{frame}
+
+\end{document}
