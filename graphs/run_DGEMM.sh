@@ -1,33 +1,43 @@
 #!/bin/bash
 
-export TEST_PATH="../build/debug/testings/perf_dgemm"
-export BLOCK_SIZES="16 32 64"
-export VARIANTS="scalaire bloc avx2_bloc"
-export M_SIZES="512 1024"
-export N_SIZES="512 1024"
-export K_SIZES="512 1024"
-export ITER="5"
-export FILE=$(date '+%Y-%m-%d-%H:%M:%S')
-RFILES="../r_scripts/template.R ../r_scripts/template_simple.R"
+TEST_PATH="../build/debug/testings/perf_dgemm"
+BLOCK_SIZES="64"
+VARIANTS="scalaire bloc avx2_bloc vendor"
+M_SIZES="512 1024"
+N_SIZES="512 1024"
+K_SIZES="512 1024"
+ITER=5
+FILE=$(date '+%Y-%m-%d-%H:%M:%S')
+RFILES="../r_scripts/template.R ../r_scripts/template_simple.R ../r_scripts/bar.R"
+RESUMING=false
 
-# If you want to edit:
-# Comment guix shell command
-# To enable bash lang syntax highlight
+need_run() {
+    if [ "$RESUMING" = false ]; then
+        return 0
+    fi
+    if [ ! -f "$1" ]; then
+        return 0
+    fi
+    local lines=$(wc -l < "$1")
+    if [ "$lines" -eq "$2" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+echo "Compiling project"
+
+source ./helpers/project_compile.sh
+
+if [[ "$1" == "-r" ]]; then
+    FILE="$2"
+    RESUMING=true
+    echo "Resuming previous run in folder $FILE"
+fi
+
 
 echo "Creating GUIX shell"
-
-guix shell --pure -D mini-chameleon bash gcc-toolchain -- \
-env -i \
-  FILE="$FILE" \
-  TEST_PATH="$TEST_PATH" \
-  BLOCK_SIZES="$BLOCK_SIZES" \
-  VARIANTS="$VARIANTS" \
-  M_SIZES="$M_SIZES" \
-  N_SIZES="$N_SIZES" \
-  K_SIZES="$K_SIZES" \
-  ITER="$ITER" \
-  bash <<'EOF'
-
 
 mkdir -p "$FILE"
 
@@ -39,19 +49,41 @@ for m in $M_SIZES; do
         
         if [ "$var" = "scalaire" ]; then
           echo "Launching: BS=N/A, Variant=$var, MxNxK=${m}x${n}x${k}, ITER=$ITER"
-          OUTPUT_FILE="gemm-${var}-${m}x${n}x${k}"
+          OUTPUT_FILE="gemm-${var}-${m}x${n}x${k}.raw"
           
-          SEQ_VER=$var $TEST_PATH -v seq -i $ITER -M $m -N $n -K $k > "$FILE/$OUTPUT_FILE"
+          if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
+              SEQ_VER=$var $TEST_PATH -v seq -i $ITER -M $m -N $n -K $k > "$FILE/$OUTPUT_FILE"
+          else
+              echo "Skipping experiment (output file exists and complete)"
+          fi
+          
 
         else
-          for bs in $BLOCK_SIZES; do
-            echo "Launching: BS=$bs, Variant=$var, MxNxK=${m}x${n}x${k}, ITER=$ITER"
-            OUTPUT_FILE="gemm-${var}-${m}x${n}x${k}-${bs}"
-            
-            SEQ_VER=$var BLOCKSIZE=$bs $TEST_PATH -v seq -i $ITER -M $m -N $n -K $k > "$FILE/$OUTPUT_FILE"
-          done
+          if [ "$var" = "vendor" ]; then
+            for bs in $BLOCK_SIZES; do
+              echo "Launching: BS=N/A, Variant=$var, MxNxK=${m}x${n}x${k}, ITER=$ITER"
+              OUTPUT_FILE="gemm-${var}-${m}x${n}x${k}.raw"
+
+              if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
+                $TEST_PATH -v vendor -i $ITER -M $m -N $n -K $k > "$FILE/$OUTPUT_FILE"
+              else
+                echo "Skipping experiment (output file exists and complete)"
+              fi
+            done
+          else
+            for bs in $BLOCK_SIZES; do
+              echo "Launching: BS=$bs, Variant=$var, MxNxK=${m}x${n}x${k}, ITER=$ITER"
+              OUTPUT_FILE="gemm-${var}-${m}x${n}x${k}-${bs}.raw"
+              
+              if need_run "$FILE/$OUTPUT_FILE" $((ITER + 1)); then
+                SEQ_VER=$var BLOCKSIZE=$bs $TEST_PATH -v seq -i $ITER -M $m -N $n -K $k > "$FILE/$OUTPUT_FILE"
+              else
+                echo "Skipping experiment (output file exists and complete)"
+              fi
+            done
+          fi
+          
         fi
-        
       done
     done
   done
@@ -60,17 +92,13 @@ done
 echo "All experiments complete. Exiting GUIX for Visualisation"
 EOF
 cd "$FILE"
-for file in *; do
+for file in *.raw; do
   echo "Processing text file: $file"
   python3 ../formatter.py -i "$file" -al -o "gemm_square.out"
 done
 for file in *.out; do
   echo "Processing text file: $file"
-  for script in $RFILES; do
-    guix shell r r-ggplot2 r-dplyr -- Rscript "$script" "$file"
+   for script in $RFILES; do
+    guix shell r r-ggplot2 r-dplyr r-tidyr -- Rscript "$script" "$file"
   done
 done
-
-
-
-
